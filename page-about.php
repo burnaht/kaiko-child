@@ -8,15 +8,30 @@ get_header(); ?>
 
 <style>
 /* ── WoodMart Override: hide page title & break out of theme container ── */
-.page-template-page-about .main-page-wrapper { padding-top: 0 !important; }
-.page-template-page-about .page-title,
-.page-template-page-about .wd-page-title,
-.page-template-page-about .page-title-default { display: none !important; }
-.page-template-page-about .site-content { padding: 0 !important; }
-.page-template-page-about .site-content > .container,
-.page-template-page-about .content-area,
-.page-template-page-about .site-main { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
-.page-template-page-about .entry-content { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+body.page-template-page-about .main-page-wrapper { padding-top: 0 !important; }
+body.page-template-page-about .page-title,
+body.page-template-page-about .wd-page-title,
+body.page-template-page-about .page-title-default { display: none !important; }
+body.page-template-page-about .site-content { padding: 0 !important; max-width: 100% !important; width: 100% !important; }
+body.page-template-page-about .site-content > .container,
+body.page-template-page-about .container,
+body.page-template-page-about .content-area,
+body.page-template-page-about .site-main { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; box-sizing: border-box !important; }
+body.page-template-page-about .entry-content { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+body.page-template-page-about .website-wrapper { overflow-x: hidden; }
+body.page-template-page-about .main-page-wrapper .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; }
+
+/* ── WoodMart Header: make visible on dark hero ── */
+body.page-template-page-about .whb-header { position: relative; z-index: 100; }
+body.page-template-page-about .whb-header a,
+body.page-template-page-about .whb-header .wd-nav > li > a,
+body.page-template-page-about .whb-header .woodmart-navigation > li > a,
+body.page-template-page-about .whb-header .menu > li > a,
+body.page-template-page-about .whb-header .site-logo a,
+body.page-template-page-about .whb-header .woodmart-logo-wrap a { color: #ffffff !important; }
+body.page-template-page-about .whb-header .whb-main-header { background: rgba(26, 92, 82, 0.95) !important; }
+body.page-template-page-about .whb-header img.woody-logo,
+body.page-template-page-about .whb-header .wd-logo img { filter: brightness(10) !important; }
 
 /* ── KAIKO About Page Styles ── */
 .kaiko-about * { box-sizing: border-box; }

@@ -8,15 +8,30 @@ get_header(); ?>
 
 <style>
 /* ── WoodMart Override: hide page title & break out of theme container ── */
-.page-template-template-homepage .main-page-wrapper { padding-top: 0 !important; }
-.page-template-template-homepage .page-title,
-.page-template-template-homepage .wd-page-title,
-.page-template-template-homepage .page-title-default { display: none !important; }
-.page-template-template-homepage .site-content { padding: 0 !important; }
-.page-template-template-homepage .site-content > .container,
-.page-template-template-homepage .content-area,
-.page-template-template-homepage .site-main { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
-.page-template-template-homepage .entry-content { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+body.page-template-template-homepage .main-page-wrapper { padding-top: 0 !important; }
+body.page-template-template-homepage .page-title,
+body.page-template-template-homepage .wd-page-title,
+body.page-template-template-homepage .page-title-default { display: none !important; }
+body.page-template-template-homepage .site-content { padding: 0 !important; max-width: 100% !important; width: 100% !important; }
+body.page-template-template-homepage .site-content > .container,
+body.page-template-template-homepage .container,
+body.page-template-template-homepage .content-area,
+body.page-template-template-homepage .site-main { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; box-sizing: border-box !important; }
+body.page-template-template-homepage .entry-content { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+body.page-template-template-homepage .website-wrapper { overflow-x: hidden; }
+body.page-template-template-homepage .main-page-wrapper .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; }
+
+/* ── WoodMart Header: make visible on dark hero ── */
+body.page-template-template-homepage .whb-header { position: relative; z-index: 100; }
+body.page-template-template-homepage .whb-header a,
+body.page-template-template-homepage .whb-header .wd-nav > li > a,
+body.page-template-template-homepage .whb-header .woodmart-navigation > li > a,
+body.page-template-template-homepage .whb-header .menu > li > a,
+body.page-template-template-homepage .whb-header .site-logo a,
+body.page-template-template-homepage .whb-header .woodmart-logo-wrap a { color: #ffffff !important; }
+body.page-template-template-homepage .whb-header .whb-main-header { background: rgba(26, 92, 82, 0.95) !important; }
+body.page-template-template-homepage .whb-header img.woody-logo,
+body.page-template-template-homepage .whb-header .wd-logo img { filter: brightness(10) !important; }
 
 /* ── KAIKO Homepage Styles ── */
 :root {
@@ -412,4 +427,3 @@ get_header(); ?>
 </script>
 
 <?php get_footer(); ?>
-/* deployed */
