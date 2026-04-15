@@ -422,3 +422,4 @@ body.page-template-template-homepage .main-page-wrapper .container { max-width: 
 </script>
 
 <?php get_footer(); ?>
+/* v2 */
