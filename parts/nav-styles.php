@@ -4,8 +4,10 @@
 .kaiko-nav-links { display: flex; gap: 3rem; align-items: center; }
 .kaiko-nav-links a { font-family: 'Inter', -apple-system, sans-serif; font-size: 0.95rem; font-weight: 500; color: #57534E !important; text-decoration: none !important; transition: color 0.2s; }
 .kaiko-nav-links a:hover { color: #1a1a1a !important; }
-.kaiko-nav-cta { background: #1a5c52 !important; color: #fff !important; padding: 0.6rem 1.5rem; border-radius: 999px; font-size: 0.85rem !important; font-weight: 600 !important; letter-spacing: 0.03em; text-transform: uppercase; transition: background 0.2s; }
-.kaiko-nav-cta:hover { background: #134840 !important; }
+nav.kaiko-nav .kaiko-nav-links a.kaiko-nav-cta,
+.kaiko-nav a.kaiko-nav-cta { background: #1a5c52 !important; color: #ffffff !important; padding: 0.6rem 1.5rem !important; border-radius: 999px !important; font-size: 0.85rem !important; font-weight: 600 !important; letter-spacing: 0.03em; text-transform: uppercase; transition: background 0.2s; display: inline-block; line-height: 1.4; }
+nav.kaiko-nav .kaiko-nav-links a.kaiko-nav-cta:hover,
+.kaiko-nav a.kaiko-nav-cta:hover { background: #134840 !important; color: #ffffff !important; }
 
 /* Cart icon */
 .kaiko-nav-cart { position: relative; display: none; color: #57534E !important; text-decoration: none !important; padding: 4px; }
