@@ -21,23 +21,10 @@ body.page-template-page-about .entry-content { max-width: 100% !important; width
 body.page-template-page-about .website-wrapper { overflow-x: hidden; }
 body.page-template-page-about .main-page-wrapper .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; }
 
-/* ── KAIKO Nav ── */
-.kaiko-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid #e4e2de; padding: 0 6rem; height: 72px; display: flex; align-items: center; justify-content: space-between; }
-.kaiko-nav-logo { font-family: 'Gotham', 'Gotham Bold', -apple-system, sans-serif; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.03em; color: #1a1a1a; text-decoration: none; }
-.kaiko-nav-links { display: flex; gap: 6rem; align-items: center; }
-.kaiko-nav-links a { font-family: 'Inter', -apple-system, sans-serif; font-size: 0.95rem; font-weight: 500; color: #57534E; text-decoration: none; transition: color 0.2s; }
-.kaiko-nav-links a:hover { color: #1a1a1a; }
-.kaiko-nav-cta { background: #1a5c52 !important; color: #fff !important; padding: 0.6rem 1.5rem; border-radius: 999px; font-size: 0.85rem !important; font-weight: 600 !important; letter-spacing: 0.03em; text-transform: uppercase; transition: background 0.2s; }
-.kaiko-nav-cta:hover { background: #134840 !important; }
-.kaiko-hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 5px; }
-.kaiko-hamburger span { display: block; width: 24px; height: 2px; background: #1a1a1a; transition: 0.3s; }
-@media (max-width: 768px) {
-  .kaiko-nav { padding: 0 1.5rem; }
-  .kaiko-hamburger { display: flex; }
-  .kaiko-nav-links { display: none; position: fixed; top: 72px; left: 0; right: 0; background: #fff; flex-direction: column; padding: 2rem; gap: 1.5rem; border-bottom: 1px solid #e4e2de; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .kaiko-nav-links.mobile-open { display: flex; }
-  .kaiko-nav-cta { text-align: center; }
-}
+/* ── Hide WoodMart header ── */
+.whb-header { display: none !important; }
+
+<?php include get_stylesheet_directory() . '/parts/nav-styles.php'; ?>
 
 /* ── KAIKO About Page Styles ── */
 .kaiko-about * { box-sizing: border-box; }
@@ -145,19 +132,7 @@ body.page-template-page-about .main-page-wrapper .container { max-width: 100% !i
 }
 </style>
 
-<!-- KAIKO Navigation -->
-<nav class="kaiko-nav">
-  <a href="<?php echo esc_url(home_url('/')); ?>" class="kaiko-nav-logo">KAIKO</a>
-  <button class="kaiko-hamburger" aria-label="Menu" onclick="this.classList.toggle('active');document.querySelector('.kaiko-nav-links').classList.toggle('mobile-open');">
-    <span></span><span></span><span></span>
-  </button>
-  <div class="kaiko-nav-links">
-    <a href="<?php echo esc_url(home_url('/products/')); ?>">Products</a>
-    <a href="<?php echo esc_url(home_url('/about/')); ?>">About</a>
-    <a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact</a>
-    <a href="<?php echo esc_url(home_url('/my-account/')); ?>" class="kaiko-nav-cta">Trade Login</a>
-  </div>
-</nav>
+<?php include get_stylesheet_directory() . '/parts/nav.php'; ?>
 
 <div class="kaiko-about">
 
