@@ -379,6 +379,38 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
       cta.style.cssText = 'background:#1a5c52!important;color:#fff!important;padding:8px 20px!important;border-radius:6px!important;font-size:0.85rem!important;text-transform:uppercase!important;letter-spacing:0.05em!important;text-decoration:none!important;font-weight:600!important;';
     }
   }
+
+  // Logged-in nav updates (bypasses page cache)
+  var isLoggedIn = document.cookie.indexOf('wordpress_logged_in') !== -1;
+  if (isLoggedIn) {
+    var navLinks = document.querySelector('.kaiko-nav-links');
+    if (navLinks) {
+      var aboutLink = navLinks.querySelector('a[href="/about/"]');
+      if (aboutLink && !navLinks.querySelector('a[href="/shop/"]')) {
+        var shopLink = document.createElement('a');
+        shopLink.href = '/shop/';
+        shopLink.textContent = 'Shop';
+        navLinks.insertBefore(shopLink, aboutLink);
+      }
+    }
+    var ctas = document.querySelectorAll('.kaiko-nav-cta, .btn-primary[href*="my-account"]');
+    ctas.forEach(function(cta) {
+      if (cta.textContent.trim() === 'Trade Login') {
+        cta.textContent = 'My Account';
+      }
+    });
+    // Mobile menu
+    var mobileLinks = document.querySelector('.kaiko-mobile-menu__links');
+    if (mobileLinks) {
+      var mAbout = mobileLinks.querySelector('a[href="/about/"]');
+      if (mAbout && !mobileLinks.querySelector('a[href="/shop/"]')) {
+        var mShop = document.createElement('a');
+        mShop.href = '/shop/';
+        mShop.textContent = 'Shop';
+        mobileLinks.insertBefore(mShop, mAbout);
+      }
+    }
+  }
 })();
 </script>
 </body>

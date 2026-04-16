@@ -697,6 +697,27 @@ body { margin: 0; padding: 0; }
     if (e.key === 'ArrowLeft') { currentIndex = (currentIndex - 1 + visibleItems.length) % visibleItems.length; updateLightbox(); }
     if (e.key === 'ArrowRight') { currentIndex = (currentIndex + 1) % visibleItems.length; updateLightbox(); }
   });
+
+  // Logged-in nav updates (bypasses page cache)
+  var isLoggedIn = document.cookie.indexOf('wordpress_logged_in') !== -1;
+  if (isLoggedIn) {
+    var navLinks = document.querySelector('.kaiko-nav-links');
+    if (navLinks) {
+      var aboutLink = navLinks.querySelector('a[href*="/about/"]');
+      if (aboutLink && !navLinks.querySelector('a[href*="/shop/"]')) {
+        var shopLink = document.createElement('a');
+        shopLink.href = '/shop/';
+        shopLink.textContent = 'Shop';
+        navLinks.insertBefore(shopLink, aboutLink);
+      }
+    }
+    var ctas = document.querySelectorAll('.kaiko-nav-cta, .btn-primary[href*="my-account"]');
+    ctas.forEach(function(cta) {
+      if (cta.textContent.trim() === 'Trade Login') {
+        cta.textContent = 'My Account';
+      }
+    });
+  }
 })();
 </script>
 
