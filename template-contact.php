@@ -35,6 +35,7 @@ $cf7_id = (int) get_option( 'kaiko_cf7_contact_id', 0 );
 .whb-header,
 .woodmart-prefooter,
 .footer-container,
+.wd-footer,
 .website-wrapper > footer,
 #wp-admin-bar-root-default { display: none !important; }
 .website-wrapper { padding-top: 0 !important; }

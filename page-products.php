@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 <style>
 /* Hide WoodMart theme wrapper elements */
-.whb-header, .woodmart-prefooter, .footer-container, .website-wrapper > footer,
+.whb-header, .woodmart-prefooter, .footer-container, .wd-footer, .website-wrapper > footer,
 .page-title, .breadcrumbs, .woodmart-breadcrumbs, .title-size-default,
 .woodmart-main-container,
 .wd-toolbar, .wd-sticky-btn, .woodmart-sticky-toolbar,
