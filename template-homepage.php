@@ -236,10 +236,10 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
       </div>
       <div class="kaiko-hero-visual">
         <div class="kaiko-hero-image-grid">
-          <div class="img-placeholder" style="background:linear-gradient(135deg, #d4cfc7, #e8e4df);">Product Photo</div>
-          <div class="img-placeholder" style="background:linear-gradient(135deg, #c4d4c0, #dce8d8);">Product Photo</div>
-          <div class="img-placeholder" style="background:linear-gradient(135deg, #d4cfc7, #e8e4df);">Product Photo</div>
-          <div class="img-placeholder" style="background:linear-gradient(135deg, #c4d4c0, #dce8d8);">Product Photo</div>
+          <div class="img-placeholder"><img src="/wp-content/uploads/2026/03/kaiko-lifestyle-28.jpg" alt="Kaiko reptile habitat products" style="width:100%;height:100%;object-fit:cover;" loading="eager" /></div>
+          <div class="img-placeholder"><img src="/wp-content/uploads/2026/03/kaiko-lifestyle-30.jpg" alt="Kaiko reptile habitat products" style="width:100%;height:100%;object-fit:cover;" loading="eager" /></div>
+          <div class="img-placeholder"><img src="/wp-content/uploads/2026/03/kaiko-lifestyle-22.jpg" alt="Kaiko reptile habitat products" style="width:100%;height:100%;object-fit:cover;" loading="lazy" /></div>
+          <div class="img-placeholder"><img src="/wp-content/uploads/2026/03/kaiko-lifestyle-05.jpg" alt="Kaiko reptile habitat products" style="width:100%;height:100%;object-fit:cover;" loading="lazy" /></div>
         </div>
       </div>
     </div>
