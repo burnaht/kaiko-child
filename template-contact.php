@@ -1196,7 +1196,7 @@ body.kaiko-contact .footer-bottom {
   };
 
   // Logged-in nav updates (bypasses page cache)
-  var isLoggedIn = document.cookie.indexOf('wordpress_logged_in') !== -1;
+  var isLoggedIn = document.body.classList.contains('logged-in') || document.getElementById('wpadminbar') !== null;
   if (isLoggedIn) {
     var navLinks = document.querySelector('.kaiko-nav-links');
     if (navLinks) {
