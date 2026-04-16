@@ -1,0 +1,26 @@
+/*
+ Theme Name:   Kaiko Child
+ Theme URI:    https://kaiko.com
+ Description:  Premium wholesale reptile & exotic pet supplies — WoodMart child theme with trade-only pricing, admin approval, scroll animations, and the Kaiko design system.
+ Author:       Kaiko Team
+ Author URI:   https://kaiko.com
+ Template:     woodmart
+ Version:      2.0.0
+ License:      GNU General Public License v2 or later
+ License URI:  https://www.gnu.org/licenses/gpl-2.0.html
+ Text Domain:  kaiko-child
+ Requires at least: 6.0
+ Tested up to: 6.5
+ Requires PHP: 8.0
+*/
+
+/* ============================================
+   All custom styles are loaded via functions.php
+   from /assets/css/ in this order:
+
+   1. kaiko-design-system.css  — Tokens, typography, components
+   2. kaiko-animations.css     — Scroll reveals, parallax, cursor
+   3. kaiko-woocommerce.css    — WooCommerce overrides
+
+   DO NOT add styles directly to this file.
+   ============================================ */

@@ -1,0 +1,1366 @@
+/**
+ * Kaiko Shell — Shared Navigation, Footer, Mobile Menu & Page Wrappers
+ *
+ * This file styles the unified Kaiko page shell that wraps ALL pages,
+ * replacing WoodMart's default header/footer with the Kaiko design system.
+ *
+ * @version 3.0.0
+ */
+
+
+/* ===========================
+   HIDE WOODMART DEFAULT CHROME
+   =========================== */
+
+.kaiko-page .whb-header,
+.kaiko-page .woodmart-prefooter,
+.kaiko-page .footer-container,
+.kaiko-page .website-wrapper > footer,
+.kaiko-page .whb-sticked,
+.kaiko-page .whb-clone,
+.kaiko-page .woodmart-sticky-header-wrap {
+  display: none !important;
+}
+
+.kaiko-page .website-wrapper {
+  padding-top: 0 !important;
+}
+
+
+/* ===========================
+   1. NAVIGATION BAR
+   =========================== */
+
+.kaiko-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--kaiko-border);
+  padding: 0 var(--kaiko-space-xl);
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+}
+
+.kaiko-nav.scrolled {
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+}
+
+.kaiko-nav-logo {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.75rem;
+  font-weight: var(--kaiko-weight-bold);
+  letter-spacing: var(--kaiko-letter-spacing-tight);
+  color: var(--kaiko-dark);
+  text-decoration: none;
+}
+
+.kaiko-nav-links {
+  display: flex;
+  gap: var(--kaiko-space-xl);
+  align-items: center;
+}
+
+.kaiko-nav-links a {
+  font-family: var(--kaiko-font-body);
+  font-size: 0.9rem;
+  font-weight: var(--kaiko-weight-medium);
+  color: var(--kaiko-mid-gray);
+  text-decoration: none;
+  transition: color 0.2s;
+  letter-spacing: 0.025em;
+  position: relative;
+}
+
+.kaiko-nav-links a:hover,
+.kaiko-nav-links a.active {
+  color: var(--kaiko-teal);
+}
+
+.kaiko-nav-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--kaiko-teal);
+  border-radius: 1px;
+}
+
+.kaiko-nav-cta {
+  background: var(--kaiko-teal) !important;
+  color: var(--kaiko-white) !important;
+  padding: 8px 20px !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: background 0.2s !important;
+}
+
+.kaiko-nav-cta:hover {
+  background: var(--kaiko-deep-teal) !important;
+}
+
+/* Cart icon in nav */
+.kaiko-nav-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: var(--kaiko-dark) !important;
+}
+
+.kaiko-nav-cart:hover {
+  color: var(--kaiko-teal) !important;
+}
+
+.kaiko-nav-cart-count {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  font-size: 0.6rem;
+  font-weight: var(--kaiko-weight-bold);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+
+/* ===========================
+   2. HAMBURGER BUTTON
+   =========================== */
+
+.kaiko-nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  z-index: 1001;
+}
+
+.kaiko-nav-hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--kaiko-dark);
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-origin: center;
+}
+
+.kaiko-nav-hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.kaiko-nav-hamburger.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.kaiko-nav-hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+
+/* ===========================
+   3. MOBILE SLIDE-OUT MENU
+   =========================== */
+
+.kaiko-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 998;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.kaiko-mobile-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.kaiko-mobile-menu {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 320px;
+  max-width: 85vw;
+  height: 100vh;
+  background: var(--kaiko-white);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+}
+
+.kaiko-mobile-menu.open {
+  right: 0;
+}
+
+.kaiko-mobile-menu__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--kaiko-space-lg) var(--kaiko-space-xl);
+  border-bottom: 1px solid var(--kaiko-border);
+}
+
+.kaiko-mobile-menu__logo {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.5rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+}
+
+.kaiko-mobile-menu__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--kaiko-mid-gray);
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.kaiko-mobile-menu__close:hover {
+  color: var(--kaiko-dark);
+}
+
+.kaiko-mobile-menu__links {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--kaiko-space-lg) 0;
+  overflow-y: auto;
+}
+
+.kaiko-mobile-menu__links a {
+  display: block;
+  padding: var(--kaiko-space-md) var(--kaiko-space-xl);
+  font-family: var(--kaiko-font-display);
+  font-size: 1.1rem;
+  font-weight: var(--kaiko-weight-medium);
+  color: var(--kaiko-dark);
+  text-decoration: none;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.kaiko-mobile-menu__links a:hover {
+  background: var(--kaiko-off-white);
+  color: var(--kaiko-teal);
+  border-left-color: var(--kaiko-teal);
+}
+
+.kaiko-mobile-menu__footer {
+  padding: var(--kaiko-space-xl);
+  border-top: 1px solid var(--kaiko-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--kaiko-space-sm);
+}
+
+.kaiko-mobile-menu__footer .btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-family: var(--kaiko-font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.2s;
+}
+
+.kaiko-mobile-menu__footer .btn-primary:hover {
+  background: var(--kaiko-deep-teal);
+}
+
+.kaiko-mobile-menu__footer .btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--kaiko-dark);
+  padding: 14px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--kaiko-border);
+  font-family: var(--kaiko-font-body);
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.kaiko-mobile-menu__footer .btn-secondary:hover {
+  border-color: var(--kaiko-teal);
+  color: var(--kaiko-teal);
+}
+
+
+/* ===========================
+   4. MAIN CONTENT AREA
+   =========================== */
+
+.kaiko-main {
+  padding-top: 72px; /* nav height */
+  min-height: calc(100vh - 72px);
+}
+
+.kaiko-page-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--kaiko-space-3xl) var(--kaiko-space-xl) var(--kaiko-space-4xl);
+}
+
+/* Page hero (used on shop, cart, checkout, account) */
+.kaiko-page-hero {
+  background: linear-gradient(135deg, var(--kaiko-off-white) 0%, var(--kaiko-warm-gray) 100%);
+  padding: var(--kaiko-space-3xl) var(--kaiko-space-xl) var(--kaiko-space-2xl);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.kaiko-page-hero::after {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -15%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(26, 92, 82, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.kaiko-page-hero__tag {
+  display: inline-block;
+  font-family: var(--kaiko-font-display);
+  font-size: 0.7rem;
+  font-weight: var(--kaiko-weight-semibold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--kaiko-teal);
+  margin-bottom: var(--kaiko-space-md);
+}
+
+.kaiko-page-hero__title {
+  font-family: var(--kaiko-font-display);
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+  margin-bottom: var(--kaiko-space-sm);
+  letter-spacing: var(--kaiko-letter-spacing-tight);
+}
+
+.kaiko-page-hero__subtitle {
+  font-family: var(--kaiko-font-body);
+  font-size: 1.05rem;
+  color: var(--kaiko-mid-gray);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* Breadcrumb bar */
+.kaiko-breadcrumb-bar {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--kaiko-space-lg) var(--kaiko-space-xl);
+}
+
+.kaiko-breadcrumb-bar .woocommerce-breadcrumb,
+.kaiko-breadcrumb-bar a,
+.kaiko-breadcrumb-bar span {
+  font-family: var(--kaiko-font-body);
+  font-size: 0.85rem;
+  color: var(--kaiko-mid-gray);
+  text-decoration: none;
+}
+
+.kaiko-breadcrumb-bar a:hover {
+  color: var(--kaiko-teal);
+}
+
+
+/* ===========================
+   5. FOOTER (matches homepage)
+   =========================== */
+
+.kaiko-footer {
+  background: var(--kaiko-dark);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 80px var(--kaiko-space-xl) 40px;
+}
+
+.footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 60px;
+}
+
+.footer-brand h3 {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.5rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-white);
+  margin: 0 0 16px;
+}
+
+.footer-brand p {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  max-width: 300px;
+  margin: 0;
+}
+
+.footer-col h4 {
+  font-family: var(--kaiko-font-display);
+  font-size: 0.8rem;
+  font-weight: var(--kaiko-weight-semibold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--kaiko-white);
+  margin: 0 0 24px;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col li {
+  margin-bottom: 10px;
+}
+
+.footer-col a {
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.footer-col a:hover {
+  color: var(--kaiko-lime);
+}
+
+.footer-bottom {
+  max-width: 1400px;
+  margin: 0 auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+
+/* ===========================
+   6. CART PAGE STYLES
+   =========================== */
+
+.kaiko-cart-section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--kaiko-space-2xl) var(--kaiko-space-xl) var(--kaiko-space-4xl);
+}
+
+.kaiko-cart-section .shop_table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--kaiko-white);
+  border-radius: var(--kaiko-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--kaiko-shadow-sm);
+  margin-bottom: var(--kaiko-space-2xl);
+}
+
+.kaiko-cart-section .shop_table thead {
+  background: var(--kaiko-off-white);
+}
+
+.kaiko-cart-section .shop_table thead th {
+  font-family: var(--kaiko-font-display);
+  font-size: 0.75rem;
+  font-weight: var(--kaiko-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--kaiko-mid-gray);
+  padding: var(--kaiko-space-lg);
+  text-align: left;
+  border-bottom: 1px solid var(--kaiko-border);
+}
+
+.kaiko-cart-section .shop_table tbody td {
+  padding: var(--kaiko-space-lg);
+  font-family: var(--kaiko-font-body);
+  font-size: 0.95rem;
+  color: var(--kaiko-dark);
+  border-bottom: 1px solid var(--kaiko-border);
+  vertical-align: middle;
+}
+
+.kaiko-cart-section .shop_table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.kaiko-cart-section .product-thumbnail img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--kaiko-radius-lg);
+}
+
+.kaiko-cart-section .product-name a {
+  font-family: var(--kaiko-font-display);
+  font-weight: var(--kaiko-weight-semibold);
+  color: var(--kaiko-dark);
+  text-decoration: none;
+}
+
+.kaiko-cart-section .product-name a:hover {
+  color: var(--kaiko-teal);
+}
+
+.kaiko-cart-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: var(--kaiko-space-2xl);
+  align-items: start;
+}
+
+.kaiko-cart-totals {
+  background: var(--kaiko-off-white);
+  border-radius: var(--kaiko-radius-xl);
+  padding: var(--kaiko-space-2xl);
+  position: sticky;
+  top: 100px;
+}
+
+.kaiko-cart-totals h2 {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.25rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+  margin-bottom: var(--kaiko-space-xl);
+}
+
+
+/* ===========================
+   7. CHECKOUT PAGE STYLES
+   =========================== */
+
+.kaiko-checkout-section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--kaiko-space-2xl) var(--kaiko-space-xl) var(--kaiko-space-4xl);
+}
+
+.kaiko-checkout-section .woocommerce-checkout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: var(--kaiko-space-3xl);
+  align-items: start;
+}
+
+.kaiko-checkout-section .woocommerce-billing-fields h3,
+.kaiko-checkout-section .woocommerce-shipping-fields h3,
+.kaiko-checkout-section .woocommerce-additional-fields h3,
+.kaiko-checkout-section #order_review_heading {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.25rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+  margin-bottom: var(--kaiko-space-xl);
+  padding-bottom: var(--kaiko-space-md);
+  border-bottom: 1px solid var(--kaiko-border);
+}
+
+.kaiko-checkout-section .form-row label {
+  font-family: var(--kaiko-font-body);
+  font-size: 0.85rem;
+  font-weight: var(--kaiko-weight-medium);
+  color: var(--kaiko-dark);
+  margin-bottom: var(--kaiko-space-xs);
+}
+
+.kaiko-checkout-section .form-row input,
+.kaiko-checkout-section .form-row textarea,
+.kaiko-checkout-section .form-row select,
+.kaiko-checkout-section .select2-container .select2-selection--single {
+  padding: 12px 16px;
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-lg);
+  font-family: var(--kaiko-font-body);
+  font-size: 0.95rem;
+  color: var(--kaiko-dark);
+  background: var(--kaiko-white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.kaiko-checkout-section .form-row input:focus,
+.kaiko-checkout-section .form-row textarea:focus,
+.kaiko-checkout-section .form-row select:focus {
+  outline: none;
+  border-color: var(--kaiko-teal);
+  box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
+}
+
+.kaiko-checkout-section #order_review {
+  background: var(--kaiko-off-white);
+  border-radius: var(--kaiko-radius-xl);
+  padding: var(--kaiko-space-2xl);
+  position: sticky;
+  top: 100px;
+}
+
+.kaiko-checkout-section #place_order {
+  width: 100%;
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  border: none;
+  border-radius: var(--kaiko-radius-lg);
+  padding: 16px;
+  font-family: var(--kaiko-font-body);
+  font-size: 1rem;
+  font-weight: var(--kaiko-weight-semibold);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  margin-top: var(--kaiko-space-xl);
+}
+
+.kaiko-checkout-section #place_order:hover {
+  background: var(--kaiko-deep-teal);
+  transform: translateY(-2px);
+}
+
+
+/* ===========================
+   8. MY ACCOUNT PAGE STYLES
+   =========================== */
+
+.kaiko-account-section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--kaiko-space-2xl) var(--kaiko-space-xl) var(--kaiko-space-4xl);
+}
+
+.kaiko-account-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--kaiko-space-2xl);
+  align-items: start;
+}
+
+/* Sidebar navigation */
+.kaiko-account-layout .woocommerce-MyAccount-navigation {
+  background: var(--kaiko-off-white);
+  border-radius: var(--kaiko-radius-xl);
+  padding: var(--kaiko-space-lg);
+  position: sticky;
+  top: 100px;
+}
+
+.kaiko-account-layout .woocommerce-MyAccount-navigation ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kaiko-account-layout .woocommerce-MyAccount-navigation a {
+  display: block;
+  padding: var(--kaiko-space-sm) var(--kaiko-space-md);
+  font-family: var(--kaiko-font-body);
+  font-size: 0.9rem;
+  font-weight: var(--kaiko-weight-medium);
+  color: var(--kaiko-mid-gray);
+  text-decoration: none;
+  border-radius: var(--kaiko-radius-md);
+  transition: all 0.2s;
+}
+
+.kaiko-account-layout .woocommerce-MyAccount-navigation a:hover {
+  background: var(--kaiko-white);
+  color: var(--kaiko-teal);
+}
+
+.kaiko-account-layout .woocommerce-MyAccount-navigation li.is-active a {
+  background: var(--kaiko-white);
+  color: var(--kaiko-teal);
+  font-weight: var(--kaiko-weight-semibold);
+  box-shadow: var(--kaiko-shadow-xs);
+}
+
+/* Account content */
+.kaiko-account-layout .woocommerce-MyAccount-content {
+  min-height: 400px;
+}
+
+.kaiko-account-layout .woocommerce-MyAccount-content h2,
+.kaiko-account-layout .woocommerce-MyAccount-content h3 {
+  font-family: var(--kaiko-font-display);
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+}
+
+/* Account status notices */
+.kaiko-account-notice {
+  padding: var(--kaiko-space-lg) var(--kaiko-space-xl);
+  border-radius: var(--kaiko-radius-xl);
+  margin-bottom: var(--kaiko-space-xl);
+  border-left: 4px solid transparent;
+}
+
+.kaiko-account-notice h3 {
+  font-family: var(--kaiko-font-display);
+  font-size: 1rem;
+  font-weight: var(--kaiko-weight-semibold);
+  margin-bottom: var(--kaiko-space-xs);
+}
+
+.kaiko-account-notice p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.kaiko-account-notice.info {
+  background: rgba(26, 92, 82, 0.06);
+  border-left-color: var(--kaiko-teal);
+}
+
+.kaiko-account-notice.info h3 { color: var(--kaiko-teal); }
+
+.kaiko-account-notice.success {
+  background: rgba(122, 184, 0, 0.06);
+  border-left-color: var(--kaiko-lime);
+}
+
+.kaiko-account-notice.success h3 { color: #5a8a00; }
+
+.kaiko-account-notice.warning {
+  background: rgba(245, 158, 11, 0.06);
+  border-left-color: #f59e0b;
+}
+
+.kaiko-account-notice.warning h3 { color: #b07300; }
+
+/* Login / Registration form */
+.kaiko-auth-section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--kaiko-space-2xl) var(--kaiko-space-xl) var(--kaiko-space-4xl);
+}
+
+.kaiko-auth-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--kaiko-space-3xl);
+  align-items: start;
+}
+
+.kaiko-auth-card {
+  background: var(--kaiko-white);
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-2xl);
+  padding: var(--kaiko-space-2xl);
+}
+
+.kaiko-auth-card h2 {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.5rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+  margin-bottom: var(--kaiko-space-xl);
+}
+
+.kaiko-auth-card .form-row label {
+  font-family: var(--kaiko-font-body);
+  font-size: 0.85rem;
+  font-weight: var(--kaiko-weight-medium);
+  color: var(--kaiko-dark);
+}
+
+.kaiko-auth-card .form-row input,
+.kaiko-auth-card .form-row select,
+.kaiko-auth-card .form-row textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-lg);
+  font-family: var(--kaiko-font-body);
+  font-size: 0.95rem;
+  color: var(--kaiko-dark);
+  background: var(--kaiko-white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.kaiko-auth-card .form-row input:focus,
+.kaiko-auth-card .form-row select:focus,
+.kaiko-auth-card .form-row textarea:focus {
+  outline: none;
+  border-color: var(--kaiko-teal);
+  box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
+}
+
+.kaiko-auth-card .woocommerce-Button,
+.kaiko-auth-card button[type="submit"] {
+  width: 100%;
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  border: none;
+  border-radius: var(--kaiko-radius-lg);
+  padding: 14px 24px;
+  font-family: var(--kaiko-font-body);
+  font-size: 0.95rem;
+  font-weight: var(--kaiko-weight-semibold);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  margin-top: var(--kaiko-space-md);
+}
+
+.kaiko-auth-card .woocommerce-Button:hover,
+.kaiko-auth-card button[type="submit"]:hover {
+  background: var(--kaiko-deep-teal);
+  transform: translateY(-1px);
+}
+
+/* Trade application intro */
+.kaiko-trade-intro {
+  background: linear-gradient(135deg, var(--kaiko-off-white) 0%, var(--kaiko-warm-gray) 100%);
+  border-radius: var(--kaiko-radius-2xl);
+  padding: var(--kaiko-space-2xl);
+  margin-bottom: var(--kaiko-space-2xl);
+}
+
+.kaiko-trade-intro h3 {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.25rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+  margin-bottom: var(--kaiko-space-md);
+}
+
+.kaiko-trade-intro p {
+  color: var(--kaiko-mid-gray);
+  line-height: 1.7;
+  margin-bottom: var(--kaiko-space-md);
+}
+
+.kaiko-trade-benefits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--kaiko-space-md);
+  margin-top: var(--kaiko-space-lg);
+}
+
+.kaiko-trade-benefit {
+  display: flex;
+  align-items: center;
+  gap: var(--kaiko-space-sm);
+  font-size: 0.9rem;
+  color: var(--kaiko-dark);
+}
+
+.kaiko-trade-benefit svg {
+  flex-shrink: 0;
+  color: var(--kaiko-teal);
+}
+
+
+/* ===========================
+   9. RESPONSIVE
+   =========================== */
+
+@media (max-width: 1024px) {
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .kaiko-checkout-section .woocommerce-checkout {
+    grid-template-columns: 1fr;
+  }
+
+  .kaiko-cart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .kaiko-account-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .kaiko-account-layout .woocommerce-MyAccount-navigation {
+    position: static;
+  }
+
+  .kaiko-account-layout .woocommerce-MyAccount-navigation ul {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--kaiko-space-xs);
+  }
+
+  .kaiko-auth-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .kaiko-nav-links {
+    display: none;
+  }
+
+  .kaiko-nav-hamburger {
+    display: flex;
+  }
+
+  .kaiko-nav {
+    padding: 0 var(--kaiko-space-lg);
+  }
+
+  .kaiko-main {
+    padding-top: 72px;
+  }
+
+  .kaiko-page-wrapper {
+    padding: var(--kaiko-space-xl) var(--kaiko-space-md) var(--kaiko-space-2xl);
+  }
+
+  .kaiko-page-hero {
+    padding: var(--kaiko-space-2xl) var(--kaiko-space-md);
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .kaiko-trade-benefits {
+    grid-template-columns: 1fr;
+  }
+
+  .kaiko-cart-section,
+  .kaiko-checkout-section,
+  .kaiko-account-section,
+  .kaiko-auth-section {
+    padding-left: var(--kaiko-space-md);
+    padding-right: var(--kaiko-space-md);
+  }
+}
+
+
+/* ===========================
+   10. CHECKOUT COLUMNS LAYOUT
+   =========================== */
+
+.kaiko-checkout-columns {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: var(--kaiko-space-3xl);
+  align-items: start;
+}
+
+.kaiko-checkout-review {
+  background: var(--kaiko-off-white);
+  border-radius: var(--kaiko-radius-2xl);
+  padding: var(--kaiko-space-2xl);
+  position: sticky;
+  top: 100px;
+}
+
+.kaiko-checkout-review h3 {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.25rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+  margin-bottom: var(--kaiko-space-xl);
+  padding-bottom: var(--kaiko-space-md);
+  border-bottom: 1px solid var(--kaiko-border);
+}
+
+.kaiko-checkout-fields .form-row label {
+  font-family: var(--kaiko-font-body);
+  font-size: 0.85rem;
+  font-weight: var(--kaiko-weight-medium);
+  color: var(--kaiko-dark);
+}
+
+.kaiko-checkout-fields .form-row input,
+.kaiko-checkout-fields .form-row textarea,
+.kaiko-checkout-fields .form-row select {
+  padding: 12px 16px;
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-lg);
+  font-family: var(--kaiko-font-body);
+  font-size: 0.95rem;
+  color: var(--kaiko-dark);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.kaiko-checkout-fields .form-row input:focus,
+.kaiko-checkout-fields .form-row textarea:focus,
+.kaiko-checkout-fields .form-row select:focus {
+  outline: none;
+  border-color: var(--kaiko-teal);
+  box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
+}
+
+@media (max-width: 1024px) {
+  .kaiko-checkout-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .kaiko-checkout-review {
+    position: static;
+  }
+}
+
+
+/* ===========================
+   11. CART ACTIONS BAR
+   =========================== */
+
+.kaiko-cart-section .actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--kaiko-space-md);
+  flex-wrap: wrap;
+  padding: var(--kaiko-space-lg) !important;
+  background: var(--kaiko-off-white);
+}
+
+.kaiko-cart-section .coupon {
+  display: flex;
+  gap: var(--kaiko-space-sm);
+  align-items: center;
+}
+
+.kaiko-cart-section .coupon input {
+  padding: 10px 16px;
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-lg);
+  font-family: var(--kaiko-font-body);
+  font-size: 0.9rem;
+  width: 200px;
+}
+
+.kaiko-cart-section .coupon input:focus {
+  outline: none;
+  border-color: var(--kaiko-teal);
+  box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
+}
+
+.kaiko-cart-section .coupon .button,
+.kaiko-cart-section .actions > .button {
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  border: none;
+  border-radius: var(--kaiko-radius-lg);
+  padding: 10px 20px;
+  font-family: var(--kaiko-font-body);
+  font-size: 0.85rem;
+  font-weight: var(--kaiko-weight-semibold);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.kaiko-cart-section .coupon .button:hover,
+.kaiko-cart-section .actions > .button:hover {
+  background: var(--kaiko-deep-teal);
+}
+
+/* Cart totals in collaterals */
+.kaiko-cart-section .cart-collaterals {
+  margin-top: var(--kaiko-space-xl);
+}
+
+.kaiko-cart-section .cart_totals {
+  background: var(--kaiko-off-white);
+  border-radius: var(--kaiko-radius-2xl);
+  padding: var(--kaiko-space-2xl);
+  max-width: 480px;
+  margin-left: auto;
+}
+
+.kaiko-cart-section .cart_totals h2 {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.25rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+  margin-bottom: var(--kaiko-space-lg);
+}
+
+.kaiko-cart-section .cart_totals table {
+  width: 100%;
+}
+
+.kaiko-cart-section .cart_totals th,
+.kaiko-cart-section .cart_totals td {
+  padding: var(--kaiko-space-sm) 0;
+  font-family: var(--kaiko-font-body);
+  font-size: 0.95rem;
+}
+
+.kaiko-cart-section .cart_totals th {
+  color: var(--kaiko-mid-gray);
+  font-weight: var(--kaiko-weight-medium);
+  text-align: left;
+}
+
+.kaiko-cart-section .cart_totals tr.order-total th,
+.kaiko-cart-section .cart_totals tr.order-total td {
+  font-size: 1.1rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+  padding-top: var(--kaiko-space-md);
+  border-top: 2px solid var(--kaiko-border);
+}
+
+.kaiko-cart-section .proceed-to-checkout .checkout-button,
+.kaiko-cart-section .wc-proceed-to-checkout .checkout-button {
+  display: block;
+  width: 100%;
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  border: none;
+  border-radius: var(--kaiko-radius-lg);
+  padding: 16px;
+  font-family: var(--kaiko-font-body);
+  font-size: 1rem;
+  font-weight: var(--kaiko-weight-semibold);
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  margin-top: var(--kaiko-space-lg);
+}
+
+.kaiko-cart-section .proceed-to-checkout .checkout-button:hover,
+.kaiko-cart-section .wc-proceed-to-checkout .checkout-button:hover {
+  background: var(--kaiko-deep-teal);
+  transform: translateY(-2px);
+}
+
+/* Product remove button styling */
+.kaiko-cart-section .product-remove .remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--kaiko-radius-full);
+  background: var(--kaiko-off-white);
+  color: var(--kaiko-mid-gray) !important;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.kaiko-cart-section .product-remove .remove:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444 !important;
+}
+
+
+/* ===========================
+   12. WOO NOTICES (global)
+   =========================== */
+
+.kaiko-page .woocommerce-message,
+.kaiko-page .woocommerce-error,
+.kaiko-page .woocommerce-info {
+  max-width: 1400px;
+  margin: var(--kaiko-space-md) auto;
+  padding: var(--kaiko-space-md) var(--kaiko-space-xl);
+  border-radius: var(--kaiko-radius-lg);
+  font-family: var(--kaiko-font-body);
+  font-size: 0.9rem;
+  border-left: 4px solid transparent;
+}
+
+.kaiko-page .woocommerce-message {
+  background: rgba(122, 184, 0, 0.06);
+  border-left-color: var(--kaiko-lime);
+  color: #5a8a00;
+}
+
+.kaiko-page .woocommerce-error {
+  background: rgba(239, 68, 68, 0.06);
+  border-left-color: #ef4444;
+  color: #c33;
+}
+
+.kaiko-page .woocommerce-info {
+  background: rgba(26, 92, 82, 0.06);
+  border-left-color: var(--kaiko-teal);
+  color: var(--kaiko-teal);
+}
+
+.kaiko-page .woocommerce-message a,
+.kaiko-page .woocommerce-info a {
+  color: var(--kaiko-teal);
+  font-weight: var(--kaiko-weight-semibold);
+}
+
+/* Order review table in checkout */
+.kaiko-checkout-review .woocommerce-checkout-review-order-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.kaiko-checkout-review .woocommerce-checkout-review-order-table th,
+.kaiko-checkout-review .woocommerce-checkout-review-order-table td {
+  padding: var(--kaiko-space-sm) 0;
+  font-family: var(--kaiko-font-body);
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--kaiko-border);
+}
+
+.kaiko-checkout-review .woocommerce-checkout-review-order-table th {
+  color: var(--kaiko-mid-gray);
+  font-weight: var(--kaiko-weight-medium);
+  text-align: left;
+}
+
+.kaiko-checkout-review .woocommerce-checkout-review-order-table tfoot .order-total th,
+.kaiko-checkout-review .woocommerce-checkout-review-order-table tfoot .order-total td {
+  font-size: 1.1rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-dark);
+  border-top: 2px solid var(--kaiko-border);
+  border-bottom: none;
+  padding-top: var(--kaiko-space-md);
+}
+
+/* Place order button in checkout review */
+.kaiko-checkout-review #place_order {
+  width: 100%;
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  border: none;
+  border-radius: var(--kaiko-radius-lg);
+  padding: 16px;
+  font-family: var(--kaiko-font-body);
+  font-size: 1rem;
+  font-weight: var(--kaiko-weight-semibold);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  margin-top: var(--kaiko-space-lg);
+}
+
+.kaiko-checkout-review #place_order:hover {
+  background: var(--kaiko-deep-teal);
+  transform: translateY(-2px);
+}
+
+
+/* ===========================
+   13. EMPTY CART STATE
+   =========================== */
+
+.kaiko-page .cart-empty {
+  text-align: center;
+  padding: var(--kaiko-space-4xl) var(--kaiko-space-xl);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.kaiko-page .cart-empty::before {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--kaiko-space-xl);
+  background: var(--kaiko-off-white);
+  border-radius: var(--kaiko-radius-full);
+}
+
+.kaiko-page .return-to-shop .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  padding: 14px 32px;
+  border-radius: var(--kaiko-radius-lg);
+  font-family: var(--kaiko-font-body);
+  font-weight: var(--kaiko-weight-semibold);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+  border: none;
+  cursor: pointer;
+  margin-top: var(--kaiko-space-lg);
+}
+
+.kaiko-page .return-to-shop .button:hover {
+  background: var(--kaiko-deep-teal);
+  transform: translateY(-2px);
+}
+
+
+/* ===========================
+   14. LOST PASSWORD & MISC FORMS
+   =========================== */
+
+.kaiko-page .woocommerce-ResetPassword,
+.kaiko-page .woocommerce-form-lost-password {
+  max-width: 480px;
+  margin: var(--kaiko-space-2xl) auto;
+  background: var(--kaiko-white);
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-2xl);
+  padding: var(--kaiko-space-2xl);
+}
+
+.kaiko-page .lost_password a {
+  color: var(--kaiko-teal);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.kaiko-page .lost_password a:hover {
+  text-decoration: underline;
+}

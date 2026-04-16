@@ -1,0 +1,1755 @@
+/**
+ * Kaiko Design System
+ * Core CSS for the Kaiko WordPress Child Theme
+ * Version: 1.0.0
+ *
+ * This file establishes the premium visual language for Kaiko, including:
+ * - CSS custom properties (variables) for consistent theming
+ * - Global typography and spacing scales
+ * - Component styling (buttons, cards, sections, forms)
+ * - Navigation and footer layouts
+ * - Responsive breakpoint system
+ *
+ * Production-ready with full documentation
+ */
+
+/* ===========================
+   1. CSS CUSTOM PROPERTIES
+   =========================== */
+
+:root {
+  /* Color Palette - Primary */
+  --kaiko-black: #0a0a0a;
+  --kaiko-white: #ffffff;
+  --kaiko-off-white: #f7f7f5;
+  --kaiko-warm-gray: #f0eeeb;
+  --kaiko-cream: #e8e4df;
+  --kaiko-dark: #1a1a1a;
+  --kaiko-charcoal: #2a2a2a;
+  --kaiko-mid-gray: #6b6b6b;
+  --kaiko-light-gray: #b0b0b0;
+  --kaiko-border: #e4e2de;
+
+  /* Color Palette - Accent */
+  --kaiko-teal: #1a5c52;
+  --kaiko-deep-teal: #0d3d35;
+  --kaiko-lime: #7ab800;
+  --kaiko-sage: #8fa68a;
+  --kaiko-gold: #c4a962;
+
+  /* Typography */
+  --kaiko-font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --kaiko-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --kaiko-font-mono: 'Monaco', 'Courier New', monospace;
+
+  /* Font Weights */
+  --kaiko-weight-light: 300;
+  --kaiko-weight-regular: 400;
+  --kaiko-weight-medium: 500;
+  --kaiko-weight-semibold: 600;
+  --kaiko-weight-bold: 700;
+
+  /* Line Heights */
+  --kaiko-line-height-tight: 1.2;
+  --kaiko-line-height-normal: 1.5;
+  --kaiko-line-height-relaxed: 1.75;
+  --kaiko-line-height-loose: 2;
+
+  /* Letter Spacing */
+  --kaiko-letter-spacing-tight: -0.01em;
+  --kaiko-letter-spacing-normal: 0;
+  --kaiko-letter-spacing-wide: 0.025em;
+  --kaiko-letter-spacing-wider: 0.05em;
+
+  /* Spacing Scale (8px base) */
+  --kaiko-space-xs: 0.25rem;    /* 4px */
+  --kaiko-space-sm: 0.5rem;     /* 8px */
+  --kaiko-space-md: 1rem;        /* 16px */
+  --kaiko-space-lg: 1.5rem;      /* 24px */
+  --kaiko-space-xl: 2rem;        /* 32px */
+  --kaiko-space-2xl: 3rem;       /* 48px */
+  --kaiko-space-3xl: 4rem;       /* 64px */
+  --kaiko-space-4xl: 6rem;       /* 96px */
+  --kaiko-space-5xl: 8rem;       /* 128px */
+
+  /* Easing Curves */
+  --kaiko-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --kaiko-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --kaiko-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --kaiko-ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Transitions */
+  --kaiko-transition-fast: 150ms var(--kaiko-ease-out);
+  --kaiko-transition-base: 250ms var(--kaiko-ease-out);
+  --kaiko-transition-slow: 400ms var(--kaiko-ease-out);
+
+  /* Border Radius */
+  --kaiko-radius-xs: 2px;
+  --kaiko-radius-sm: 4px;
+  --kaiko-radius-md: 8px;
+  --kaiko-radius-lg: 12px;
+  --kaiko-radius-xl: 16px;
+  --kaiko-radius-2xl: 20px;
+  --kaiko-radius-full: 9999px;
+
+  /* Shadows */
+  --kaiko-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --kaiko-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --kaiko-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --kaiko-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --kaiko-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+  --kaiko-shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.15);
+  --kaiko-shadow-lift: 0 15px 40px rgba(0, 0, 0, 0.15);
+
+  /* Z-index Scale */
+  --kaiko-z-dropdown: 1000;
+  --kaiko-z-navbar: 1010;
+  --kaiko-z-modal: 2000;
+  --kaiko-z-tooltip: 2010;
+
+  /* Responsive Breakpoints (min-width) */
+  --kaiko-bp-mobile: 480px;
+  --kaiko-bp-tablet: 768px;
+  --kaiko-bp-laptop: 1024px;
+  --kaiko-bp-desktop: 1200px;
+}
+
+/* ===========================
+   2. GLOBAL STYLES
+   =========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--kaiko-font-body);
+  font-size: 1rem;
+  line-height: var(--kaiko-line-height-normal);
+  color: #1a1a1a;
+  background-color: #ffffff;
+  font-weight: var(--kaiko-weight-regular);
+  letter-spacing: var(--kaiko-letter-spacing-normal);
+}
+
+/* ===========================
+   3. TYPOGRAPHY
+   =========================== */
+
+/* Display Sizes */
+h1, .kaiko-h1 {
+  font-family: var(--kaiko-font-display);
+  font-weight: var(--kaiko-weight-bold);
+  line-height: var(--kaiko-line-height-tight);
+  letter-spacing: var(--kaiko-letter-spacing-tight);
+  font-size: clamp(2rem, 5vw, 4rem);
+  margin-bottom: var(--kaiko-space-lg);
+}
+
+h2, .kaiko-h2 {
+  font-family: var(--kaiko-font-display);
+  font-weight: var(--kaiko-weight-bold);
+  line-height: var(--kaiko-line-height-tight);
+  letter-spacing: var(--kaiko-letter-spacing-tight);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: var(--kaiko-space-md);
+}
+
+h3, .kaiko-h3 {
+  font-family: var(--kaiko-font-display);
+  font-weight: var(--kaiko-weight-semibold);
+  line-height: var(--kaiko-line-height-tight);
+  letter-spacing: var(--kaiko-letter-spacing-tight);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  margin-bottom: var(--kaiko-space-md);
+}
+
+h4, .kaiko-h4 {
+  font-family: var(--kaiko-font-display);
+  font-weight: var(--kaiko-weight-semibold);
+  line-height: var(--kaiko-line-height-normal);
+  font-size: 1.25rem;
+  margin-bottom: var(--kaiko-space-sm);
+}
+
+h5, .kaiko-h5 {
+  font-family: var(--kaiko-font-display);
+  font-weight: var(--kaiko-weight-semibold);
+  line-height: var(--kaiko-line-height-normal);
+  font-size: 1.125rem;
+  margin-bottom: var(--kaiko-space-sm);
+}
+
+h6, .kaiko-h6 {
+  font-family: var(--kaiko-font-display);
+  font-weight: var(--kaiko-weight-medium);
+  line-height: var(--kaiko-line-height-normal);
+  font-size: 1rem;
+  margin-bottom: var(--kaiko-space-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--kaiko-letter-spacing-wide);
+}
+
+p {
+  margin-bottom: var(--kaiko-space-md);
+  line-height: var(--kaiko-line-height-relaxed);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+/* Body Text Variants */
+.kaiko-text-body {
+  font-family: var(--kaiko-font-body);
+  font-size: 1rem;
+  line-height: var(--kaiko-line-height-relaxed);
+}
+
+.kaiko-text-body-sm {
+  font-family: var(--kaiko-font-body);
+  font-size: 0.875rem;
+  line-height: var(--kaiko-line-height-relaxed);
+}
+
+.kaiko-text-body-lg {
+  font-family: var(--kaiko-font-body);
+  font-size: 1.125rem;
+  line-height: var(--kaiko-line-height-relaxed);
+}
+
+/* Label & Caption */
+.kaiko-label {
+  font-family: var(--kaiko-font-display);
+  font-size: 0.875rem;
+  font-weight: var(--kaiko-weight-semibold);
+  letter-spacing: var(--kaiko-letter-spacing-wide);
+  text-transform: uppercase;
+  color: #555550;
+}
+
+.kaiko-caption {
+  font-family: var(--kaiko-font-body);
+  font-size: 0.75rem;
+  line-height: var(--kaiko-line-height-normal);
+  color: var(--kaiko-light-gray);
+}
+
+/* Links */
+a {
+  color: var(--kaiko-teal);
+  text-decoration: none;
+  transition: color var(--kaiko-transition-fast);
+}
+
+a:hover,
+a:focus {
+  color: var(--kaiko-deep-teal);
+  text-decoration: underline;
+}
+
+/* Lists */
+ul, ol {
+  margin-bottom: var(--kaiko-space-md);
+  margin-left: var(--kaiko-space-lg);
+}
+
+li {
+  margin-bottom: var(--kaiko-space-sm);
+  line-height: var(--kaiko-line-height-relaxed);
+}
+
+/* ===========================
+   4. NAVIGATION
+   =========================== */
+
+nav, .navbar, .kaiko-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--kaiko-z-navbar);
+  background-color: transparent;
+  padding: var(--kaiko-space-lg) var(--kaiko-space-xl);
+  transition: background-color var(--kaiko-transition-base),
+              backdrop-filter var(--kaiko-transition-base),
+              box-shadow var(--kaiko-transition-base);
+}
+
+nav.scrolled, .navbar.scrolled, .kaiko-nav.scrolled {
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--kaiko-shadow-md);
+}
+
+.kaiko-nav-inner {
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kaiko-nav-logo {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.5rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+.kaiko-nav-menu {
+  display: flex;
+  gap: var(--kaiko-space-2xl);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.kaiko-nav-menu li a {
+  font-family: var(--kaiko-font-display);
+  font-size: 0.95rem;
+  font-weight: var(--kaiko-weight-medium);
+  color: #1a1a1a;
+  text-decoration: none;
+  position: relative;
+  transition: color var(--kaiko-transition-base);
+}
+
+.kaiko-nav-menu li a:hover {
+  color: var(--kaiko-teal);
+}
+
+.kaiko-nav-menu li a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--kaiko-teal);
+  transition: width var(--kaiko-transition-base);
+}
+
+.kaiko-nav-menu li a:hover::after {
+  width: 100%;
+}
+
+.kaiko-nav-mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--kaiko-space-sm);
+}
+
+@media (max-width: 768px) {
+  nav, .navbar, .kaiko-nav {
+    padding: var(--kaiko-space-md) var(--kaiko-space-lg);
+  }
+
+  .kaiko-nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background-color: #ffffff;
+    padding: var(--kaiko-space-lg);
+    box-shadow: var(--kaiko-shadow-lg);
+  }
+
+  .kaiko-nav-menu.active {
+    display: flex;
+  }
+
+  .kaiko-nav-mobile-toggle {
+    display: block;
+  }
+}
+
+/* ===========================
+   5. BUTTONS
+   =========================== */
+
+.kaiko-btn {
+  display: inline-block;
+  padding: 0.875rem 1.5rem;
+  font-family: var(--kaiko-font-display);
+  font-size: 0.95rem;
+  font-weight: var(--kaiko-weight-semibold);
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: var(--kaiko-radius-lg);
+  cursor: pointer;
+  transition: all var(--kaiko-transition-base);
+  letter-spacing: var(--kaiko-letter-spacing-wide);
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kaiko-space-sm);
+}
+
+/* Primary Button */
+.kaiko-btn-primary {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.kaiko-btn-primary:hover,
+.kaiko-btn-primary:focus {
+  background-color: var(--kaiko-teal);
+  transform: translateY(-2px);
+  box-shadow: var(--kaiko-shadow-lg);
+}
+
+.kaiko-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Secondary Button */
+.kaiko-btn-secondary {
+  background-color: transparent;
+  color: #1a1a1a;
+  border: 1px solid var(--kaiko-border);
+}
+
+.kaiko-btn-secondary:hover,
+.kaiko-btn-secondary:focus {
+  background-color: var(--kaiko-teal);
+  color: #ffffff;
+  border-color: var(--kaiko-teal);
+  transform: translateY(-2px);
+  box-shadow: var(--kaiko-shadow-lg);
+}
+
+.kaiko-btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* Outline Button */
+.kaiko-btn-outline {
+  background-color: transparent;
+  color: #1a1a1a;
+  border: 1.5px solid #1a1a1a;
+}
+
+.kaiko-btn-outline:hover,
+.kaiko-btn-outline:focus {
+  background-color: var(--kaiko-teal);
+  color: #ffffff;
+  border-color: var(--kaiko-teal);
+  box-shadow: var(--kaiko-shadow-lg);
+}
+
+/* Accent Button */
+.kaiko-btn-accent {
+  background-color: var(--kaiko-teal);
+  color: #ffffff;
+}
+
+.kaiko-btn-accent:hover,
+.kaiko-btn-accent:focus {
+  background-color: var(--kaiko-deep-teal);
+  transform: translateY(-2px);
+  box-shadow: var(--kaiko-shadow-lg);
+}
+
+/* Ghost Button */
+.kaiko-btn-ghost {
+  background-color: transparent;
+  color: #1a1a1a;
+  border: none;
+  padding: 0.5rem 1rem;
+}
+
+.kaiko-btn-ghost:hover,
+.kaiko-btn-ghost:focus {
+  color: var(--kaiko-teal);
+}
+
+/* Button Sizes */
+.kaiko-btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.kaiko-btn-lg {
+  padding: 1.25rem 2rem;
+  font-size: 1rem;
+}
+
+.kaiko-btn-block {
+  width: 100%;
+  display: block;
+}
+
+.kaiko-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.kaiko-btn:disabled:hover {
+  transform: none;
+}
+
+/* ===========================
+   6. SECTIONS
+   =========================== */
+
+.kaiko-section {
+  padding: var(--kaiko-space-4xl) var(--kaiko-space-xl);
+  position: relative;
+  background-color: #ffffff;
+}
+
+.kaiko-section-dark {
+  background-color: var(--kaiko-deep-teal);
+  color: #ffffff;
+}
+
+.kaiko-section-light {
+  background-color: #f7f7f5;
+  color: #1a1a1a;
+}
+
+.kaiko-section-cream {
+  background-color: #f0eeeb;
+  color: #1a1a1a;
+}
+
+.kaiko-section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--kaiko-space-xl);
+}
+
+/* Section with curved divider */
+.kaiko-section-curved {
+  position: relative;
+  overflow: hidden;
+}
+
+.kaiko-section-curved::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: inherit;
+  clip-path: polygon(0 50%, 100% 0, 100% 100%, 0 100%);
+}
+
+/* ===========================
+   7. PRODUCT CARDS
+   =========================== */
+
+.kaiko-product-card {
+  background-color: #ffffff;
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-2xl);
+  padding: var(--kaiko-space-xl);
+  box-shadow: var(--kaiko-shadow-xs);
+  transition: all var(--kaiko-transition-base);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.kaiko-product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--kaiko-shadow-lg);
+  border-color: transparent;
+}
+
+.kaiko-product-card-image {
+  width: 100%;
+  height: 250px;
+  background-color: #f7f7f5;
+  border-radius: var(--kaiko-radius-lg);
+  margin-bottom: var(--kaiko-space-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+.kaiko-product-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--kaiko-transition-base);
+}
+
+.kaiko-product-card:hover .kaiko-product-card-image img {
+  transform: scale(1.05);
+}
+
+.kaiko-product-card-title {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.25rem;
+  font-weight: var(--kaiko-weight-semibold);
+  margin-bottom: var(--kaiko-space-sm);
+  color: #1a1a1a;
+}
+
+.kaiko-product-card-description {
+  font-size: 0.95rem;
+  line-height: var(--kaiko-line-height-relaxed);
+  color: var(--kaiko-mid-gray);
+  margin-bottom: var(--kaiko-space-lg);
+  flex-grow: 1;
+}
+
+.kaiko-product-card-price {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.5rem;
+  font-weight: var(--kaiko-weight-bold);
+  color: var(--kaiko-teal);
+  margin-bottom: var(--kaiko-space-lg);
+}
+
+.kaiko-product-card-badge {
+  position: absolute;
+  top: var(--kaiko-space-lg);
+  right: var(--kaiko-space-lg);
+  background-color: var(--kaiko-lime);
+  color: #1a1a1a;
+  padding: var(--kaiko-space-xs) var(--kaiko-space-md);
+  border-radius: var(--kaiko-radius-full);
+  font-size: 0.75rem;
+  font-weight: var(--kaiko-weight-semibold);
+  letter-spacing: var(--kaiko-letter-spacing-wide);
+}
+
+/* ===========================
+   8. PRICING & ACCESS NOTICES
+   =========================== */
+
+.kaiko-price-locked,
+.kaiko-access-notice {
+  background-color: #f7f7f5;
+  border: 1px solid var(--kaiko-border);
+  border-left: 4px solid var(--kaiko-teal);
+  padding: var(--kaiko-space-lg);
+  border-radius: var(--kaiko-radius-lg);
+  margin-bottom: var(--kaiko-space-lg);
+}
+
+.kaiko-price-locked {
+  color: var(--kaiko-teal);
+  border-left-color: var(--kaiko-teal);
+}
+
+.kaiko-price-locked-title,
+.kaiko-access-notice-title {
+  font-family: var(--kaiko-font-display);
+  font-weight: var(--kaiko-weight-semibold);
+  font-size: 1rem;
+  margin-bottom: var(--kaiko-space-xs);
+  color: #1a1a1a;
+}
+
+.kaiko-price-locked-description,
+.kaiko-access-notice-description {
+  font-size: 0.95rem;
+  line-height: var(--kaiko-line-height-relaxed);
+  color: var(--kaiko-mid-gray);
+}
+
+.kaiko-access-notice.success {
+  border-color: var(--kaiko-lime);
+  border-left-color: var(--kaiko-lime);
+  background-color: rgba(122, 184, 0, 0.05);
+}
+
+.kaiko-access-notice.warning {
+  border-color: #f59e0b;
+  border-left-color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.05);
+}
+
+.kaiko-access-notice.error {
+  border-color: #ef4444;
+  border-left-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+/* ===========================
+   9. ACCOUNT NOTICE BOXES
+   =========================== */
+
+.kaiko-account-notice {
+  background-color: #f7f7f5;
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-lg);
+  padding: var(--kaiko-space-lg);
+  margin-bottom: var(--kaiko-space-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--kaiko-space-md);
+}
+
+.kaiko-account-notice-icon {
+  font-size: 1.5rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+.kaiko-account-notice-content {
+  flex: 1;
+}
+
+.kaiko-account-notice-title {
+  font-family: var(--kaiko-font-display);
+  font-weight: var(--kaiko-weight-semibold);
+  font-size: 1rem;
+  margin-bottom: var(--kaiko-space-xs);
+  color: #1a1a1a;
+}
+
+.kaiko-account-notice-text {
+  font-size: 0.95rem;
+  line-height: var(--kaiko-line-height-relaxed);
+  color: var(--kaiko-mid-gray);
+}
+
+.kaiko-account-notice.info {
+  background-color: rgba(26, 92, 82, 0.05);
+  border-left: 4px solid var(--kaiko-teal);
+}
+
+.kaiko-account-notice.success {
+  background-color: rgba(122, 184, 0, 0.05);
+  border-left: 4px solid var(--kaiko-lime);
+}
+
+.kaiko-account-notice.warning {
+  background-color: rgba(245, 158, 11, 0.05);
+  border-left: 4px solid #f59e0b;
+}
+
+.kaiko-account-notice.premium {
+  background: linear-gradient(135deg, rgba(122, 184, 0, 0.05) 0%, rgba(26, 92, 82, 0.05) 100%);
+  border-left: 4px solid var(--kaiko-gold);
+}
+
+/* ===========================
+   10. FORMS
+   =========================== */
+
+form {
+  margin-bottom: var(--kaiko-space-2xl);
+}
+
+.kaiko-form-group {
+  margin-bottom: var(--kaiko-space-lg);
+}
+
+label, .kaiko-label {
+  display: block;
+  margin-bottom: var(--kaiko-space-sm);
+  font-weight: var(--kaiko-weight-medium);
+  color: #1a1a1a;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.75rem var(--kaiko-space-md);
+  font-family: var(--kaiko-font-body);
+  font-size: 1rem;
+  border: 1px solid var(--kaiko-border);
+  border-radius: 12px;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  transition: all var(--kaiko-transition-base);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--kaiko-teal);
+  box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: var(--kaiko-font-body);
+}
+
+/* Form Validation */
+input[type="text"]:invalid,
+input[type="email"]:invalid {
+  border-color: #ef4444;
+}
+
+input[type="text"]:valid,
+input[type="email"]:valid {
+  border-color: var(--kaiko-lime);
+}
+
+.kaiko-form-error {
+  font-size: 0.875rem;
+  color: #ef4444;
+  margin-top: var(--kaiko-space-xs);
+}
+
+.kaiko-form-success {
+  font-size: 0.875rem;
+  color: var(--kaiko-lime);
+  margin-top: var(--kaiko-space-xs);
+}
+
+.kaiko-form-hint {
+  font-size: 0.875rem;
+  color: var(--kaiko-light-gray);
+  margin-top: var(--kaiko-space-xs);
+}
+
+/* ===========================
+   11. FOOTER
+   =========================== */
+
+footer, .kaiko-footer {
+  background-color: #f7f7f5;
+  color: #1a1a1a;
+  padding: var(--kaiko-space-4xl) var(--kaiko-space-xl) var(--kaiko-space-2xl);
+}
+
+.kaiko-footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--kaiko-space-2xl);
+  margin-bottom: var(--kaiko-space-3xl);
+  padding: 0 var(--kaiko-space-xl);
+}
+
+.kaiko-footer-column h3 {
+  font-family: var(--kaiko-font-display);
+  font-size: 1rem;
+  margin-bottom: var(--kaiko-space-lg);
+  color: #1a1a1a;
+}
+
+.kaiko-footer-column ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.kaiko-footer-column li {
+  margin-bottom: var(--kaiko-space-md);
+}
+
+.kaiko-footer-column a {
+  color: #555550;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color var(--kaiko-transition-base);
+}
+
+.kaiko-footer-column a:hover {
+  color: var(--kaiko-teal);
+  text-decoration: none;
+}
+
+.kaiko-footer-bottom {
+  border-top: 1px solid var(--kaiko-border);
+  padding-top: var(--kaiko-space-2xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 var(--kaiko-space-xl);
+}
+
+.kaiko-footer-copyright {
+  font-size: 0.875rem;
+  color: #555550;
+}
+
+.kaiko-footer-social {
+  display: flex;
+  gap: var(--kaiko-space-lg);
+}
+
+.kaiko-footer-social a {
+  color: #555550;
+  font-size: 1.25rem;
+  transition: color var(--kaiko-transition-base);
+}
+
+.kaiko-footer-social a:hover {
+  color: var(--kaiko-teal);
+}
+
+@media (max-width: 1024px) {
+  .kaiko-footer-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--kaiko-space-xl);
+  }
+}
+
+@media (max-width: 768px) {
+  .kaiko-footer-container {
+    grid-template-columns: 1fr;
+    gap: var(--kaiko-space-lg);
+  }
+
+  .kaiko-footer-bottom {
+    flex-direction: column;
+    gap: var(--kaiko-space-lg);
+    text-align: center;
+  }
+
+  .kaiko-footer-social {
+    justify-content: center;
+  }
+}
+
+/* ===========================
+   12. HERO SECTION
+   =========================== */
+
+.kaiko-hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--kaiko-space-3xl) var(--kaiko-space-xl);
+  background: linear-gradient(135deg, #f7f7f5 0%, #ffffff 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.kaiko-hero-content {
+  max-width: 900px;
+  text-align: center;
+  z-index: 2;
+}
+
+.kaiko-hero-title {
+  font-family: var(--kaiko-font-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: var(--kaiko-weight-bold);
+  line-height: var(--kaiko-line-height-tight);
+  margin-bottom: var(--kaiko-space-lg);
+  color: #1a1a1a;
+}
+
+.kaiko-hero-subtitle {
+  font-size: clamp(1.125rem, 3vw, 1.5rem);
+  line-height: var(--kaiko-line-height-relaxed);
+  color: var(--kaiko-mid-gray);
+  margin-bottom: var(--kaiko-space-2xl);
+  font-weight: var(--kaiko-weight-regular);
+}
+
+.kaiko-hero-cta {
+  display: flex;
+  gap: var(--kaiko-space-lg);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===========================
+   13. MARQUEE / TICKER
+   =========================== */
+
+.kaiko-marquee {
+  overflow: hidden;
+  background-color: var(--kaiko-deep-teal);
+  color: #ffffff;
+  padding: var(--kaiko-space-lg) 0;
+  position: relative;
+}
+
+.kaiko-marquee-content {
+  display: flex;
+  gap: var(--kaiko-space-2xl);
+  white-space: nowrap;
+  animation: kaiko-scroll 20s linear infinite;
+}
+
+.kaiko-marquee-item {
+  font-family: var(--kaiko-font-display);
+  font-size: 1.5rem;
+  font-weight: var(--kaiko-weight-bold);
+  display: inline-block;
+  min-width: max-content;
+  padding: 0 var(--kaiko-space-2xl);
+}
+
+.kaiko-marquee-item span {
+  color: var(--kaiko-lime);
+  margin: 0 var(--kaiko-space-md);
+}
+
+@keyframes kaiko-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* ===========================
+   14. RESPONSIVE DESIGN
+   =========================== */
+
+@media (max-width: 1200px) {
+  :root {
+    font-size: 15px;
+  }
+
+  .kaiko-section {
+    padding: var(--kaiko-space-3xl) var(--kaiko-space-lg);
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    font-size: 15px;
+  }
+
+  .kaiko-section {
+    padding: var(--kaiko-space-3xl) var(--kaiko-space-lg);
+  }
+
+  .kaiko-hero {
+    min-height: 80vh;
+  }
+
+  .kaiko-footer-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    font-size: 14px;
+  }
+
+  h1, .kaiko-h1 {
+    font-size: clamp(1.75rem, 5vw, 3rem);
+  }
+
+  h2, .kaiko-h2 {
+    font-size: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .kaiko-section {
+    padding: var(--kaiko-space-2xl) var(--kaiko-space-lg);
+  }
+
+  .kaiko-section-container {
+    padding: 0 var(--kaiko-space-lg);
+  }
+
+  .kaiko-hero {
+    min-height: 70vh;
+    padding: var(--kaiko-space-2xl) var(--kaiko-space-lg);
+  }
+
+  .kaiko-hero-cta {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .kaiko-hero-cta .kaiko-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .kaiko-footer-container {
+    grid-template-columns: 1fr;
+    gap: var(--kaiko-space-lg);
+  }
+
+  .kaiko-product-card {
+    padding: var(--kaiko-space-lg);
+  }
+
+  nav, .navbar, .kaiko-nav {
+    padding: var(--kaiko-space-md) var(--kaiko-space-lg);
+  }
+
+  .kaiko-nav-menu {
+    gap: var(--kaiko-space-xl);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    font-size: 13px;
+  }
+
+  h1, .kaiko-h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+  }
+
+  .kaiko-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .kaiko-section {
+    padding: var(--kaiko-space-xl) var(--kaiko-space-md);
+  }
+
+  .kaiko-section-container {
+    padding: 0 var(--kaiko-space-md);
+  }
+
+  .kaiko-hero {
+    padding: var(--kaiko-space-xl) var(--kaiko-space-md);
+  }
+
+  .kaiko-footer-container {
+    padding: 0 var(--kaiko-space-md);
+  }
+
+  .kaiko-footer-bottom {
+    margin: 0 var(--kaiko-space-md);
+  }
+
+  .kaiko-marquee-item {
+    font-size: 1.125rem;
+    padding: 0 var(--kaiko-space-lg);
+  }
+}
+
+/* ===========================
+   15. UTILITY CLASSES
+   =========================== */
+
+.kaiko-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--kaiko-space-xl);
+}
+
+.kaiko-grid {
+  display: grid;
+  gap: var(--kaiko-space-xl);
+}
+
+.kaiko-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.kaiko-grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.kaiko-grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.kaiko-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kaiko-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kaiko-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.kaiko-gap-md {
+  gap: var(--kaiko-space-md);
+}
+
+.kaiko-gap-lg {
+  gap: var(--kaiko-space-lg);
+}
+
+.kaiko-gap-xl {
+  gap: var(--kaiko-space-xl);
+}
+
+.kaiko-text-center {
+  text-align: center;
+}
+
+.kaiko-text-right {
+  text-align: right;
+}
+
+.kaiko-text-muted {
+  color: var(--kaiko-light-gray);
+}
+
+.kaiko-text-accent {
+  color: var(--kaiko-teal);
+}
+
+.kaiko-text-accent-gold {
+  color: var(--kaiko-gold);
+}
+
+.kaiko-text-success {
+  color: var(--kaiko-lime);
+}
+
+.kaiko-mt-sm { margin-top: var(--kaiko-space-sm); }
+.kaiko-mt-md { margin-top: var(--kaiko-space-md); }
+.kaiko-mt-lg { margin-top: var(--kaiko-space-lg); }
+.kaiko-mt-xl { margin-top: var(--kaiko-space-xl); }
+.kaiko-mt-2xl { margin-top: var(--kaiko-space-2xl); }
+
+.kaiko-mb-sm { margin-bottom: var(--kaiko-space-sm); }
+.kaiko-mb-md { margin-bottom: var(--kaiko-space-md); }
+.kaiko-mb-lg { margin-bottom: var(--kaiko-space-lg); }
+.kaiko-mb-xl { margin-bottom: var(--kaiko-space-xl); }
+.kaiko-mb-2xl { margin-bottom: var(--kaiko-space-2xl); }
+
+.kaiko-px-lg { padding-left: var(--kaiko-space-lg); padding-right: var(--kaiko-space-lg); }
+.kaiko-py-lg { padding-top: var(--kaiko-space-lg); padding-bottom: var(--kaiko-space-lg); }
+.kaiko-px-xl { padding-left: var(--kaiko-space-xl); padding-right: var(--kaiko-space-xl); }
+.kaiko-py-xl { padding-top: var(--kaiko-space-xl); padding-bottom: var(--kaiko-space-xl); }
+
+.kaiko-rounded { border-radius: var(--kaiko-radius-lg); }
+.kaiko-rounded-full { border-radius: var(--kaiko-radius-full); }
+
+.kaiko-shadow { box-shadow: var(--kaiko-shadow-md); }
+.kaiko-shadow-lg { box-shadow: var(--kaiko-shadow-lg); }
+.kaiko-shadow-xl { box-shadow: var(--kaiko-shadow-xl); }
+
+.kaiko-hidden {
+  display: none;
+}
+
+.kaiko-invisible {
+  visibility: hidden;
+}
+
+.kaiko-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ===========================
+   16. ACCESSIBILITY
+   =========================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus Visible for Keyboard Navigation */
+:focus-visible {
+  outline: 2px solid var(--kaiko-teal);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: more) {
+  :root {
+    --kaiko-shadow-md: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --kaiko-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  .kaiko-btn-outline {
+    border-width: 2px;
+  }
+}
+
+/* ===========================
+   17. PRINT STYLES
+   =========================== */
+
+@media print {
+  nav, .navbar, .kaiko-nav,
+  footer, .kaiko-footer,
+  .kaiko-nav-mobile-toggle {
+    display: none;
+  }
+
+  body {
+    background-color: #ffffff;
+    color: #1a1a1a;
+  }
+
+  .kaiko-section {
+    page-break-inside: avoid;
+    box-shadow: none;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  .kaiko-btn {
+    border: 1px solid #1a1a1a;
+  }
+}
+
+
+/* ============================================
+   ACCORDION / FAQ
+   ============================================ */
+
+.kaiko-accordion {
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-lg);
+  overflow: hidden;
+}
+
+.kaiko-accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--kaiko-space-lg) var(--kaiko-space-xl);
+  background: var(--kaiko-white);
+  border: none;
+  border-bottom: 1px solid var(--kaiko-border);
+  cursor: pointer;
+  font-family: var(--kaiko-font-display);
+  font-size: 1.05rem;
+  font-weight: var(--kaiko-weight-semibold);
+  color: var(--kaiko-dark);
+  text-align: left;
+  transition: background var(--kaiko-transition-fast);
+}
+
+.kaiko-accordion-trigger:hover {
+  background: var(--kaiko-off-white);
+}
+
+.kaiko-accordion-trigger::after {
+  content: '+';
+  font-size: 1.25rem;
+  font-weight: var(--kaiko-weight-light);
+  color: var(--kaiko-mid-gray);
+  transition: transform var(--kaiko-transition-base);
+}
+
+.kaiko-accordion-trigger.active::after {
+  content: '−';
+}
+
+.kaiko-accordion-panel {
+  display: none;
+  padding: var(--kaiko-space-lg) var(--kaiko-space-xl);
+  font-size: 0.95rem;
+  line-height: var(--kaiko-line-height-relaxed);
+  color: var(--kaiko-mid-gray);
+  background: var(--kaiko-white);
+}
+
+
+/* ============================================
+   BACK TO TOP
+   ============================================ */
+
+.kaiko-back-to-top {
+  position: fixed;
+  bottom: var(--kaiko-space-xl);
+  right: var(--kaiko-space-xl);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  border: none;
+  border-radius: var(--kaiko-radius-full);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all var(--kaiko-transition-base);
+  z-index: var(--kaiko-z-dropdown);
+  box-shadow: var(--kaiko-shadow-lg);
+}
+
+.kaiko-back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.kaiko-back-to-top:hover {
+  background: var(--kaiko-deep-teal);
+  transform: translateY(-2px);
+  box-shadow: var(--kaiko-shadow-xl);
+}
+
+.kaiko-back-to-top svg {
+  width: 20px;
+  height: 20px;
+}
+
+
+/* ============================================
+   CONTACT FORM
+   ============================================ */
+
+.kaiko-contact-form {
+  max-width: 640px;
+}
+
+.kaiko-contact-form .kaiko-form-group {
+  margin-bottom: var(--kaiko-space-lg);
+}
+
+.kaiko-contact-form label {
+  display: block;
+  font-family: var(--kaiko-font-body);
+  font-size: 0.875rem;
+  font-weight: var(--kaiko-weight-medium);
+  color: var(--kaiko-dark);
+  margin-bottom: var(--kaiko-space-xs);
+}
+
+.kaiko-contact-form input,
+.kaiko-contact-form textarea,
+.kaiko-contact-form select {
+  width: 100%;
+  padding: var(--kaiko-space-sm) var(--kaiko-space-md);
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-md);
+  font-family: var(--kaiko-font-body);
+  font-size: 1rem;
+  color: var(--kaiko-dark);
+  background: var(--kaiko-white);
+  transition: border-color var(--kaiko-transition-fast), box-shadow var(--kaiko-transition-fast);
+}
+
+.kaiko-contact-form input:focus,
+.kaiko-contact-form textarea:focus {
+  outline: none;
+  border-color: var(--kaiko-teal);
+  box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
+}
+
+.kaiko-contact-form textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.kaiko-form-response {
+  display: none;
+  margin-top: var(--kaiko-space-md);
+}
+
+.kaiko-message {
+  padding: var(--kaiko-space-md) var(--kaiko-space-lg);
+  border-radius: var(--kaiko-radius-md);
+  font-size: 0.9rem;
+}
+
+.kaiko-message.success {
+  background: rgba(122, 184, 0, 0.08);
+  color: var(--kaiko-success);
+  border: 1px solid rgba(122, 184, 0, 0.2);
+}
+
+.kaiko-message.error {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--kaiko-error);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+
+/* ============================================
+   NEWSLETTER FORM
+   ============================================ */
+
+.kaiko-newsletter-form {
+  display: flex;
+  gap: var(--kaiko-space-sm);
+  max-width: 480px;
+}
+
+.kaiko-newsletter-form input[type="email"] {
+  flex: 1;
+  padding: var(--kaiko-space-sm) var(--kaiko-space-md);
+  border: 1px solid var(--kaiko-border);
+  border-radius: var(--kaiko-radius-md);
+  font-family: var(--kaiko-font-body);
+  font-size: 0.95rem;
+  color: var(--kaiko-dark);
+  background: var(--kaiko-white);
+}
+
+.kaiko-newsletter-form input[type="email"]:focus {
+  outline: none;
+  border-color: var(--kaiko-teal);
+  box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
+}
+
+.kaiko-newsletter-form button {
+  padding: var(--kaiko-space-sm) var(--kaiko-space-lg);
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  border: none;
+  border-radius: var(--kaiko-radius-md);
+  font-family: var(--kaiko-font-body);
+  font-weight: var(--kaiko-weight-semibold);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background var(--kaiko-transition-fast);
+  white-space: nowrap;
+}
+
+.kaiko-newsletter-form button:hover {
+  background: var(--kaiko-deep-teal);
+}
+
+@media (max-width: 480px) {
+  .kaiko-newsletter-form {
+    flex-direction: column;
+  }
+}
+
+
+/* ============================================
+   LIGHTBOX
+   ============================================ */
+
+.kaiko-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: var(--kaiko-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--kaiko-transition-slow), visibility var(--kaiko-transition-slow);
+}
+
+.kaiko-lightbox.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.kaiko-lightbox-image {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: var(--kaiko-radius-lg);
+  transform: scale(0.95);
+  transition: transform var(--kaiko-transition-slow);
+}
+
+.kaiko-lightbox.active .kaiko-lightbox-image {
+  transform: scale(1);
+}
+
+.kaiko-lightbox-close {
+  position: absolute;
+  top: var(--kaiko-space-xl);
+  right: var(--kaiko-space-xl);
+  font-size: 2rem;
+  color: var(--kaiko-white);
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity var(--kaiko-transition-fast);
+}
+
+.kaiko-lightbox-close:hover {
+  opacity: 1;
+}
+
+.kaiko-lightbox-prev,
+.kaiko-lightbox-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 3rem;
+  color: var(--kaiko-white);
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity var(--kaiko-transition-fast);
+  user-select: none;
+}
+
+.kaiko-lightbox-prev:hover,
+.kaiko-lightbox-next:hover {
+  opacity: 1;
+}
+
+.kaiko-lightbox-prev {
+  left: var(--kaiko-space-xl);
+}
+
+.kaiko-lightbox-next {
+  right: var(--kaiko-space-xl);
+}
+
+
+/* ============================================
+   PRODUCT TABS (Custom)
+   ============================================ */
+
+.kaiko-product-tabs {
+  margin: var(--kaiko-space-2xl) 0;
+}
+
+.kaiko-product-tabs-list {
+  display: flex;
+  gap: var(--kaiko-space-xl);
+  border-bottom: 1px solid var(--kaiko-border);
+  margin-bottom: var(--kaiko-space-xl);
+}
+
+.kaiko-product-tabs-list button {
+  padding: var(--kaiko-space-md) 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--kaiko-font-body);
+  font-size: 0.95rem;
+  font-weight: var(--kaiko-weight-medium);
+  color: var(--kaiko-mid-gray);
+  cursor: pointer;
+  transition: all var(--kaiko-transition-fast);
+}
+
+.kaiko-product-tabs-list button:hover {
+  color: var(--kaiko-dark);
+}
+
+.kaiko-product-tabs-list button.active {
+  color: var(--kaiko-dark);
+  border-bottom-color: var(--kaiko-teal);
+}
+
+.kaiko-product-tab-panel {
+  display: none;
+}
+
+.kaiko-product-tab-panel.active {
+  display: block;
+}
+
+
+/* ============================================
+   STICKY ACCESS BAR
+   ============================================ */
+
+.kaiko-access-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--kaiko-teal);
+  color: var(--kaiko-white);
+  padding: var(--kaiko-space-md) var(--kaiko-space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kaiko-space-lg);
+  z-index: var(--kaiko-z-navbar);
+  transform: translateY(100%);
+  transition: transform var(--kaiko-transition-slow);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.kaiko-access-bar.visible {
+  transform: translateY(0);
+}
+
+.kaiko-access-bar p {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: var(--kaiko-weight-medium);
+}
+
+.kaiko-access-bar .kaiko-btn {
+  background: var(--kaiko-white);
+  color: var(--kaiko-teal);
+  padding: var(--kaiko-space-xs) var(--kaiko-space-lg);
+  border-radius: var(--kaiko-radius-sm);
+  font-weight: var(--kaiko-weight-semibold);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all var(--kaiko-transition-fast);
+}
+
+.kaiko-access-bar .kaiko-btn:hover {
+  background: var(--kaiko-off-white);
+}
+
+.kaiko-access-bar-close {
+  position: absolute;
+  right: var(--kaiko-space-lg);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--kaiko-white);
+  font-size: 1.25rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--kaiko-transition-fast);
+}
+
+.kaiko-access-bar-close:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .kaiko-access-bar {
+    flex-direction: column;
+    gap: var(--kaiko-space-sm);
+    padding: var(--kaiko-space-md);
+    text-align: center;
+  }
+}

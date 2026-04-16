@@ -1,0 +1,1299 @@
+/**
+ * Kaiko Animations & Motion System
+ * Motion design and interactive animations for Kaiko WordPress Child Theme
+ * Version: 1.0.0
+ *
+ * This file provides:
+ * - Scroll-triggered reveal animations
+ * - Parallax effects
+ * - Hero entrance animations
+ * - Marquee/ticker animations
+ * - Micro-interactions (hover, focus, active states)
+ * - Page transitions
+ * - Loading states
+ * - Custom cursor styling
+ *
+ * All animations respect prefers-reduced-motion for accessibility
+ * Production-ready implementation
+ */
+
+/* ===========================
+   1. SCROLL BEHAVIOR & SMOOTH SCROLLING
+   =========================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar styling (Webkit browsers) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--kaiko-off-white);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--kaiko-light-gray);
+  border-radius: 5px;
+  transition: background var(--kaiko-transition-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--kaiko-mid-gray);
+}
+
+/* ===========================
+   2. REVEAL ANIMATIONS (Scroll-triggered)
+   =========================== */
+
+/**
+ * Base reveal animation
+ * Elements fade in and slide up 60px when scrolled into view
+ * Applied with .kaiko-reveal class
+ * JavaScript should add .visible class to trigger
+ */
+
+.kaiko-reveal {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity var(--kaiko-transition-slow) var(--kaiko-ease-out),
+              transform var(--kaiko-transition-slow) var(--kaiko-ease-out);
+}
+
+.kaiko-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Reveal from left */
+.kaiko-reveal-left {
+  opacity: 0;
+  transform: translateX(-60px);
+  transition: opacity var(--kaiko-transition-slow) var(--kaiko-ease-out),
+              transform var(--kaiko-transition-slow) var(--kaiko-ease-out);
+}
+
+.kaiko-reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Reveal from right */
+.kaiko-reveal-right {
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity var(--kaiko-transition-slow) var(--kaiko-ease-out),
+              transform var(--kaiko-transition-slow) var(--kaiko-ease-out);
+}
+
+.kaiko-reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Reveal with scale */
+.kaiko-reveal-scale {
+  opacity: 0;
+  transform: scale(0.95) translateY(20px);
+  transition: opacity var(--kaiko-transition-slow) var(--kaiko-ease-out),
+              transform var(--kaiko-transition-slow) var(--kaiko-ease-out);
+}
+
+.kaiko-reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* ===========================
+   3. STAGGER ANIMATION SYSTEM
+   =========================== */
+
+/**
+ * Stagger children animations for sequential reveal
+ * Parent: .kaiko-stagger
+ * Children: .kaiko-reveal (with any variant)
+ */
+
+.kaiko-stagger > .kaiko-reveal:nth-child(1) {
+  transition-delay: 0ms;
+}
+
+.kaiko-stagger > .kaiko-reveal:nth-child(2) {
+  transition-delay: 100ms;
+}
+
+.kaiko-stagger > .kaiko-reveal:nth-child(3) {
+  transition-delay: 200ms;
+}
+
+.kaiko-stagger > .kaiko-reveal:nth-child(4) {
+  transition-delay: 300ms;
+}
+
+.kaiko-stagger > .kaiko-reveal:nth-child(5) {
+  transition-delay: 400ms;
+}
+
+.kaiko-stagger > .kaiko-reveal:nth-child(6) {
+  transition-delay: 500ms;
+}
+
+.kaiko-stagger > .kaiko-reveal:nth-child(7) {
+  transition-delay: 600ms;
+}
+
+.kaiko-stagger > .kaiko-reveal:nth-child(8) {
+  transition-delay: 700ms;
+}
+
+.kaiko-stagger > .kaiko-reveal:nth-child(9) {
+  transition-delay: 800ms;
+}
+
+.kaiko-stagger > .kaiko-reveal:nth-child(10) {
+  transition-delay: 900ms;
+}
+
+/* Stagger with larger delays for more dramatic effect */
+.kaiko-stagger-large > .kaiko-reveal:nth-child(1) {
+  transition-delay: 0ms;
+}
+
+.kaiko-stagger-large > .kaiko-reveal:nth-child(2) {
+  transition-delay: 150ms;
+}
+
+.kaiko-stagger-large > .kaiko-reveal:nth-child(3) {
+  transition-delay: 300ms;
+}
+
+.kaiko-stagger-large > .kaiko-reveal:nth-child(4) {
+  transition-delay: 450ms;
+}
+
+.kaiko-stagger-large > .kaiko-reveal:nth-child(5) {
+  transition-delay: 600ms;
+}
+
+/* ===========================
+   4. PARALLAX EFFECTS
+   =========================== */
+
+/**
+ * Parallax helper classes
+ * Uses CSS transforms for performant parallax scrolling
+ * Pair with JavaScript for translate calculations
+ */
+
+.kaiko-parallax {
+  position: relative;
+  overflow: hidden;
+}
+
+.kaiko-parallax-bg {
+  will-change: transform;
+  transition: transform var(--kaiko-transition-base);
+}
+
+.kaiko-parallax-slow {
+  transform: translateY(var(--parallax-offset, 0px));
+  will-change: transform;
+}
+
+.kaiko-parallax-fast {
+  transform: translateY(calc(var(--parallax-offset, 0px) * 0.5));
+  will-change: transform;
+}
+
+.kaiko-parallax-very-fast {
+  transform: translateY(calc(var(--parallax-offset, 0px) * 0.25));
+  will-change: transform;
+}
+
+/* ===========================
+   5. HERO ENTRANCE ANIMATIONS
+   =========================== */
+
+/**
+ * Hero section entrance animations
+ * Includes title, subtitle, and CTA animations
+ */
+
+.kaiko-hero-title {
+  animation: kaiko-hero-title-enter var(--kaiko-transition-slow) var(--kaiko-ease-out) backwards;
+  animation-delay: 100ms;
+}
+
+@keyframes kaiko-hero-title-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+    letter-spacing: 0.1em;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: var(--kaiko-letter-spacing-tight);
+  }
+}
+
+.kaiko-hero-subtitle {
+  animation: kaiko-hero-subtitle-enter var(--kaiko-transition-slow) var(--kaiko-ease-out) backwards;
+  animation-delay: 250ms;
+}
+
+@keyframes kaiko-hero-subtitle-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kaiko-hero-cta {
+  animation: kaiko-hero-cta-enter var(--kaiko-transition-slow) var(--kaiko-ease-out) backwards;
+  animation-delay: 400ms;
+}
+
+@keyframes kaiko-hero-cta-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * Character-by-character letter animation for titles
+ * Applied to elements with .kaiko-letter-animation
+ */
+
+.kaiko-letter-animation {
+  display: inline-block;
+}
+
+.kaiko-letter {
+  display: inline-block;
+  opacity: 0;
+  animation: kaiko-letter-pop 0.4s var(--kaiko-ease-elastic) forwards;
+  animation-fill-mode: both;
+}
+
+.kaiko-letter:nth-child(1) { animation-delay: 0ms; }
+.kaiko-letter:nth-child(2) { animation-delay: 40ms; }
+.kaiko-letter:nth-child(3) { animation-delay: 80ms; }
+.kaiko-letter:nth-child(4) { animation-delay: 120ms; }
+.kaiko-letter:nth-child(5) { animation-delay: 160ms; }
+.kaiko-letter:nth-child(6) { animation-delay: 200ms; }
+.kaiko-letter:nth-child(7) { animation-delay: 240ms; }
+.kaiko-letter:nth-child(8) { animation-delay: 280ms; }
+.kaiko-letter:nth-child(9) { animation-delay: 320ms; }
+.kaiko-letter:nth-child(10) { animation-delay: 360ms; }
+
+@keyframes kaiko-letter-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ===========================
+   6. MARQUEE / TICKER ANIMATION
+   =========================== */
+
+/**
+ * Continuous scrolling marquee animation
+ * Pair with .kaiko-marquee-content element
+ */
+
+@keyframes kaiko-marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.kaiko-marquee-content {
+  animation: kaiko-marquee-scroll 25s linear infinite;
+}
+
+.kaiko-marquee-content:hover {
+  animation-play-state: paused;
+}
+
+/**
+ * Alternative seamless marquee using duplicated content
+ * Position absolutely for infinite scroll effect
+ */
+
+.kaiko-marquee-seamless {
+  overflow: hidden;
+  position: relative;
+}
+
+.kaiko-marquee-seamless-inner {
+  display: flex;
+  animation: kaiko-marquee-seamless 20s linear infinite;
+  width: 200%;
+}
+
+@keyframes kaiko-marquee-seamless {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.kaiko-marquee-seamless:hover .kaiko-marquee-seamless-inner {
+  animation-play-state: paused;
+}
+
+/* ===========================
+   7. SCROLL INDICATOR ANIMATION
+   =========================== */
+
+/**
+ * Animated scroll indicator for hero sections
+ * Pulse animation to draw attention downward
+ */
+
+.kaiko-scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  cursor: pointer;
+}
+
+.kaiko-scroll-indicator-icon {
+  width: 24px;
+  height: 40px;
+  border: 2px solid var(--kaiko-dark);
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.kaiko-scroll-indicator-icon::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  background-color: var(--kaiko-dark);
+  border-radius: 2px;
+  animation: kaiko-scroll-pulse 2s ease-in-out infinite;
+}
+
+@keyframes kaiko-scroll-pulse {
+  0%, 20%, 50%, 80%, 100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 0.5;
+    transform: translateY(8px);
+  }
+  60% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* ===========================
+   8. BUTTON HOVER & INTERACTIONS
+   =========================== */
+
+/**
+ * Micro-interactions for buttons
+ * Includes scale, shadow lift, and glow effects
+ */
+
+.kaiko-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.kaiko-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left var(--kaiko-transition-base);
+  z-index: -1;
+}
+
+.kaiko-btn:hover::before {
+  left: 100%;
+}
+
+/* Primary button glow effect */
+.kaiko-btn-primary {
+  position: relative;
+}
+
+.kaiko-btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3), transparent);
+  opacity: 0;
+  transition: opacity var(--kaiko-transition-base);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.kaiko-btn-primary:hover::after {
+  opacity: 1;
+}
+
+/* Button ripple effect on click */
+@keyframes kaiko-btn-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.kaiko-btn:active::after {
+  animation: kaiko-btn-ripple 0.6s ease-out;
+}
+
+/* ===========================
+   9. FORM INTERACTIONS
+   =========================== */
+
+/**
+ * Input field focus animations and transitions
+ */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+  position: relative;
+  transition: all var(--kaiko-transition-base);
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="number"]::placeholder,
+textarea::placeholder {
+  transition: color var(--kaiko-transition-base);
+}
+
+input[type="text"]:focus::placeholder,
+input[type="email"]:focus::placeholder,
+input[type="password"]:focus::placeholder,
+input[type="number"]:focus::placeholder,
+textarea:focus::placeholder {
+  color: transparent;
+}
+
+/* Form input underline animation */
+.kaiko-form-group input[type="text"],
+.kaiko-form-group input[type="email"],
+.kaiko-form-group input[type="password"],
+.kaiko-form-group input[type="number"],
+.kaiko-form-group input[type="date"],
+.kaiko-form-group input[type="time"],
+.kaiko-form-group textarea,
+.kaiko-form-group select {
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: transparent;
+  transition: all var(--kaiko-transition-base);
+}
+
+.kaiko-form-group input[type="text"]:focus,
+.kaiko-form-group input[type="email"]:focus,
+.kaiko-form-group input[type="password"]:focus,
+.kaiko-form-group input[type="number"]:focus,
+.kaiko-form-group input[type="date"]:focus,
+.kaiko-form-group input[type="time"]:focus,
+.kaiko-form-group textarea:focus,
+.kaiko-form-group select:focus {
+  border-bottom-color: var(--kaiko-teal);
+}
+
+/* Checkbox animation */
+input[type="checkbox"] {
+  transition: all var(--kaiko-transition-base);
+}
+
+input[type="checkbox"]:checked {
+  animation: kaiko-checkbox-check 0.3s var(--kaiko-ease-elastic);
+}
+
+@keyframes kaiko-checkbox-check {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Radio button animation */
+input[type="radio"] {
+  transition: all var(--kaiko-transition-base);
+}
+
+input[type="radio"]:checked {
+  animation: kaiko-radio-check 0.4s var(--kaiko-ease-elastic);
+}
+
+@keyframes kaiko-radio-check {
+  0% {
+    transform: scale(0.7);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===========================
+   10. CARD & PRODUCT HOVER EFFECTS
+   =========================== */
+
+/**
+ * Product card hover animations
+ * Lift, shadow, and image zoom
+ */
+
+.kaiko-product-card {
+  transition: all var(--kaiko-transition-base);
+}
+
+.kaiko-product-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  animation: kaiko-card-lift var(--kaiko-transition-base) var(--kaiko-ease-out) forwards;
+}
+
+@keyframes kaiko-card-lift {
+  0% {
+    box-shadow: var(--kaiko-shadow-md);
+  }
+  100% {
+    box-shadow: var(--kaiko-shadow-2xl);
+  }
+}
+
+/* Generic card hover lift */
+.kaiko-card-hover {
+  transition: all var(--kaiko-transition-base);
+}
+
+.kaiko-card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--kaiko-shadow-xl);
+}
+
+/* ===========================
+   11. LOADING ANIMATIONS
+   =========================== */
+
+/**
+ * Loading spinner animation
+ * Used for async operations
+ */
+
+.kaiko-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--kaiko-light-gray);
+  border-top-color: var(--kaiko-teal);
+  border-radius: 50%;
+  animation: kaiko-spin 0.8s linear infinite;
+}
+
+@keyframes kaiko-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pulsing loader */
+.kaiko-loader-pulse {
+  width: 40px;
+  height: 40px;
+  background-color: var(--kaiko-teal);
+  border-radius: 50%;
+  animation: kaiko-pulse 1.5s var(--kaiko-ease-in-out) infinite;
+}
+
+@keyframes kaiko-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+/* Skeleton loading animation */
+.kaiko-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--kaiko-light-gray) 0%,
+    var(--kaiko-off-white) 50%,
+    var(--kaiko-light-gray) 100%
+  );
+  background-size: 200% 100%;
+  animation: kaiko-skeleton-loading 1.5s infinite;
+}
+
+@keyframes kaiko-skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ===========================
+   12. PAGE TRANSITION ANIMATIONS
+   =========================== */
+
+/**
+ * Page load and navigation transitions
+ */
+
+.kaiko-page-enter {
+  animation: kaiko-page-fade-in 0.6s var(--kaiko-ease-out) forwards;
+}
+
+.kaiko-page-exit {
+  animation: kaiko-page-fade-out 0.4s var(--kaiko-ease-in) forwards;
+}
+
+@keyframes kaiko-page-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes kaiko-page-fade-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Loading screen overlay */
+.kaiko-loading-screen {
+  position: fixed;
+  inset: 0;
+  background-color: var(--kaiko-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: kaiko-loading-fade-out 0.8s var(--kaiko-ease-out) forwards;
+  animation-delay: 2s;
+}
+
+.kaiko-loading-screen.hidden {
+  pointer-events: none;
+}
+
+@keyframes kaiko-loading-fade-out {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+  99% {
+    opacity: 0;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.kaiko-loading-screen-content {
+  text-align: center;
+}
+
+.kaiko-loading-screen-logo {
+  font-family: var(--kaiko-font-display);
+  font-size: 2rem;
+  font-weight: var(--kaiko-weight-bold);
+  margin-bottom: var(--kaiko-space-lg);
+  animation: kaiko-logo-pulse 2s var(--kaiko-ease-in-out) infinite;
+}
+
+@keyframes kaiko-logo-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* ===========================
+   13. MODAL & DIALOG ANIMATIONS
+   =========================== */
+
+/**
+ * Modal entrance and exit animations
+ */
+
+.kaiko-modal {
+  animation: kaiko-modal-backdrop-in 0.3s var(--kaiko-ease-out) forwards;
+}
+
+.kaiko-modal.exit {
+  animation: kaiko-modal-backdrop-out 0.3s var(--kaiko-ease-in) forwards;
+}
+
+@keyframes kaiko-modal-backdrop-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes kaiko-modal-backdrop-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.kaiko-modal-content {
+  animation: kaiko-modal-content-in 0.4s var(--kaiko-ease-out) forwards;
+}
+
+.kaiko-modal.exit .kaiko-modal-content {
+  animation: kaiko-modal-content-out 0.3s var(--kaiko-ease-in) forwards;
+}
+
+@keyframes kaiko-modal-content-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes kaiko-modal-content-out {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+}
+
+/* ===========================
+   14. DROPDOWN & MENU ANIMATIONS
+   =========================== */
+
+/**
+ * Dropdown menu entrance and exit
+ */
+
+.kaiko-dropdown {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
+  visibility: hidden;
+  transition: all var(--kaiko-transition-fast);
+  pointer-events: none;
+}
+
+.kaiko-dropdown.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.kaiko-dropdown-item {
+  transition: all var(--kaiko-transition-fast);
+}
+
+.kaiko-dropdown-item:hover {
+  background-color: var(--kaiko-off-white);
+  padding-left: calc(var(--kaiko-space-lg) + 4px);
+}
+
+/* ===========================
+   15. TOOLTIP ANIMATIONS
+   =========================== */
+
+/**
+ * Tooltip entrance and exit animations
+ */
+
+.kaiko-tooltip {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.95);
+  visibility: hidden;
+  transition: all var(--kaiko-transition-fast);
+  pointer-events: none;
+  z-index: var(--kaiko-z-tooltip);
+}
+
+.kaiko-tooltip.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+}
+
+/* ===========================
+   16. TEXT ANIMATIONS
+   =========================== */
+
+/**
+ * Text-based animations
+ */
+
+.kaiko-text-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--kaiko-teal) 0%,
+    var(--kaiko-lime) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.kaiko-text-shimmer {
+  animation: kaiko-shimmer 2s infinite;
+}
+
+@keyframes kaiko-shimmer {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Animated underline on text */
+.kaiko-text-underline-animate {
+  position: relative;
+  text-decoration: none;
+}
+
+.kaiko-text-underline-animate::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--kaiko-teal);
+  transition: width var(--kaiko-transition-base);
+}
+
+.kaiko-text-underline-animate:hover::after {
+  width: 100%;
+}
+
+/* ===========================
+   17. CURSOR STYLES
+   =========================== */
+
+/**
+ * Custom cursor styling
+ * Note: Limited browser support, primarily Chrome/Firefox
+ */
+
+.kaiko-cursor-pointer {
+  cursor: pointer;
+}
+
+.kaiko-cursor-grab {
+  cursor: grab;
+}
+
+.kaiko-cursor-grab:active {
+  cursor: grabbing;
+}
+
+.kaiko-cursor-wait {
+  cursor: wait;
+}
+
+.kaiko-cursor-default {
+  cursor: default;
+}
+
+/* Custom cursor for interactive elements */
+a,
+button,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+.kaiko-btn {
+  cursor: pointer;
+}
+
+/* ===========================
+   18. SECTION TRANSITION ANIMATIONS
+   =========================== */
+
+/**
+ * Smooth transitions between sections
+ */
+
+.kaiko-section-transition {
+  position: relative;
+  transition: all var(--kaiko-transition-base);
+}
+
+.kaiko-section-transition::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--kaiko-white);
+  opacity: 0;
+  transition: opacity var(--kaiko-transition-base);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.kaiko-section-transition.loading::before {
+  opacity: 0.5;
+}
+
+/* ===========================
+   19. ACCESSIBILITY - REDUCED MOTION
+   =========================== */
+
+/**
+ * Respect user's motion preferences
+ * All animations are disabled when prefers-reduced-motion is set
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable parallax for reduced motion */
+  .kaiko-parallax-bg,
+  .kaiko-parallax-slow,
+  .kaiko-parallax-fast,
+  .kaiko-parallax-very-fast {
+    transform: none !important;
+  }
+
+  /* Instant state changes instead of transitions */
+  .kaiko-reveal,
+  .kaiko-reveal-left,
+  .kaiko-reveal-right,
+  .kaiko-reveal-scale {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+
+  /* Instant button states */
+  .kaiko-btn {
+    transition: none !important;
+  }
+
+  .kaiko-btn:hover {
+    transform: none !important;
+  }
+
+  /* Disable marquee animation */
+  .kaiko-marquee-content,
+  .kaiko-marquee-seamless-inner {
+    animation: none !important;
+  }
+
+  /* Instant loading states */
+  .kaiko-spinner,
+  .kaiko-loader-pulse,
+  .kaiko-skeleton {
+    animation: none !important;
+  }
+
+  /* Instant page transitions */
+  .kaiko-page-enter,
+  .kaiko-page-exit {
+    animation: none !important;
+  }
+
+  /* Disable modal animations */
+  .kaiko-modal,
+  .kaiko-modal-content {
+    animation: none !important;
+  }
+
+  /* Disable scroll indicator */
+  .kaiko-scroll-indicator-icon::after {
+    animation: none !important;
+  }
+}
+
+/* ===========================
+   20. HIGH CONTRAST MODE SUPPORT
+   =========================== */
+
+/**
+ * Support for high contrast mode
+ */
+
+@media (prefers-contrast: more) {
+  .kaiko-reveal,
+  .kaiko-reveal-left,
+  .kaiko-reveal-right,
+  .kaiko-reveal-scale {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .kaiko-btn {
+    border-width: 2px;
+  }
+
+  .kaiko-shadow {
+    box-shadow: var(--kaiko-shadow-lg) !important;
+  }
+}
+
+/* ===========================
+   21. DARK MODE / LIGHT MODE ANIMATIONS
+   =========================== */
+
+/**
+ * Smooth color transitions for theme switching
+ */
+
+.kaiko-theme-transition {
+  transition: background-color var(--kaiko-transition-base),
+              color var(--kaiko-transition-base),
+              border-color var(--kaiko-transition-base),
+              box-shadow var(--kaiko-transition-base);
+}
+
+html[data-theme="dark"] .kaiko-theme-transition {
+  color-scheme: dark;
+}
+
+html[data-theme="light"] .kaiko-theme-transition {
+  color-scheme: light;
+}
+
+/* ===========================
+   22. FOCUS RING ANIMATIONS
+   =========================== */
+
+/**
+ * Animated focus rings for keyboard navigation
+ */
+
+:focus-visible {
+  outline: 2px solid var(--kaiko-teal);
+  outline-offset: 2px;
+  animation: kaiko-focus-in 0.2s var(--kaiko-ease-out);
+}
+
+@keyframes kaiko-focus-in {
+  0% {
+    outline-width: 0;
+    outline-offset: 0;
+  }
+  100% {
+    outline-width: 2px;
+    outline-offset: 2px;
+  }
+}
+
+/* ===========================
+   23. UTILITY ANIMATION CLASSES
+   =========================== */
+
+/**
+ * Utility classes for quick animation application
+ */
+
+.kaiko-animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity var(--kaiko-transition-slow) var(--kaiko-ease-out),
+              transform var(--kaiko-transition-slow) var(--kaiko-ease-out);
+}
+
+.kaiko-animate-on-scroll.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.kaiko-animate-fade {
+  animation: kaiko-fade 0.6s var(--kaiko-ease-out) forwards;
+}
+
+@keyframes kaiko-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.kaiko-animate-slide-in {
+  animation: kaiko-slide-in 0.5s var(--kaiko-ease-out) forwards;
+}
+
+@keyframes kaiko-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.kaiko-animate-zoom-in {
+  animation: kaiko-zoom-in 0.5s var(--kaiko-ease-out) forwards;
+}
+
+@keyframes kaiko-zoom-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.kaiko-animate-bounce {
+  animation: kaiko-bounce 0.6s var(--kaiko-ease-elastic);
+}
+
+@keyframes kaiko-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-10px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  75% {
+    transform: translateY(-10px);
+  }
+}
+
+.kaiko-animate-float {
+  animation: kaiko-float 3s ease-in-out infinite;
+}
+
+@keyframes kaiko-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ===========================
+   24. DEBUG & TESTING
+   =========================== */
+
+/**
+ * Debug classes for testing animations
+ * Remove in production if desired
+ */
+
+.kaiko-debug-animation {
+  background-color: rgba(26, 92, 82, 0.1);
+  border: 1px dashed var(--kaiko-teal);
+  outline: none !important;
+}
+
+.kaiko-debug-animation:hover {
+  background-color: rgba(26, 92, 82, 0.2);
+}

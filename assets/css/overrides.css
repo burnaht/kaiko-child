@@ -1,0 +1,274 @@
+/* ============================================
+   Kaiko — WoodMart Theme Overrides
+   ============================================
+   Purpose: Reset WoodMart's default styles to
+   use Kaiko design tokens. This file acts as
+   the bridge between WoodMart and our token system.
+
+   Rules:
+   - NEVER hardcode values — always use var(--token)
+   - Target WoodMart classes specifically
+   - Keep selectors as low-specificity as possible
+   - Group by WoodMart component
+   ============================================ */
+
+
+/* ---- Global Resets ---- */
+
+body,
+.woodmart-prefooter,
+.site-content {
+	background-color: var(--color-bg);
+	color: var(--color-text);
+	font-family: var(--font-body);
+	font-size: var(--text-base);
+	line-height: var(--leading-normal);
+}
+
+
+/* ---- Typography ---- */
+
+h1, h2, h3, h4, h5, h6,
+.title,
+.woodmart-title-container .title,
+.entry-title {
+	font-family: var(--font-display);
+	color: var(--color-text-heading);
+	line-height: var(--leading-tight);
+	letter-spacing: var(--tracking-tight);
+}
+
+h1, .woodmart-title-size-large  { font-size: var(--text-4xl); }
+h2, .woodmart-title-size-medium { font-size: var(--text-3xl); }
+h3                               { font-size: var(--text-2xl); }
+h4                               { font-size: var(--text-xl); }
+h5                               { font-size: var(--text-lg); }
+h6                               { font-size: var(--text-base); }
+
+a {
+	color: var(--color-accent);
+	transition: color var(--transition-micro);
+}
+
+a:hover,
+a:focus {
+	color: var(--color-accent-light);
+}
+
+
+/* ---- Header ---- */
+
+.whb-header,
+.whb-sticked,
+.whb-row {
+	background-color: var(--color-bg) !important;
+	border-bottom: 1px solid var(--color-border);
+}
+
+.woodmart-logo img {
+	max-height: 48px;
+}
+
+.whb-header .navigation-style-bordered > li > a,
+.whb-header .main-nav .menu > li > a {
+	color: var(--color-text);
+	font-family: var(--font-body);
+	font-weight: var(--weight-medium);
+	font-size: var(--text-sm);
+	letter-spacing: var(--tracking-wide);
+	text-transform: uppercase;
+	transition: color var(--transition-micro);
+}
+
+.whb-header .main-nav .menu > li > a:hover,
+.whb-header .main-nav .menu > li.current-menu-item > a {
+	color: var(--color-accent);
+}
+
+
+/* ---- Footer ---- */
+
+.footer-container,
+.woodmart-prefooter,
+.copyrights-wrapper {
+	background-color: var(--color-secondary-dark);
+	color: var(--color-text-muted);
+	border-top: 1px solid var(--color-border);
+}
+
+
+/* ---- Buttons ---- */
+
+.btn,
+.button,
+.woodmart-button,
+input[type="submit"],
+.woocommerce .button,
+.woocommerce a.button,
+.woocommerce button.button {
+	font-family: var(--font-body);
+	font-weight: var(--weight-medium);
+	font-size: var(--text-sm);
+	letter-spacing: var(--tracking-wide);
+	text-transform: uppercase;
+	padding: var(--space-2) var(--space-4);
+	border-radius: var(--radius-sm);
+	transition: all var(--transition-micro);
+	cursor: pointer;
+}
+
+/* Primary button */
+.btn-color-primary,
+.button.alt,
+.woocommerce .button.alt,
+.woocommerce a.button.alt,
+.woocommerce button.button.alt,
+.single_add_to_cart_button {
+	background-color: var(--color-accent) !important;
+	color: var(--color-bg) !important;
+	border: none;
+}
+
+.btn-color-primary:hover,
+.button.alt:hover,
+.woocommerce .button.alt:hover,
+.single_add_to_cart_button:hover {
+	background-color: var(--color-accent-light) !important;
+	color: var(--color-bg) !important;
+}
+
+/* Secondary / outline button */
+.btn-color-default,
+.woocommerce .button:not(.alt) {
+	background-color: transparent;
+	color: var(--color-accent);
+	border: 1px solid var(--color-accent);
+}
+
+.btn-color-default:hover,
+.woocommerce .button:not(.alt):hover {
+	background-color: rgba(var(--color-accent-rgb), 0.1);
+	color: var(--color-accent-light);
+	border-color: var(--color-accent-light);
+}
+
+
+/* ---- Forms ---- */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select,
+.woocommerce-input-wrapper input,
+.woocommerce-input-wrapper select {
+	background-color: var(--color-bg-elevated);
+	color: var(--color-text);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	padding: var(--space-2) var(--space-3);
+	font-family: var(--font-body);
+	font-size: var(--text-base);
+	transition: border-color var(--transition-micro);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+	border-color: var(--color-accent);
+	outline: none;
+	box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.2);
+}
+
+::placeholder {
+	color: var(--color-text-muted);
+	opacity: 1;
+}
+
+
+/* ---- Breadcrumbs ---- */
+
+.woocommerce-breadcrumb,
+.yoast-breadcrumb,
+.woodmart-breadcrumbs {
+	color: var(--color-text-muted);
+	font-size: var(--text-sm);
+}
+
+.woocommerce-breadcrumb a {
+	color: var(--color-text-muted);
+}
+
+.woocommerce-breadcrumb a:hover {
+	color: var(--color-accent);
+}
+
+
+/* ---- WooCommerce Notices ---- */
+
+.woocommerce-message {
+	background-color: var(--color-bg-elevated);
+	color: var(--color-text);
+	border-top-color: var(--color-success);
+}
+
+.woocommerce-error {
+	background-color: var(--color-bg-elevated);
+	color: var(--color-text);
+	border-top-color: var(--color-error);
+}
+
+.woocommerce-info {
+	background-color: var(--color-bg-elevated);
+	color: var(--color-text);
+	border-top-color: var(--color-info);
+}
+
+
+/* ---- Pagination ---- */
+
+.woocommerce-pagination .page-numbers li a,
+.woocommerce-pagination .page-numbers li span {
+	background-color: var(--color-bg-elevated);
+	color: var(--color-text-muted);
+	border: 1px solid var(--color-border);
+}
+
+.woocommerce-pagination .page-numbers li span.current,
+.woocommerce-pagination .page-numbers li a:hover {
+	background-color: var(--color-accent);
+	color: var(--color-bg);
+	border-color: var(--color-accent);
+}
+
+
+/* ---- Scrollbar (webkit) ---- */
+
+::-webkit-scrollbar {
+	width: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--color-border);
+	border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: var(--color-border-light);
+}
+
+
+/* ---- Selection ---- */
+
+::selection {
+	background-color: var(--color-accent);
+	color: var(--color-bg);
+}
