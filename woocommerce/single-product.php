@@ -747,6 +747,93 @@ body.kaiko-product-page .kaiko-pp-btn--ghost {
 }
 body.kaiko-product-page .kaiko-pp-btn--ghost:hover { border-color: var(--k-dark); }
 
+/* =========================================================
+   Variable product — pill selector (replaces WC dropdowns)
+   WC still renders its <select> underneath; we hide it, and
+   our JS pills set select.value + dispatch 'change' so all of
+   WooCommerce's variation JS still works.
+   ========================================================= */
+body.kaiko-product-page .kaiko-pp-summary table.variations,
+body.kaiko-product-page .kaiko-pp-summary table.variations_table,
+body.kaiko-product-page .kaiko-pp-summary .reset_variations {
+	display: none !important;
+}
+/* Woodmart often wraps its select in .wd-select-wrapper — hide that too if it appears */
+body.kaiko-product-page .kaiko-pp-summary .wd-select-wrapper,
+body.kaiko-product-page .kaiko-pp-summary .variations select {
+	display: none !important;
+}
+/* WC variation status blocks — we render our own price via tiers */
+body.kaiko-product-page .kaiko-pp-summary .single_variation_wrap .woocommerce-variation-price,
+body.kaiko-product-page .kaiko-pp-summary .single_variation_wrap .woocommerce-variation-availability,
+body.kaiko-product-page .kaiko-pp-summary .single_variation_wrap .woocommerce-variation-description {
+	display: none !important;
+}
+
+body.kaiko-product-page .kaiko-pp-variant-group {
+	margin: 0 0 22px;
+}
+body.kaiko-product-page .kaiko-pp-variant-head {
+	display: flex; align-items: baseline; justify-content: space-between;
+	gap: 12px; flex-wrap: wrap;
+	margin: 0 0 12px;
+}
+body.kaiko-product-page .kaiko-pp-variant-label {
+	font-size: 0.8rem; font-weight: 600;
+	letter-spacing: 0.14em; text-transform: uppercase;
+	color: var(--k-stone-700);
+}
+body.kaiko-product-page .kaiko-pp-variant-current {
+	font-size: 0.88rem;
+	color: var(--k-teal);
+	font-weight: 500;
+}
+body.kaiko-product-page .kaiko-pp-variant-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+	gap: 10px;
+}
+body.kaiko-product-page .kaiko-pp-variant-pill {
+	background: var(--k-white);
+	border: 1.5px solid var(--k-stone-200);
+	border-radius: var(--k-r-md);
+	padding: 14px 16px;
+	cursor: pointer;
+	transition: border-color 200ms ease, background 200ms ease, box-shadow 200ms ease;
+	text-align: center;
+	font-family: inherit;
+	color: var(--k-dark);
+	line-height: 1.2;
+}
+body.kaiko-product-page .kaiko-pp-variant-pill:hover {
+	border-color: var(--k-stone-400);
+}
+body.kaiko-product-page .kaiko-pp-variant-pill.is-active {
+	border-color: var(--k-teal);
+	background: rgba(26,92,82,0.04);
+	box-shadow: 0 0 0 2px rgba(26,92,82,0.10);
+}
+body.kaiko-product-page .kaiko-pp-variant-pill__label {
+	display: block;
+	font-weight: 700; font-size: 1.05rem;
+	color: var(--k-dark);
+	margin-bottom: 2px;
+}
+body.kaiko-product-page .kaiko-pp-variant-pill.is-active .kaiko-pp-variant-pill__label {
+	color: var(--k-teal);
+}
+body.kaiko-product-page .kaiko-pp-variant-pill__sub {
+	display: block;
+	font-size: 0.82rem;
+	color: var(--k-stone-500);
+}
+body.kaiko-product-page .kaiko-pp-variant-pill[disabled],
+body.kaiko-product-page .kaiko-pp-variant-pill.is-disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
 /* Tier pricing */
 body.kaiko-product-page .kaiko-pp-tiers {
 	background: var(--k-stone-50);
@@ -1250,6 +1337,184 @@ body.kaiko-product-page .kaiko-pp-tile__value {
 		jQuery(document.body).on('found_variation', function () {
 			setTimeout(refresh, 50);
 		});
+	}
+
+	// ---------------------------------------------------------
+	// Pill-ify variation selects
+	// WC still renders <select> underneath; our CSS hides them.
+	// Clicking a pill sets select.value and dispatches 'change'
+	// so WC's variations_form JS handles the rest.
+	// ---------------------------------------------------------
+	function splitOptionText(raw) {
+		// Split "Large 22cm diameter" / "Large (22cm)" / "Large - 22cm" / "Large — 22cm"
+		// Into { label: "Large", sub: "22cm diameter" }
+		var t = (raw || '').trim();
+		var m;
+		if ((m = t.match(/^([^\-\—\(]+)[\-\—]\s*(.+)$/))) {
+			return { label: m[1].trim(), sub: m[2].replace(/[\)\s]+$/, '').trim() };
+		}
+		if ((m = t.match(/^(.+?)\s*\((.+?)\)\s*$/))) {
+			return { label: m[1].trim(), sub: m[2].trim() };
+		}
+		if ((m = t.match(/^(\S+)\s+(.+)$/)) && /^\d|cm|mm|ml|g|kg|"/i.test(m[2])) {
+			return { label: m[1].trim(), sub: m[2].trim() };
+		}
+		return { label: t, sub: '' };
+	}
+
+	function syncPillsFromSelect(group, select) {
+		var val = select.value;
+		var pills = group.querySelectorAll('.kaiko-pp-variant-pill');
+		var current = group.querySelector('.kaiko-pp-variant-current');
+		var activeText = '';
+		pills.forEach(function (p) {
+			var match = p.getAttribute('data-value') === val;
+			p.classList.toggle('is-active', match);
+			if (match) {
+				var l = p.querySelector('.kaiko-pp-variant-pill__label');
+				var s = p.querySelector('.kaiko-pp-variant-pill__sub');
+				activeText = (l ? l.textContent : '') + (s && s.textContent ? ' · ' + s.textContent : '');
+			}
+		});
+		if (current) current.textContent = activeText;
+	}
+
+	function buildVariationPills() {
+		var form = document.querySelector('.kaiko-pp-summary form.variations_form');
+		if (!form) return;
+
+		var selects = form.querySelectorAll('table.variations select, table.variations_table select');
+		selects.forEach(function (select) {
+			if (select.dataset.kaikoPilled === '1') return;
+			select.dataset.kaikoPilled = '1';
+
+			var group = document.createElement('div');
+			group.className = 'kaiko-pp-variant-group';
+			group.setAttribute('data-attr-name', select.getAttribute('data-attribute_name') || select.name || '');
+
+			// Label from the <th><label for="..."> that WC renders
+			var row = select.closest('tr');
+			var attrLabel = '';
+			if (row) {
+				var th = row.querySelector('th.label, th label, label');
+				if (th) attrLabel = th.textContent.trim();
+			}
+			if (!attrLabel) {
+				attrLabel = (select.getAttribute('data-attribute_name') || select.name || '')
+					.replace(/^attribute_(pa_)?/, '').replace(/[_-]/g, ' ').trim();
+			}
+
+			var head = document.createElement('div');
+			head.className = 'kaiko-pp-variant-head';
+			var labelEl = document.createElement('span');
+			labelEl.className = 'kaiko-pp-variant-label';
+			labelEl.textContent = attrLabel.toUpperCase();
+			var currentEl = document.createElement('span');
+			currentEl.className = 'kaiko-pp-variant-current';
+			head.appendChild(labelEl);
+			head.appendChild(currentEl);
+			group.appendChild(head);
+
+			var grid = document.createElement('div');
+			grid.className = 'kaiko-pp-variant-grid';
+
+			Array.from(select.options).forEach(function (opt) {
+				if (!opt.value) return; // skip "Choose an option"
+				var pill = document.createElement('button');
+				pill.type = 'button';
+				pill.className = 'kaiko-pp-variant-pill';
+				pill.setAttribute('data-value', opt.value);
+
+				var parts = splitOptionText(opt.textContent);
+				var labelSpan = document.createElement('span');
+				labelSpan.className = 'kaiko-pp-variant-pill__label';
+				labelSpan.textContent = parts.label;
+				pill.appendChild(labelSpan);
+				if (parts.sub) {
+					var subSpan = document.createElement('span');
+					subSpan.className = 'kaiko-pp-variant-pill__sub';
+					subSpan.textContent = parts.sub;
+					pill.appendChild(subSpan);
+				}
+
+				pill.addEventListener('click', function () {
+					if (select.value === opt.value) return;
+					select.value = opt.value;
+					if (window.jQuery) {
+						jQuery(select).trigger('change').trigger('focusin');
+					} else {
+						select.dispatchEvent(new Event('change', { bubbles: true }));
+					}
+					syncPillsFromSelect(group, select);
+				});
+
+				grid.appendChild(pill);
+			});
+
+			group.appendChild(grid);
+
+			// Insert above the hidden variations table
+			var table = select.closest('table.variations, table.variations_table');
+			if (table && table.parentNode) {
+				table.parentNode.insertBefore(group, table);
+			} else {
+				// Fallback: prepend to form
+				form.insertBefore(group, form.firstChild);
+			}
+
+			syncPillsFromSelect(group, select);
+		});
+
+		// After building, if only one attr has no selection, pick the first real option
+		// so tier pricing reflects something immediately.
+		selects.forEach(function (select) {
+			if (!select.value) {
+				for (var i = 0; i < select.options.length; i++) {
+					if (select.options[i].value) {
+						select.value = select.options[i].value;
+						if (window.jQuery) jQuery(select).trigger('change');
+						else select.dispatchEvent(new Event('change', { bubbles: true }));
+						var g = document.querySelector('.kaiko-pp-variant-group[data-attr-name="' + (select.getAttribute('data-attribute_name') || select.name) + '"]');
+						if (g) syncPillsFromSelect(g, select);
+						break;
+					}
+				}
+			}
+		});
+	}
+
+	buildVariationPills();
+	if (window.jQuery) {
+		jQuery(document.body).on('woocommerce_update_variation_values wc_variation_form', function () {
+			buildVariationPills();
+			// Re-sync pills whenever WC re-evaluates available options
+			document.querySelectorAll('.kaiko-pp-summary form.variations_form table.variations select').forEach(function (select) {
+				var g = document.querySelector('.kaiko-pp-variant-group[data-attr-name="' + (select.getAttribute('data-attribute_name') || select.name) + '"]');
+				if (g) syncPillsFromSelect(g, select);
+
+				// Disable pills whose value is no longer available
+				var enabledVals = Array.from(select.options).filter(function (o) { return o.value; }).map(function (o) { return o.value; });
+				if (g) {
+					g.querySelectorAll('.kaiko-pp-variant-pill').forEach(function (p) {
+						var v = p.getAttribute('data-value');
+						p.classList.toggle('is-disabled', enabledVals.indexOf(v) === -1);
+					});
+				}
+			});
+		});
+		jQuery(document.body).on('reset_data', function () {
+			document.querySelectorAll('.kaiko-pp-summary form.variations_form table.variations select').forEach(function (select) {
+				var g = document.querySelector('.kaiko-pp-variant-group[data-attr-name="' + (select.getAttribute('data-attribute_name') || select.name) + '"]');
+				if (g) syncPillsFromSelect(g, select);
+			});
+		});
+	}
+	// MutationObserver fallback for themes/plugins that re-render the form async
+	var summaryRoot = document.querySelector('.kaiko-pp-summary');
+	if (summaryRoot && !summaryRoot._kaikoPillObserver) {
+		var mo = new MutationObserver(function () { buildVariationPills(); });
+		mo.observe(summaryRoot, { childList: true, subtree: true });
+		summaryRoot._kaikoPillObserver = mo;
 	}
 })();
 </script>
