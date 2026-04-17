@@ -395,13 +395,15 @@ function kaiko_output_og_meta() {
     }
 
     // Product-specific OG
-    if ( function_exists( 'is_product' ) && is_product() ) {
-        global $product;
-        if ( $product ) {
-            $og['og:type']               = 'product';
-            $og['product:price:amount']   = $product->get_price();
+    // Note: wp_head fires before the main loop sets up $GLOBALS['product'],
+    // so we must resolve the product from the queried object instead of the global.
+    if ( function_exists( 'is_product' ) && is_product() && function_exists( 'wc_get_product' ) ) {
+        $product_obj = wc_get_product( get_queried_object_id() );
+        if ( $product_obj instanceof WC_Product ) {
+            $og['og:type']                = 'product';
+            $og['product:price:amount']   = $product_obj->get_price();
             $og['product:price:currency'] = get_woocommerce_currency();
-            $og['product:availability']   = $product->is_in_stock() ? 'in stock' : 'out of stock';
+            $og['product:availability']   = $product_obj->is_in_stock() ? 'in stock' : 'out of stock';
         }
     }
 
