@@ -326,16 +326,16 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
 
         <div class="testimonial-card">
           <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p class="testimonial-text">&ldquo;The tortoise water dish is a huge step up on anything I&rsquo;ve tried before. Looks great in the enclosure and it&rsquo;s easy to clean.&rdquo;</p>
+          <p class="testimonial-text">&ldquo;The water bowls actually look like part of the setup &mdash; properly considered design that sits naturally in the enclosure instead of looking like a bit of plastic bolted on. Aesthetic matters and Kaiko nails it.&rdquo;</p>
           <div class="testimonial-author">Olivia P.</div>
           <div class="testimonial-role">Tortoise Keeper, Brighton</div>
         </div>
 
         <div class="testimonial-card">
           <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p class="testimonial-text">&ldquo;Proper thought has gone into every product. The chameleon drip system is the first one I&rsquo;ve used that my animals actually drink from reliably.&rdquo;</p>
+          <p class="testimonial-text">&ldquo;The humidity hide has made a proper difference to shedding across my leopard gecko collection. Holds moisture exactly as it should and looks great in the enclosure &mdash; the design is spot on for hatchlings too.&rdquo;</p>
           <div class="testimonial-author">Michael H.</div>
-          <div class="testimonial-role">Chameleon Breeder, Cardiff</div>
+          <div class="testimonial-role">Leopard Gecko Breeder, Cardiff</div>
         </div>
 
       </div>
