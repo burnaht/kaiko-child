@@ -620,7 +620,146 @@ function kaiko_register_acf_fields() {
         'menu_order' => 20,
     ) );
 
+    // Wholesale Tier Pricing
+    acf_add_local_field_group( array(
+        'key'    => 'group_kaiko_tiers',
+        'title'  => 'Wholesale Tier Pricing',
+        'fields' => array(
+            array(
+                'key'           => 'field_kaiko_tiers',
+                'label'         => 'Quantity Tiers',
+                'name'          => 'kaiko_wholesale_tiers',
+                'type'          => 'repeater',
+                'instructions'  => 'Leave empty to use the product\'s base price with no tier discount. Set the final tier\'s Max Qty to 0 (or blank) to mean "and above".',
+                'layout'        => 'table',
+                'button_label'  => 'Add Tier',
+                'sub_fields'    => array(
+                    array( 'key' => 'field_tier_min', 'label' => 'Min Qty', 'name' => 'min_qty', 'type' => 'number', 'default_value' => 1, 'min' => 1, 'wrapper' => array( 'width' => '20' ) ),
+                    array( 'key' => 'field_tier_max', 'label' => 'Max Qty', 'name' => 'max_qty', 'type' => 'number', 'instructions' => '0 or blank = unlimited', 'wrapper' => array( 'width' => '20' ) ),
+                    array( 'key' => 'field_tier_price', 'label' => 'Unit Price (£)', 'name' => 'unit_price', 'type' => 'number', 'step' => 0.01, 'required' => 1, 'wrapper' => array( 'width' => '30' ) ),
+                    array( 'key' => 'field_tier_label', 'label' => 'Label (optional)', 'name' => 'label', 'type' => 'text', 'placeholder' => 'e.g. Best Value', 'wrapper' => array( 'width' => '30' ) ),
+                ),
+            ),
+            array(
+                'key'           => 'field_kaiko_carton_qty',
+                'label'         => 'Carton Quantity',
+                'name'          => 'carton_qty',
+                'type'          => 'number',
+                'instructions'  => 'Units per carton (shown in meta grid).',
+                'wrapper'       => array( 'width' => '50' ),
+            ),
+            array(
+                'key'           => 'field_kaiko_lead_time',
+                'label'         => 'Lead Time',
+                'name'          => 'lead_time',
+                'type'          => 'text',
+                'placeholder'   => 'e.g. 3–5 working days',
+                'wrapper'       => array( 'width' => '50' ),
+            ),
+        ),
+        'location'   => $product_location,
+        'menu_order' => 5,
+    ) );
 
+}
+
+
+/* ============================================
+   8b. WHOLESALE TIER PRICING HELPERS
+   ============================================ */
+
+/**
+ * Get normalised tier array for a product.
+ *
+ * @param int $product_id
+ * @return array of ['min_qty'=>int,'max_qty'=>int,'unit_price'=>float,'label'=>string]
+ */
+function kaiko_get_product_tiers( $product_id ) {
+    if ( ! function_exists( 'get_field' ) ) {
+        return array();
+    }
+    $raw = get_field( 'kaiko_wholesale_tiers', $product_id );
+    if ( empty( $raw ) || ! is_array( $raw ) ) {
+        return array();
+    }
+    $tiers = array();
+    foreach ( $raw as $row ) {
+        $min = isset( $row['min_qty'] ) ? (int) $row['min_qty'] : 1;
+        $max = isset( $row['max_qty'] ) ? (int) $row['max_qty'] : 0;
+        $price = isset( $row['unit_price'] ) ? (float) $row['unit_price'] : 0;
+        if ( $price <= 0 ) continue;
+        $tiers[] = array(
+            'min_qty'    => max( 1, $min ),
+            'max_qty'    => max( 0, $max ),
+            'unit_price' => $price,
+            'label'      => isset( $row['label'] ) ? sanitize_text_field( $row['label'] ) : '',
+        );
+    }
+    // Sort by min_qty asc
+    usort( $tiers, function( $a, $b ) { return $a['min_qty'] - $b['min_qty']; } );
+    return $tiers;
+}
+
+/**
+ * Return the unit price for a given qty based on configured tiers,
+ * falling back to the product's base price.
+ */
+function kaiko_get_tier_price( $product_id, $qty ) {
+    $tiers = kaiko_get_product_tiers( $product_id );
+    $product = wc_get_product( $product_id );
+    $base = $product ? (float) $product->get_price() : 0;
+    if ( empty( $tiers ) ) return $base;
+    foreach ( $tiers as $tier ) {
+        $in_band = ( $tier['max_qty'] === 0 )
+            ? ( $qty >= $tier['min_qty'] )
+            : ( $qty >= $tier['min_qty'] && $qty <= $tier['max_qty'] );
+        if ( $in_band ) return (float) $tier['unit_price'];
+    }
+    return $base;
+}
+
+/**
+ * Apply tier pricing to cart items based on quantity.
+ * Runs on every cart recalculation.
+ */
+add_action( 'woocommerce_before_calculate_totals', 'kaiko_apply_tier_pricing_to_cart', 20, 1 );
+
+function kaiko_apply_tier_pricing_to_cart( $cart ) {
+    if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
+    if ( ! function_exists( 'kaiko_user_can_see_prices' ) || ! kaiko_user_can_see_prices() ) return;
+    if ( did_action( 'woocommerce_before_calculate_totals' ) >= 2 ) return;
+
+    foreach ( $cart->get_cart() as $cart_item ) {
+        $product_id = $cart_item['product_id'];
+        $qty        = $cart_item['quantity'];
+        $tier_price = kaiko_get_tier_price( $product_id, $qty );
+        if ( $tier_price > 0 ) {
+            $cart_item['data']->set_price( $tier_price );
+        }
+    }
+}
+
+/**
+ * Shop archive: show "From £X" when tiers exist (approved users only).
+ */
+add_filter( 'woocommerce_get_price_html', 'kaiko_tier_from_price_html', 20, 2 );
+
+function kaiko_tier_from_price_html( $price_html, $product ) {
+    if ( is_admin() ) return $price_html;
+    if ( ! function_exists( 'kaiko_user_can_see_prices' ) || ! kaiko_user_can_see_prices() ) return $price_html;
+    $tiers = kaiko_get_product_tiers( $product->get_id() );
+    if ( empty( $tiers ) ) return $price_html;
+
+    // Lowest tier price
+    $min_tier_price = min( array_column( $tiers, 'unit_price' ) );
+    $base           = (float) $product->get_price();
+    if ( $min_tier_price >= $base || $min_tier_price <= 0 ) return $price_html;
+
+    return sprintf(
+        '%s <span class="kaiko-from-price">from %s</span>',
+        $price_html,
+        wp_kses_post( wc_price( $min_tier_price ) )
+    );
 }
 
 
