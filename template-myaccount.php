@@ -132,6 +132,12 @@ body.kaiko-myaccount-page {
   box-shadow: 0 4px 24px rgba(28,25,23,0.06);
 }
 
+/* WP admin bar offset — push Kaiko nav below the black admin bar (32px desktop / 46px ≤782px). */
+body.admin-bar .kaiko-myaccount-wrap .kaiko-nav { top: 32px !important; }
+@media screen and (max-width: 782px) {
+  body.admin-bar .kaiko-myaccount-wrap .kaiko-nav { top: 46px !important; }
+}
+
 .kaiko-myaccount-wrap .kaiko-nav-logo {
   font-family: var(--k-font-display);
   font-size: 1.85rem; font-weight: 700;
@@ -291,10 +297,21 @@ body.kaiko-myaccount-page {
    ============================================ */
 .kaiko-myaccount-content {
   flex: 1;
-  padding: 128px 4rem 100px;
+  padding: calc(72px + 56px) 4rem 100px;
   max-width: 1140px;
   margin: 0 auto; width: 100%;
   position: relative; z-index: 1;
+}
+
+/* Admin bar pushes the fixed Kaiko nav down by 32px (46px below 782px).
+   The content area must match or the nav will overlap the dashboard. */
+body.admin-bar .kaiko-myaccount-wrap .kaiko-myaccount-content {
+  padding-top: calc(72px + 56px + 32px);
+}
+@media screen and (max-width: 782px) {
+  body.admin-bar .kaiko-myaccount-wrap .kaiko-myaccount-content {
+    padding-top: calc(72px + 40px + 46px);
+  }
 }
 
 /* ============================================
@@ -777,6 +794,197 @@ body.kaiko-myaccount-page {
 /* Suppress "lost your password" form inside dashboard if it tries to render */
 .kaiko-myaccount-wrap .woocommerce-MyAccount-content .lost_password { display: none; }
 
+/* ============================================
+   APPROVED DASHBOARD — sidebar avatar, welcome
+   banner, quick reorder, help strip
+   ============================================ */
+
+/* Sidebar avatar block (sits above the nav list) */
+.kaiko-account-sidebar {
+  display: flex; flex-direction: column;
+  background: var(--k-glass-bg);
+  backdrop-filter: var(--k-glass-blur);
+  -webkit-backdrop-filter: var(--k-glass-blur);
+  border: 1px solid var(--k-glass-border);
+  border-radius: var(--k-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--k-glass-shadow);
+}
+.kaiko-account-sidebar .kaiko-avatar-block {
+  display: flex; align-items: center; gap: 14px;
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--k-stone-200);
+  background: rgba(26,92,82,0.03);
+}
+.kaiko-account-sidebar .kaiko-avatar-block img {
+  width: 44px; height: 44px; border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--k-glass-border);
+  box-shadow: 0 1px 4px rgba(28,25,23,0.08);
+}
+.kaiko-account-sidebar .kaiko-avatar-meta {
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 0;
+}
+.kaiko-account-sidebar .kaiko-avatar-meta .name {
+  font-family: var(--k-font-body);
+  font-size: 0.95rem; font-weight: 600;
+  color: var(--k-dark);
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.kaiko-account-sidebar .kaiko-avatar-meta .role {
+  font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--k-teal);
+}
+
+/* aria-current overrides hover/active fallback */
+.kaiko-account-nav li a[aria-current="page"] {
+  background: rgba(26,92,82,0.06);
+  color: var(--k-teal);
+  font-weight: 600;
+  border-left-color: var(--k-teal);
+}
+.kaiko-account-nav li a:focus-visible {
+  outline: 2px solid var(--k-teal);
+  outline-offset: -2px;
+}
+
+/* Welcome banner — eyebrow + greeting + subtitle */
+.kaiko-welcome-banner {
+  margin: 0 0 28px;
+}
+.kaiko-welcome-banner .kaiko-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--k-font-body);
+  font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--k-teal);
+  background: rgba(26,92,82,0.06);
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid rgba(26,92,82,0.1);
+  margin-bottom: 14px;
+}
+.kaiko-welcome-banner h2 {
+  font-family: var(--k-font-display);
+  font-size: clamp(1.5rem, 2.4vw, 1.85rem);
+  font-weight: 600;
+  color: var(--k-dark);
+  margin: 0 0 8px;
+  letter-spacing: 0.005em;
+  line-height: 1.2;
+}
+.kaiko-welcome-banner .kaiko-greeting {
+  font-size: 0.92rem; color: var(--k-stone-500);
+  margin: 0; line-height: 1.7; max-width: 60ch;
+}
+
+/* Stats grid: 4 columns (shrinks gracefully) */
+.kaiko-stats-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.kaiko-stats-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.kaiko-stat-card dl,
+.kaiko-stat-card dt,
+.kaiko-stat-card dd { margin: 0; padding: 0; }
+.kaiko-stat-card dt {
+  font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--k-stone-500); margin: 0 0 8px;
+}
+.kaiko-stat-card dd {
+  font-family: var(--k-font-display);
+  font-size: 1.7rem; font-weight: 700;
+  color: var(--k-dark); line-height: 1;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.kaiko-stat-card dd.is-text { font-size: 1.05rem; padding-top: 4px; }
+.kaiko-stat-card .kaiko-stat-meta {
+  font-size: 0.78rem; color: var(--k-teal);
+  margin-top: 6px; font-weight: 500;
+}
+
+/* Quick reorder grid */
+.kaiko-quick-reorder {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+.kaiko-reorder-card {
+  display: flex; flex-direction: column;
+  background: var(--k-stone-50);
+  border: 1px solid var(--k-stone-200);
+  border-radius: var(--k-radius-md);
+  padding: 14px;
+  transition: box-shadow var(--k-duration) var(--k-ease),
+              transform var(--k-duration) var(--k-ease);
+}
+.kaiko-reorder-card:hover {
+  box-shadow: 0 6px 20px rgba(28,25,23,0.07);
+  transform: translateY(-1px);
+}
+.kaiko-reorder-card .kaiko-reorder-thumb {
+  display: block;
+  aspect-ratio: 1 / 1;
+  background: var(--k-white);
+  border-radius: var(--k-radius-sm);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.kaiko-reorder-card .kaiko-reorder-thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.kaiko-reorder-card .kaiko-reorder-title {
+  font-family: var(--k-font-body);
+  font-size: 0.88rem; font-weight: 600;
+  color: var(--k-dark);
+  text-decoration: none;
+  margin: 0 0 6px;
+  line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.kaiko-reorder-card .kaiko-reorder-price {
+  font-size: 0.85rem; color: var(--k-stone-500);
+  margin: 0 0 12px;
+}
+.kaiko-reorder-card .kaiko-reorder-price .amount { color: var(--k-dark); font-weight: 600; }
+.kaiko-reorder-card .kaiko-reorder-cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; margin-top: auto;
+  width: 100%;
+  background: var(--k-teal); color: var(--k-white);
+  padding: 10px 14px; border-radius: var(--k-radius-sm);
+  font-size: 0.74rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  text-decoration: none;
+  transition: background var(--k-duration) var(--k-ease);
+}
+.kaiko-reorder-card .kaiko-reorder-cta:hover { background: var(--k-deep-teal); color: var(--k-white); }
+
+/* Help strip */
+.kaiko-help-strip {
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: space-between; gap: 16px;
+  margin-top: 36px; padding: 20px 24px;
+  border-radius: var(--k-radius-md);
+  background: rgba(26,92,82,0.04);
+  border: 1px solid rgba(26,92,82,0.12);
+}
+.kaiko-help-strip .kaiko-help-text {
+  font-size: 0.88rem; color: var(--k-stone-700);
+  margin: 0;
+}
+.kaiko-help-strip .kaiko-help-text a {
+  color: var(--k-teal); font-weight: 600; text-decoration: none;
+}
+.kaiko-help-strip .kaiko-help-text a:hover { color: var(--k-deep-teal); }
+
 /* CTA helper button */
 .kaiko-cta-button {
   display: inline-flex; align-items: center; justify-content: center;
@@ -846,14 +1054,13 @@ body.kaiko-myaccount-page {
   color: var(--k-stone-500);
 }
 
-/* HIDE WOODMART ELEMENTS */
+/* HIDE WOODMART ELEMENTS (keep the WP admin bar for logged-in admins) */
 .whb-header, .woodmart-prefooter, .footer-container,
 .website-wrapper > footer, .page-title, .breadcrumbs,
 .woodmart-breadcrumbs, .title-size-default, .woodmart-main-container,
 .wd-toolbar, .wd-sticky-btn, .woodmart-sticky-toolbar,
 .wd-toolbar-shop, .whb-sticky-toolbar,
 div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
-#wp-admin-bar-root-default,
 .wd-footer { display: none !important; }
 .website-wrapper { padding-top: 0 !important; }
 
@@ -868,9 +1075,58 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {
-  .kaiko-account-layout { grid-template-columns: 1fr; }
   .kaiko-footer-inner { grid-template-columns: 1fr 1fr; }
-  .kaiko-myaccount-content { padding: 120px 3rem 80px; }
+  .kaiko-myaccount-content { padding-left: 3rem; padding-right: 3rem; }
+  .kaiko-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Sidebar collapses to a horizontal pill-row above the content */
+@media (max-width: 900px) {
+  .kaiko-account-layout { grid-template-columns: 1fr; gap: 20px; }
+
+  .kaiko-account-sidebar {
+    overflow: visible;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .kaiko-account-sidebar .kaiko-avatar-block {
+    background: var(--k-glass-bg);
+    backdrop-filter: var(--k-glass-blur);
+    -webkit-backdrop-filter: var(--k-glass-blur);
+    border: 1px solid var(--k-glass-border);
+    border-radius: var(--k-radius-md);
+    margin-bottom: 12px;
+  }
+  .kaiko-account-nav {
+    border-radius: 100px;
+    padding: 4px;
+  }
+  .kaiko-account-nav ul {
+    display: flex; flex-wrap: nowrap; overflow-x: auto;
+    padding: 0; gap: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .kaiko-account-nav ul::-webkit-scrollbar { display: none; }
+  .kaiko-account-nav li { flex: 0 0 auto; }
+  .kaiko-account-nav li a {
+    border-left: none !important;
+    padding: 10px 18px;
+    border-radius: 100px;
+    white-space: nowrap;
+    font-size: 0.82rem;
+  }
+  .kaiko-account-nav li.active a,
+  .kaiko-account-nav li a[aria-current="page"] {
+    background: var(--k-teal);
+    color: var(--k-white);
+  }
+
+  .kaiko-quick-reorder { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 768px) {
@@ -880,7 +1136,10 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
   .kaiko-myaccount-wrap .kaiko-nav-links { display: none !important; }
   .kaiko-myaccount-wrap .kaiko-hamburger { display: flex !important; }
 
-  .kaiko-myaccount-content { padding: 96px 1.25rem 60px; }
+  .kaiko-myaccount-content { padding: calc(64px + 32px) 1.25rem 60px; }
+  body.admin-bar .kaiko-myaccount-wrap .kaiko-myaccount-content {
+    padding-top: calc(64px + 32px + 46px);
+  }
   .kaiko-page-header { margin-bottom: 36px; }
   .kaiko-page-header h1 { font-size: clamp(1.75rem, 6vw, 2.25rem); }
 
@@ -892,7 +1151,9 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
 
   .kaiko-account-content { padding: 28px 22px; }
   .kaiko-stats-grid { grid-template-columns: 1fr; }
+  .kaiko-quick-reorder { grid-template-columns: 1fr; }
   .kaiko-myaccount-wrap .woocommerce-Addresses { grid-template-columns: 1fr; }
+  .kaiko-help-strip { flex-direction: column; align-items: flex-start; }
 
   .kaiko-myaccount-footer { padding: 48px 1.25rem 24px; }
   .kaiko-footer-inner { grid-template-columns: 1fr; gap: 36px; }

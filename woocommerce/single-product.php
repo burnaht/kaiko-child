@@ -212,7 +212,7 @@ while ( have_posts() ) : the_post();
 						<div class="kaiko-pp-tiers">
 							<div class="kaiko-pp-tiers__header">
 								<span class="kaiko-pp-tiers__title"><?php esc_html_e( 'Wholesale Tier Pricing', 'kaiko-child' ); ?></span>
-								<span class="kaiko-pp-tiers__note"><?php esc_html_e( 'Applies automatically at checkout', 'kaiko-child' ); ?></span>
+								<span class="kaiko-pp-tiers__note"><?php esc_html_e( 'Live price updates as you change quantity', 'kaiko-child' ); ?></span>
 							</div>
 							<div class="kaiko-pp-tiers__table">
 								<?php
@@ -555,18 +555,29 @@ body.kaiko-product-page #kaiko-main {
 	float: none !important;
 }
 /* WP admin bar: 32px desktop, 46px mobile — push the Kaiko nav below it
-   and add matching extra top padding on .kaiko-main so content still clears. */
-body.kaiko-product-page.admin-bar .kaiko-nav { top: 32px !important; }
-body.kaiko-product-page.admin-bar .kaiko-main,
-body.kaiko-product-page.admin-bar #kaiko-main {
+   and add matching extra top padding on .kaiko-main so content still clears.
+   Extra-specific selectors (html body.*) to beat any enqueued override. */
+html body.kaiko-product-page.admin-bar .kaiko-nav,
+html body.kaiko-product-page.admin-bar #kaiko-nav { top: 32px !important; }
+html body.kaiko-product-page.admin-bar .kaiko-main,
+html body.kaiko-product-page.admin-bar #kaiko-main {
 	padding-top: calc(72px + 32px) !important;
 }
 @media screen and (max-width: 782px) {
-	body.kaiko-product-page.admin-bar .kaiko-nav { top: 46px !important; }
-	body.kaiko-product-page.admin-bar .kaiko-main,
-	body.kaiko-product-page.admin-bar #kaiko-main {
+	html body.kaiko-product-page.admin-bar .kaiko-nav,
+	html body.kaiko-product-page.admin-bar #kaiko-nav { top: 46px !important; }
+	html body.kaiko-product-page.admin-bar .kaiko-main,
+	html body.kaiko-product-page.admin-bar #kaiko-main {
 		padding-top: calc(72px + 46px) !important;
 	}
+}
+/* Belt-and-braces: absolutely force breadcrumb to sit below the fixed nav,
+   never clipping into it. Flex/grid parents can collapse the main's
+   padding — this gives the breadcrumb its own guaranteed clearance. */
+body.kaiko-product-page .kaiko-pp-wrap .kaiko-pp-breadcrumb {
+	margin-top: 0 !important;
+	position: relative !important;
+	z-index: 1 !important;
 }
 body.kaiko-product-page .main-page-wrapper,
 body.kaiko-product-page .site-content,
@@ -1293,6 +1304,11 @@ body.kaiko-product-page .kaiko-pp-tile__value {
 	var totalValue = document.querySelector('[data-kaiko-total]');
 	var saveEl = document.querySelector('.kaiko-pp-total__save');
 	var qtyInput = document.querySelector('form.cart input.qty');
+	var atcBtn = document.querySelector('form.cart .single_add_to_cart_button');
+	var atcBaseLabel = atcBtn ? (atcBtn.getAttribute('data-kaiko-label') || atcBtn.textContent.trim() || 'Add to cart') : 'Add to cart';
+	if (atcBtn && !atcBtn.getAttribute('data-kaiko-label')) {
+		atcBtn.setAttribute('data-kaiko-label', atcBaseLabel);
+	}
 
 	function formatPrice(n) {
 		return '£' + n.toFixed(2);
@@ -1311,8 +1327,26 @@ body.kaiko-product-page .kaiko-pp-tile__value {
 		return match;
 	}
 
+	function setAtcLabel(total) {
+		if (!atcBtn) return;
+		if (isFinite(total) && total > 0) {
+			atcBtn.textContent = atcBaseLabel.toUpperCase() + ' — ' + formatPrice(total);
+		} else {
+			atcBtn.textContent = atcBaseLabel;
+		}
+	}
+
 	function refresh() {
-		if (!tiersRoot) return;
+		if (!tiersRoot) {
+			// No tiers table (simple/non-tiered product) — still try to reflect qty × price on ATC.
+			if (qtyInput && atcBtn) {
+				var simpleQ = Math.max(1, parseInt(qtyInput.value, 10) || 1);
+				var simplePriceEl = document.querySelector('.kaiko-pp-price__current');
+				var simpleUnit = simplePriceEl ? parseFloat(simplePriceEl.getAttribute('data-unit-price')) : NaN;
+				if (isFinite(simpleUnit) && simpleUnit > 0) setAtcLabel(simpleQ * simpleUnit);
+			}
+			return;
+		}
 		var q = 1;
 		if (qtyInput) { q = Math.max(1, parseInt(qtyInput.value, 10) || 1); }
 		var cells = tiersRoot.querySelectorAll('.kaiko-pp-tier');
@@ -1335,6 +1369,9 @@ body.kaiko-product-page .kaiko-pp-tile__value {
 		} else if (saveEl) {
 			saveEl.hidden = true;
 		}
+
+		// Live-update the ADD TO CART button with running total.
+		setAtcLabel(total);
 	}
 
 	if (qtyInput) {

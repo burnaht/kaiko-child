@@ -21,6 +21,11 @@ defined( 'ABSPATH' ) || exit;
 /* Homepage-specific overrides to ensure Kaiko design takes priority */
 body.kaiko-homepage { margin: 0; padding: 0; background: var(--kaiko-white, #ffffff); font-family: var(--kaiko-font-body); color: var(--kaiko-black); -webkit-font-smoothing: antialiased; }
 body.kaiko-homepage .kaiko-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--kaiko-border); padding: 0 var(--kaiko-space-xl); height: 72px; display: flex; align-items: center; justify-content: space-between; }
+/* WP admin bar offset — push Kaiko nav below the black admin bar (32px desktop / 46px ≤782px). */
+body.kaiko-homepage.admin-bar .kaiko-nav { top: 32px !important; }
+@media screen and (max-width: 782px) {
+  body.kaiko-homepage.admin-bar .kaiko-nav { top: 46px !important; }
+}
 body.kaiko-homepage .kaiko-nav-logo { font-family: var(--kaiko-font-display); font-size: 1.75rem; font-weight: var(--kaiko-weight-bold); letter-spacing: var(--kaiko-letter-spacing-tight); color: var(--kaiko-dark); text-decoration: none; }
 body.kaiko-homepage .kaiko-nav-links { display: flex; gap: var(--kaiko-space-xl); align-items: center; }
 body.kaiko-homepage .kaiko-nav-links a { font-family: var(--kaiko-font-body); font-size: 0.9rem; font-weight: var(--kaiko-weight-medium); color: var(--kaiko-mid-gray); text-decoration: none; transition: color 0.2s; letter-spacing: 0.025em; }
