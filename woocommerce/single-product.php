@@ -100,7 +100,7 @@ while ( have_posts() ) : the_post();
 		</nav>
 
 		<!-- Main product -->
-		<main class="kaiko-pp-main">
+		<section class="kaiko-pp-main">
 
 			<!-- Gallery -->
 			<div class="kaiko-pp-gallery">
@@ -328,7 +328,7 @@ while ( have_posts() ) : the_post();
 
 			</div>
 
-		</main>
+		</section>
 
 		<!-- Tabs -->
 		<section class="kaiko-pp-info">
@@ -551,9 +551,64 @@ body.kaiko-product-page {
 	--k-shadow-md: 0 8px 32px rgba(28,25,23,0.06);
 	--k-shadow-lg: 0 16px 48px rgba(28,25,23,0.08);
 }
+/* ---------------------------------------------------------
+   LAYOUT RESET — neutralise Woodmart/WooCommerce parent styles.
+   wc_product_class() adds .product .type-* classes to .kaiko-pp-wrap,
+   and Woodmart targets .single-product div.product with flex/grid
+   that would otherwise cram our breadcrumb/main/tabs/related onto one row.
+   --------------------------------------------------------- */
+body.kaiko-product-page .kaiko-main,
+body.kaiko-product-page #kaiko-main {
+	display: block !important;
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	float: none !important;
+}
+body.kaiko-product-page .main-page-wrapper,
+body.kaiko-product-page .site-content,
+body.kaiko-product-page .content-area,
+body.kaiko-product-page .site-main,
+body.kaiko-product-page .container,
+body.kaiko-product-page .row {
+	display: block !important;
+	width: 100% !important;
+	max-width: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	float: none !important;
+	flex: unset !important;
+	grid-template-columns: unset !important;
+}
 body.kaiko-product-page .kaiko-pp-wrap {
+	display: block !important;
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	float: none !important;
+	flex: unset !important;
+	grid-template-columns: unset !important;
 	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	color: var(--k-dark);
+}
+body.kaiko-product-page .kaiko-pp-wrap > * {
+	float: none !important;
+	clear: both;
+	width: auto !important;
+	max-width: none !important;
+	flex: unset !important;
+}
+/* Defeat any Woodmart rule that puts .product > .summary / .images / .woocommerce-tabs
+   into a 50/50 column layout — our children don't use those classes but better safe. */
+body.kaiko-product-page .kaiko-pp-wrap .summary,
+body.kaiko-product-page .kaiko-pp-wrap .images,
+body.kaiko-product-page .kaiko-pp-wrap .woocommerce-tabs {
+	float: none !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	margin: 0 !important;
 }
 body.kaiko-product-page .kaiko-pp-wrap img { max-width: 100%; display: block; }
 
