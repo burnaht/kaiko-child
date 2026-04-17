@@ -171,11 +171,30 @@
     align-items: center;
     justify-content: center;
     margin-bottom: var(--kaiko-space-md);
-    transition: background 250ms var(--kaiko-ease-out);
+    transition: background 250ms var(--kaiko-ease-out), transform 300ms var(--kaiko-ease-out);
+    overflow: hidden;
 }
 
 .kaiko-species-card:hover .kaiko-species-card__image {
     background: rgba(26, 92, 82, 0.08);
+}
+
+.kaiko-species-card.has-photo .kaiko-species-card__image {
+    width: 120px;
+    height: 120px;
+    background: transparent;
+}
+
+.kaiko-species-card.has-photo:hover .kaiko-species-card__image {
+    background: transparent;
+    transform: scale(1.04);
+}
+
+.kaiko-species-card__photo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 .kaiko-species-card__emoji {
@@ -210,6 +229,11 @@
 .kaiko-species-grid--compact .kaiko-species-card__image {
     width: 60px;
     height: 60px;
+}
+
+.kaiko-species-grid--compact .kaiko-species-card.has-photo .kaiko-species-card__image {
+    width: 88px;
+    height: 88px;
 }
 
 .kaiko-species-grid--compact .kaiko-species-card__emoji {

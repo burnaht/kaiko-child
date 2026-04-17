@@ -34,62 +34,67 @@ function kaiko_species_grid_shortcode( $atts ) {
         'style'      => 'default',
     ), $atts, 'kaiko_species_grid' );
 
+    /**
+     * Species list. The 'image' key references a file in
+     * assets/images/species/ (theme directory). Empty string = no photo yet,
+     * template falls back to emoji.
+     */
     $species_list = array(
         array(
             'name'       => 'Ball Pythons',
             'slug'       => 'ball-python',
             'scientific' => 'Python regius',
             'emoji'      => '🐍',
-            'image'      => 'ball-python.jpg',
+            'image'      => '', // TODO: add ball-python.png to assets/images/species/
         ),
         array(
             'name'       => 'Leopard Geckos',
             'slug'       => 'leopard-gecko',
             'scientific' => 'Eublepharis macularius',
             'emoji'      => '🦎',
-            'image'      => 'leopard-gecko.jpg',
+            'image'      => 'leopard-gecko.png',
         ),
         array(
             'name'       => 'Crested Geckos',
             'slug'       => 'crested-gecko',
             'scientific' => 'Correlophus ciliatus',
             'emoji'      => '🦎',
-            'image'      => 'crested-gecko.jpg',
+            'image'      => 'crested-gecko.png',
         ),
         array(
             'name'       => 'Bearded Dragons',
             'slug'       => 'bearded-dragon',
             'scientific' => 'Pogona vitticeps',
             'emoji'      => '🐉',
-            'image'      => 'bearded-dragon.jpg',
+            'image'      => 'bearded-dragon.png',
         ),
         array(
             'name'       => 'Corn Snakes',
             'slug'       => 'corn-snake',
             'scientific' => 'Pantherophis guttatus',
             'emoji'      => '🐍',
-            'image'      => 'corn-snake.jpg',
+            'image'      => '', // TODO: add corn-snake.png to assets/images/species/
         ),
         array(
             'name'       => 'Chameleons',
             'slug'       => 'chameleon',
             'scientific' => 'Chamaeleonidae',
             'emoji'      => '🦎',
-            'image'      => 'chameleon.jpg',
+            'image'      => 'chameleon.png',
         ),
         array(
             'name'       => 'Blue Tongue Skinks',
             'slug'       => 'blue-tongue-skink',
             'scientific' => 'Tiliqua scincoides',
             'emoji'      => '🦎',
-            'image'      => 'blue-tongue-skink.jpg',
+            'image'      => 'blue-tongue-skink.png',
         ),
         array(
             'name'       => 'Monitor Lizards',
             'slug'       => 'monitor-lizard',
             'scientific' => 'Varanus',
             'emoji'      => '🦎',
-            'image'      => 'monitor-lizard.jpg',
+            'image'      => '', // TODO: add monitor-lizard.png to assets/images/species/
         ),
     );
 
@@ -133,9 +138,23 @@ function kaiko_species_grid_shortcode( $atts ) {
                 wp_reset_postdata();
             }
         ?>
-        <a href="<?php echo esc_url( $url ); ?>" class="kaiko-species-card kaiko-reveal" aria-label="<?php echo esc_attr( $species['name'] ); ?>">
+        <a href="<?php echo esc_url( $url ); ?>" class="kaiko-species-card kaiko-reveal<?php echo ! empty( $species['image'] ) ? ' has-photo' : ''; ?>" aria-label="<?php echo esc_attr( $species['name'] ); ?>">
             <div class="kaiko-species-card__image">
-                <span class="kaiko-species-card__emoji"><?php echo $species['emoji']; ?></span>
+                <?php if ( ! empty( $species['image'] ) ) :
+                    $photo_url = get_stylesheet_directory_uri() . '/assets/images/species/' . $species['image'];
+                ?>
+                    <img
+                        src="<?php echo esc_url( $photo_url ); ?>"
+                        alt="<?php echo esc_attr( $species['name'] ); ?>"
+                        class="kaiko-species-card__photo"
+                        loading="lazy"
+                        decoding="async"
+                        width="120"
+                        height="120"
+                    />
+                <?php else : ?>
+                    <span class="kaiko-species-card__emoji" aria-hidden="true"><?php echo esc_html( $species['emoji'] ); ?></span>
+                <?php endif; ?>
             </div>
             <div class="kaiko-species-card__body">
                 <h3 class="kaiko-species-card__name"><?php echo esc_html( $species['name'] ); ?></h3>
