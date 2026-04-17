@@ -231,18 +231,19 @@ while ( have_posts() ) : the_post();
 									$label      = $max > 0 ? $min . ' – ' . $max : $min . '+';
 									$off        = ( $pct > 0 ) ? round( $pct ) . '% off' : '';
 									?>
-									<div class="kaiko-pp-tier"
+									<button type="button" class="kaiko-pp-tier"
 										 data-min="<?php echo esc_attr( $min ); ?>"
 										 data-max="<?php echo esc_attr( $max ); ?>"
 										 data-price="<?php echo esc_attr( $price ); ?>"
 										 data-discount-pct="<?php echo esc_attr( $pct ); ?>"
-										 data-default-schedule="<?php echo $is_default ? '1' : '0'; ?>">
+										 data-default-schedule="<?php echo $is_default ? '1' : '0'; ?>"
+										 aria-label="<?php echo esc_attr( sprintf( __( 'Select tier: %1$s units at %2$s each', 'kaiko-child' ), $label, strip_tags( wc_price( $price ) ) ) ); ?>">
 										<div class="kaiko-pp-tier__qty"><?php echo esc_html( $label ); ?></div>
 										<div class="kaiko-pp-tier__price"><?php echo wp_kses_post( wc_price( $price ) ); ?></div>
 										<div class="kaiko-pp-tier__unit">
 											<?php esc_html_e( 'per unit', 'kaiko-child' ); ?><?php echo $off ? ' · ' . esc_html( $off ) : ''; ?>
 										</div>
-									</div>
+									</button>
 								<?php endforeach; ?>
 							</div>
 						</div>
@@ -877,6 +878,24 @@ body.kaiko-product-page .kaiko-pp-tier {
 	padding: 14px 12px;
 	text-align: center;
 	transition: all 200ms ease;
+	/* Act as a clickable button — reset browser defaults */
+	cursor: pointer;
+	display: block;
+	width: 100%;
+	font: inherit;
+	color: inherit;
+	-webkit-appearance: none;
+	appearance: none;
+	outline: none;
+}
+body.kaiko-product-page .kaiko-pp-tier:hover {
+	border-color: var(--k-teal);
+	background: rgba(26,92,82,0.02);
+	transform: translateY(-1px);
+}
+body.kaiko-product-page .kaiko-pp-tier:focus-visible {
+	outline: 2px solid var(--k-teal);
+	outline-offset: 2px;
 }
 body.kaiko-product-page .kaiko-pp-tier__qty {
 	font-size: 0.74rem; font-weight: 600;
@@ -1378,6 +1397,31 @@ body.kaiko-product-page .kaiko-pp-tile__value {
 		qtyInput.addEventListener('input', refresh);
 		qtyInput.addEventListener('change', refresh);
 	}
+
+	// Click-to-select tier: set the qty input to the tier's minimum (or 1 for the base tier)
+	// and fire input/change so refresh() + WC's variation listeners both pick it up.
+	if (tiersRoot) {
+		tiersRoot.addEventListener('click', function (e) {
+			var pill = e.target.closest ? e.target.closest('.kaiko-pp-tier') : null;
+			if (!pill) return;
+			var min = parseInt(pill.dataset.min, 10) || 1;
+			if (qtyInput) {
+				// Respect WC's max/step on the qty input if present.
+				var max = parseInt(qtyInput.getAttribute('max'), 10);
+				var step = parseInt(qtyInput.getAttribute('step'), 10) || 1;
+				var target = min;
+				if (isFinite(max) && max > 0 && target > max) target = max;
+				if (step > 1) target = Math.ceil(target / step) * step;
+				qtyInput.value = target;
+				// Fire both events so any listeners (WC + our refresh) react.
+				qtyInput.dispatchEvent(new Event('input', { bubbles: true }));
+				qtyInput.dispatchEvent(new Event('change', { bubbles: true }));
+			} else {
+				refresh();
+			}
+		});
+	}
+
 	refresh();
 
 	// ---------------------------------------------------------

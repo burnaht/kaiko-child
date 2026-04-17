@@ -565,7 +565,15 @@ body.admin-bar .kaiko-myaccount-wrap .kaiko-myaccount-content {
   align-items: start;
 }
 
-.kaiko-account-nav {
+/* NOTE: When .kaiko-account-nav sits inside the .kaiko-account-sidebar
+   (approved state — avatar block + nav stacked together), the sidebar
+   already owns the glass card. Give the nav a transparent background
+   so it doesn't paint a second overlapping card. The standalone .kaiko-account-nav
+   usage (pending state) falls back to the glass styling further down. */
+.kaiko-account-nav { background: transparent; border: 0; box-shadow: none; border-radius: 0; overflow: visible; }
+.kaiko-account-sidebar .kaiko-account-nav { background: transparent; border: 0; box-shadow: none; border-radius: 0; }
+/* Pending-state standalone nav keeps the glass card */
+.kaiko-account-layout > .kaiko-account-nav:not(.kaiko-account-sidebar .kaiko-account-nav) {
   background: var(--k-glass-bg);
   backdrop-filter: var(--k-glass-blur);
   -webkit-backdrop-filter: var(--k-glass-blur);
@@ -1351,6 +1359,57 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
         ticking = true;
       }
     }, { passive: true });
+  }
+})();
+
+// Logged-in nav updates (bypasses page cache) — ports the same fix used on the homepage.
+// If WP Rocket served a cached "logged-out" version of this page, the nav will still
+// say "Trade Login" and be missing the Shop link. This script runs client-side and
+// corrects the nav when we detect the user is logged in.
+(function() {
+  function applyLoggedInNav() {
+    var isLoggedIn = document.body.classList.contains('logged-in')
+                     || document.getElementById('wpadminbar') !== null;
+    if (!isLoggedIn) return;
+
+    document.querySelectorAll('.kaiko-nav .kaiko-nav-cta').forEach(function(el) {
+      if (el.textContent.trim() === 'Trade Login') el.textContent = 'My Account';
+    });
+
+    document.querySelectorAll('.kaiko-nav').forEach(function(nav) {
+      if (nav.querySelector('[data-kaiko-shop-link]')) return;
+      var linkContainer = nav.querySelector('.kaiko-nav-links') || nav;
+      var aboutLink = Array.from(linkContainer.querySelectorAll('a')).find(function(a) {
+        return a.textContent.trim() === 'About';
+      });
+      if (!aboutLink || !aboutLink.parentNode) return;
+      var shopLink = document.createElement('a');
+      shopLink.href = '/shop/';
+      shopLink.textContent = 'Shop';
+      shopLink.setAttribute('data-kaiko-shop-link', '1');
+      shopLink.className = aboutLink.className;
+      aboutLink.parentNode.insertBefore(shopLink, aboutLink);
+    });
+
+    // Do the same for the mobile menu.
+    document.querySelectorAll('.kaiko-mobile-menu__links').forEach(function(box) {
+      if (box.querySelector('[data-kaiko-shop-link-mobile]')) return;
+      var aboutLink = Array.from(box.querySelectorAll('a')).find(function(a) {
+        return a.textContent.trim() === 'About';
+      });
+      if (!aboutLink || !aboutLink.parentNode) return;
+      var shopLink = document.createElement('a');
+      shopLink.href = '/shop/';
+      shopLink.textContent = 'Shop';
+      shopLink.setAttribute('data-kaiko-shop-link-mobile', '1');
+      aboutLink.parentNode.insertBefore(shopLink, aboutLink);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyLoggedInNav);
+  } else {
+    applyLoggedInNav();
   }
 })();
 </script>
