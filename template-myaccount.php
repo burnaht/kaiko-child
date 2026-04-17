@@ -967,16 +967,9 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
     if ( ! $logged_in ) :
       // Logged-out: no page header — go straight into the login/signup cards.
     elseif ( $is_pending ) :
-      ?>
-      <div class="kaiko-page-header">
-        <div class="kaiko-tag">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Trade Application
-        </div>
-        <h1>My Account</h1>
-        <p>Your application is being reviewed. We&rsquo;ll be in touch within 24 hours.</p>
-      </div>
-      <?php
+      // Pending: no page header either — the confirmation card below
+      // carries its own eyebrow + title. A second page-level heading was
+      // creating the double-heading pile-up.
     else :
       ?>
       <div class="kaiko-page-header">

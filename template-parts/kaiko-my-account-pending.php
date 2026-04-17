@@ -2,193 +2,174 @@
 /**
  * Kaiko — My Account: Pending State
  *
- * Shown to users with the kaiko_pending role (not admins / shop managers).
- * Limited sidebar (Dashboard, Addresses, Account details, Logout) and a
- * pending-application status card. WC sub-endpoints render in-place so
- * pending users can still update their email / address pre-approval.
+ * Intentionally minimal. A pending applicant can't do anything yet, so
+ * the old "dashboard" with sidebar nav + stats grid + sub-endpoints was
+ * the wrong shape entirely. This template now shows a single centred
+ * confirmation card — same design language as the logged-out
+ * "Application received" banner — with a logout button.
+ *
+ * The core trade flow (set in functions.php) now prevents auto-login on
+ * registration, so new applicants should almost never land here. This
+ * template covers the edge case where a pending user does log in (e.g.
+ * admin testing, or a user who was manually registered).
  *
  * @package KaikoChild
  */
 
 defined( 'ABSPATH' ) || exit;
 
-$current_user = wp_get_current_user();
+$current_user  = wp_get_current_user();
+$myaccount_url = wc_get_page_permalink( 'myaccount' );
 
-/**
- * Greeting fallback chain.
- *
- * The WC register form only captures email + business name — WooCommerce
- * then auto-generates a username from the email local part (e.g.
- * "silkwormstore.co.uk-0344"). If we fall through to $user_login the
- * greeting reads "HELLO, SILKWORMSTORE.CO.UK-0344" which looks broken.
- *
- * Order: Business name → First name → Email local part → "Trade Partner"
- */
 $business_name = get_user_meta( $current_user->ID, 'kaiko_business_name', true );
-$email_local   = $current_user->user_email ? strstr( $current_user->user_email, '@', true ) : '';
-
-if ( ! empty( $business_name ) ) {
-	$first_name = $business_name;
-} elseif ( ! empty( $current_user->first_name ) ) {
-	$first_name = $current_user->first_name;
-} elseif ( $email_local && false === strpos( $email_local, '.' ) ) {
-	// Only use email local part if it looks like a person's handle
-	// (not "mail" or "info" or "contact" — those read weird).
-	$generic = array( 'mail', 'info', 'contact', 'hello', 'admin', 'sales', 'support', 'trade' );
-	$first_name = in_array( strtolower( $email_local ), $generic, true ) ? __( 'Trade Partner', 'kaiko-child' ) : ucfirst( $email_local );
-} else {
-	$first_name = __( 'Trade Partner', 'kaiko-child' );
-}
+$greeting_name = $business_name
+	? $business_name
+	: ( $current_user->first_name ?: __( 'Trade Partner', 'kaiko-child' ) );
 
 $applied_date = $current_user->user_registered
 	? date_i18n( get_option( 'date_format' ), strtotime( $current_user->user_registered ) )
-	: '—';
-$myaccount_url = wc_get_page_permalink( 'myaccount' );
-
-$endpoint = WC()->query->get_current_endpoint();
-
-$pending_nav_items = array(
-	'dashboard'    => array(
-		'label' => __( 'Dashboard', 'kaiko-child' ),
-		'url'   => $myaccount_url,
-	),
-	'edit-address' => array(
-		'label' => __( 'Addresses', 'kaiko-child' ),
-		'url'   => wc_get_account_endpoint_url( 'edit-address' ),
-	),
-	'edit-account' => array(
-		'label' => __( 'Account details', 'kaiko-child' ),
-		'url'   => wc_get_account_endpoint_url( 'edit-account' ),
-	),
-	'customer-logout' => array(
-		'label' => __( 'Logout', 'kaiko-child' ),
-		'url'   => wp_logout_url( $myaccount_url ),
-	),
-);
-
-$active_key = ( ! $endpoint || 'dashboard' === $endpoint ) ? 'dashboard' : $endpoint;
+	: '';
 ?>
+<section class="kaiko-pending-state" aria-live="polite">
+	<div class="kaiko-pending-state__card">
+		<div class="kaiko-pending-state__icon" aria-hidden="true">
+			<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+				<circle cx="12" cy="12" r="10"/>
+				<polyline points="12 6 12 12 16 14"/>
+			</svg>
+		</div>
+
+		<p class="kaiko-pending-state__eyebrow"><?php esc_html_e( 'Application Received', 'kaiko-child' ); ?></p>
+		<h1 class="kaiko-pending-state__title">
+			<?php
+			/* translators: %s: business name or trade partner */
+			echo esc_html( sprintf( __( 'Thanks, %s.', 'kaiko-child' ), $greeting_name ) );
+			?>
+		</h1>
+		<p class="kaiko-pending-state__lede">
+			<?php esc_html_e( 'We review every trade application personally — you’ll hear back within 24 hours. Once approved, we’ll email you a link to log in and start placing trade orders.', 'kaiko-child' ); ?>
+		</p>
+
+		<?php if ( $applied_date ) : ?>
+			<p class="kaiko-pending-state__meta">
+				<?php echo esc_html( sprintf( __( 'Submitted %s', 'kaiko-child' ), $applied_date ) ); ?>
+				&nbsp;·&nbsp;
+				<?php echo esc_html( sprintf( __( 'Confirmation sent to %s', 'kaiko-child' ), $current_user->user_email ) ); ?>
+			</p>
+		<?php endif; ?>
+
+		<div class="kaiko-pending-state__actions">
+			<a class="kaiko-pending-state__btn kaiko-pending-state__btn--primary" href="<?php echo esc_url( home_url( '/products/' ) ); ?>">
+				<?php esc_html_e( 'Browse products', 'kaiko-child' ); ?>
+			</a>
+			<a class="kaiko-pending-state__btn kaiko-pending-state__btn--ghost" href="<?php echo esc_url( wp_logout_url( $myaccount_url ) ); ?>">
+				<?php esc_html_e( 'Log out', 'kaiko-child' ); ?>
+			</a>
+		</div>
+	</div>
+</section>
 <style>
-/* Defensive layout rules — scoped so theme / plugin CSS can't
-   collapse the sidebar or horizontalise the nav items. */
-.kaiko-account-layout {
-	display: grid !important;
-	grid-template-columns: 260px minmax(0, 1fr) !important;
-	gap: 36px !important;
-	align-items: start !important;
-	max-width: 1240px;
-	margin: 0 auto;
+.kaiko-pending-state {
+	display: flex;
+	justify-content: center;
+	width: 100%;
 	padding: 0 24px;
 	box-sizing: border-box;
 }
-.kaiko-account-layout .kaiko-account-nav { min-width: 0; }
-.kaiko-account-layout .kaiko-account-nav ul {
-	display: block !important;
-	list-style: none !important;
-	padding: 10px 0 !important;
-	margin: 0 !important;
+.kaiko-pending-state__card {
+	width: 100%;
+	max-width: 620px;
+	padding: 56px 48px;
+	background: #ffffff;
+	border: 1px solid rgba(26,92,82,0.12);
+	border-radius: 24px;
+	box-shadow: 0 12px 40px rgba(28,25,23,0.06);
+	text-align: center;
 }
-.kaiko-account-layout .kaiko-account-nav li {
-	display: block !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	border: 0 !important;
-}
-.kaiko-account-layout .kaiko-account-nav li a {
-	display: flex !important;
-	width: 100% !important;
-	padding: 14px 28px !important;
-	font-size: 0.9rem !important;
-	color: #78716C;
-	text-decoration: none !important;
-	border-left: 3px solid transparent;
-}
-.kaiko-account-layout .kaiko-account-nav li.active a {
-	background: rgba(26,92,82,0.06);
+.kaiko-pending-state__icon {
+	width: 64px; height: 64px;
+	margin: 0 auto 24px;
+	border-radius: 50%;
+	background: rgba(26,92,82,0.08);
 	color: #1a5c52;
+	display: flex; align-items: center; justify-content: center;
+}
+.kaiko-pending-state__eyebrow {
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+	font-size: 0.72rem;
 	font-weight: 600;
-	border-left-color: #1a5c52;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: #1a5c52;
+	margin: 0 0 12px;
 }
-.kaiko-account-layout .kaiko-account-content {
-	min-width: 0;
+.kaiko-pending-state__title {
+	font-family: 'Cormorant Garamond', Georgia, serif;
+	font-size: 2.1rem;
+	font-weight: 600;
+	line-height: 1.15;
+	margin: 0 0 16px;
+	color: #1C1917;
+	letter-spacing: 0.005em;
 }
-@media (max-width: 860px) {
-	.kaiko-account-layout {
-		grid-template-columns: 1fr !important;
-		gap: 20px !important;
-	}
+.kaiko-pending-state__lede {
+	font-size: 1rem;
+	line-height: 1.65;
+	color: #44403C;
+	margin: 0 0 24px;
+}
+.kaiko-pending-state__meta {
+	font-size: 0.82rem;
+	color: #78716C;
+	margin: 0 0 32px;
+	padding: 14px 20px;
+	background: #FAFAF9;
+	border-radius: 10px;
+	border: 1px solid #E7E5E4;
+	line-height: 1.6;
+}
+.kaiko-pending-state__actions {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+.kaiko-pending-state__btn {
+	display: inline-flex;
+	align-items: center;
+	padding: 14px 28px;
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+	font-size: 0.88rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	text-decoration: none;
+	border-radius: 12px;
+	border: 1px solid transparent;
+	transition: all 200ms ease;
+}
+.kaiko-pending-state__btn--primary {
+	background: #1a5c52;
+	color: #ffffff;
+	border-color: #1a5c52;
+}
+.kaiko-pending-state__btn--primary:hover {
+	background: #134840;
+	border-color: #134840;
+}
+.kaiko-pending-state__btn--ghost {
+	background: transparent;
+	color: #44403C;
+	border-color: #D6D3D1;
+}
+.kaiko-pending-state__btn--ghost:hover {
+	border-color: #78716C;
+	color: #1C1917;
+}
+@media (max-width: 640px) {
+	.kaiko-pending-state__card { padding: 40px 28px; }
+	.kaiko-pending-state__title { font-size: 1.7rem; }
+	.kaiko-pending-state__actions { flex-direction: column; }
+	.kaiko-pending-state__btn { width: 100%; justify-content: center; }
 }
 </style>
-<div class="kaiko-account-layout">
-
-	<nav class="kaiko-account-nav" aria-label="<?php esc_attr_e( 'Account navigation', 'kaiko-child' ); ?>">
-		<ul>
-			<?php foreach ( $pending_nav_items as $key => $item ) : ?>
-				<li class="<?php echo $active_key === $key ? 'active' : ''; ?>">
-					<a href="<?php echo esc_url( $item['url'] ); ?>"><?php echo esc_html( $item['label'] ); ?></a>
-				</li>
-			<?php endforeach; ?>
-		</ul>
-	</nav>
-
-	<div class="kaiko-account-content">
-		<?php if ( function_exists( 'wc_print_notices' ) ) { wc_print_notices(); } ?>
-
-		<?php if ( ! $endpoint || 'dashboard' === $endpoint ) : ?>
-
-			<h2><?php echo esc_html( sprintf( __( 'Hello, %s', 'kaiko-child' ), $first_name ) ); ?></h2>
-			<p class="kaiko-greeting">
-				<?php esc_html_e( 'Thanks for applying for a KAIKO trade account. We review every application personally — you’ll hear from us within 24 hours.', 'kaiko-child' ); ?>
-			</p>
-
-			<div class="kaiko-account-notice pending">
-				<h3><?php esc_html_e( 'Application Under Review', 'kaiko-child' ); ?></h3>
-				<p>
-					<?php
-					echo esc_html(
-						sprintf(
-							/* translators: %s: customer email address */
-							__( 'Your account is awaiting approval from our team. You’ll get an email at %s as soon as you’re approved and can start placing trade orders.', 'kaiko-child' ),
-							$current_user->user_email
-						)
-					);
-					?>
-				</p>
-			</div>
-
-			<div class="kaiko-stats-grid">
-				<div class="kaiko-stat-card">
-					<p class="label"><?php esc_html_e( 'Application Status', 'kaiko-child' ); ?></p>
-					<p class="value is-text"><?php esc_html_e( 'Pending Review', 'kaiko-child' ); ?></p>
-				</div>
-				<div class="kaiko-stat-card">
-					<p class="label"><?php esc_html_e( 'Estimated Decision', 'kaiko-child' ); ?></p>
-					<p class="value is-text"><?php esc_html_e( 'Within 24 hours', 'kaiko-child' ); ?></p>
-				</div>
-				<div class="kaiko-stat-card">
-					<p class="label"><?php esc_html_e( 'Applied', 'kaiko-child' ); ?></p>
-					<p class="value is-text"><?php echo esc_html( $applied_date ); ?></p>
-				</div>
-			</div>
-
-			<h3 class="kaiko-section-heading"><?php esc_html_e( 'While You Wait', 'kaiko-child' ); ?></h3>
-			<p style="margin: 0 0 20px; color: var(--k-stone-500); font-size: 0.92rem; line-height: 1.7;">
-				<?php esc_html_e( 'Explore our product range to plan your first order. Trade pricing unlocks across the catalogue once you’re approved.', 'kaiko-child' ); ?>
-			</p>
-			<a href="<?php echo esc_url( home_url( '/products/' ) ); ?>" class="kaiko-cta-button">
-				<?php esc_html_e( 'Browse Products', 'kaiko-child' ); ?>
-			</a>
-
-		<?php else : ?>
-
-			<?php
-			// Pending users may visit edit-account / edit-address sub-routes.
-			// Dispatch the same WC action [woocommerce_my_account] uses internally.
-			$value = WC()->query->get_endpoint_query_var_value( $endpoint );
-			do_action( 'woocommerce_account_' . $endpoint . '_endpoint', $value );
-			?>
-
-		<?php endif; ?>
-	</div>
-
-</div>
