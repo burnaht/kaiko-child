@@ -45,7 +45,7 @@ function kaiko_species_grid_shortcode( $atts ) {
             'slug'       => 'snake',
             'scientific' => '',
             'emoji'      => '🐍',
-            'image'      => '', // TODO: add snake.png to assets/images/species/ (GS.png available in pet images copy/)
+            'image'      => 'snake.png',
         ),
         array(
             'name'       => 'Leopard Geckos',
