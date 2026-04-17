@@ -68,6 +68,12 @@ function kaiko_enqueue_assets() {
     // WooCommerce overrides
     if ( class_exists( 'WooCommerce' ) ) {
         wp_enqueue_style( 'kaiko-woocommerce', KAIKO_URI . '/assets/css/kaiko-woocommerce.css', array( 'kaiko-shell' ), KAIKO_VERSION );
+
+        // Shop archive — hero, sidebar, grid, drawer
+        if ( is_shop() || is_product_category() || is_product_tag() ) {
+            wp_enqueue_style( 'kaiko-shop', KAIKO_URI . '/assets/css/kaiko-shop.css', array( 'kaiko-woocommerce' ), KAIKO_VERSION );
+            wp_enqueue_script( 'kaiko-shop', KAIKO_URI . '/assets/js/kaiko-shop.js', array(), KAIKO_VERSION, true );
+        }
     }
 
     // Animation engine (scroll reveals, parallax, cursor, countup, marquee)
@@ -990,6 +996,91 @@ add_image_size( 'kaiko-category-banner', 1600, 600, true );
    12. AJAX PRODUCT FILTERING
    ============================================ */
 
+/**
+ * Shop archive — apply URL filter params to the main query so that
+ * deep-linked / no-JS form submissions behave the same as AJAX calls.
+ */
+/**
+ * Shop archive — strip WC's default result-count + orderby dropdown;
+ * Kaiko renders its own in the hero and sidebar.
+ */
+add_action( 'wp', 'kaiko_shop_strip_default_controls' );
+
+function kaiko_shop_strip_default_controls() {
+    if ( ! function_exists( 'is_shop' ) ) return;
+    if ( ! ( is_shop() || is_product_category() || is_product_tag() ) ) return;
+    remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count',    20 );
+    remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
+}
+
+add_action( 'pre_get_posts', 'kaiko_shop_apply_url_filters' );
+
+function kaiko_shop_apply_url_filters( $q ) {
+    if ( is_admin() || ! $q->is_main_query() ) {
+        return;
+    }
+    if ( ! function_exists( 'is_shop' ) || ! ( is_shop() || is_product_category() || is_product_tag() ) ) {
+        return;
+    }
+
+    $tax_query  = (array) $q->get( 'tax_query' );
+    $meta_query = (array) $q->get( 'meta_query' );
+
+    if ( ! empty( $_GET['category'] ) && is_shop() ) {
+        $tax_query[] = array(
+            'taxonomy' => 'product_cat',
+            'field'    => 'slug',
+            'terms'    => sanitize_text_field( wp_unslash( $_GET['category'] ) ),
+        );
+    }
+
+    if ( ! empty( $_GET['species'] ) ) {
+        $meta_query[] = array(
+            'key'     => 'compatible_species_%_species_name',
+            'value'   => sanitize_text_field( wp_unslash( $_GET['species'] ) ),
+            'compare' => 'LIKE',
+        );
+    }
+
+    if ( ! empty( $_GET['difficulty'] ) ) {
+        $meta_query[] = array(
+            'key'     => 'kaiko_difficulty',
+            'value'   => sanitize_text_field( wp_unslash( $_GET['difficulty'] ) ),
+            'compare' => '=',
+        );
+    }
+
+    $min = isset( $_GET['min_price'] ) ? trim( wp_unslash( $_GET['min_price'] ) ) : '';
+    $max = isset( $_GET['max_price'] ) ? trim( wp_unslash( $_GET['max_price'] ) ) : '';
+    if ( is_numeric( $min ) && is_numeric( $max ) ) {
+        $meta_query[] = array( 'key' => '_price', 'value' => array( (float) $min, (float) $max ), 'type' => 'NUMERIC', 'compare' => 'BETWEEN' );
+    } elseif ( is_numeric( $min ) ) {
+        $meta_query[] = array( 'key' => '_price', 'value' => (float) $min, 'type' => 'NUMERIC', 'compare' => '>=' );
+    } elseif ( is_numeric( $max ) ) {
+        $meta_query[] = array( 'key' => '_price', 'value' => (float) $max, 'type' => 'NUMERIC', 'compare' => '<=' );
+    }
+
+    if ( ! empty( $tax_query ) )  $q->set( 'tax_query',  $tax_query );
+    if ( ! empty( $meta_query ) ) $q->set( 'meta_query', $meta_query );
+
+    switch ( sanitize_text_field( wp_unslash( $_GET['orderby'] ?? '' ) ) ) {
+        case 'price':
+            $q->set( 'orderby',  'meta_value_num' );
+            $q->set( 'meta_key', '_price' );
+            $q->set( 'order',    'ASC' );
+            break;
+        case 'price-desc':
+            $q->set( 'orderby',  'meta_value_num' );
+            $q->set( 'meta_key', '_price' );
+            $q->set( 'order',    'DESC' );
+            break;
+        case 'title':
+            $q->set( 'orderby', 'title' );
+            $q->set( 'order',   'ASC' );
+            break;
+    }
+}
+
 add_action( 'wp_ajax_kaiko_filter_products', 'kaiko_ajax_filter_products' );
 add_action( 'wp_ajax_nopriv_kaiko_filter_products', 'kaiko_ajax_filter_products' );
 
@@ -999,8 +1090,10 @@ function kaiko_ajax_filter_products() {
     $args = array(
         'post_type'      => 'product',
         'posts_per_page' => intval( $_POST['per_page'] ?? 12 ),
-        'paged'          => intval( $_POST['paged'] ?? 1 ),
+        'paged'          => max( 1, intval( $_POST['paged'] ?? 1 ) ),
         'post_status'    => 'publish',
+        'tax_query'      => array(),
+        'meta_query'     => array(),
     );
 
     // Category filter
@@ -1008,21 +1101,62 @@ function kaiko_ajax_filter_products() {
         $args['tax_query'][] = array(
             'taxonomy' => 'product_cat',
             'field'    => 'slug',
-            'terms'    => sanitize_text_field( $_POST['category'] ),
+            'terms'    => sanitize_text_field( wp_unslash( $_POST['category'] ) ),
         );
     }
 
-    // Species filter (ACF repeater)
+    // Species filter (ACF repeater stores entries as compatible_species_{i}_species_name)
     if ( ! empty( $_POST['species'] ) ) {
         $args['meta_query'][] = array(
             'key'     => 'compatible_species_%_species_name',
-            'value'   => sanitize_text_field( $_POST['species'] ),
+            'value'   => sanitize_text_field( wp_unslash( $_POST['species'] ) ),
             'compare' => 'LIKE',
         );
     }
 
+    // Difficulty filter (meta: kaiko_difficulty — may be unset on legacy products)
+    if ( ! empty( $_POST['difficulty'] ) ) {
+        $args['meta_query'][] = array(
+            'key'     => 'kaiko_difficulty',
+            'value'   => sanitize_text_field( wp_unslash( $_POST['difficulty'] ) ),
+            'compare' => '=',
+        );
+    }
+
+    // Price range — only apply when a value is numeric.
+    $min_price = isset( $_POST['min_price'] ) ? trim( wp_unslash( $_POST['min_price'] ) ) : '';
+    $max_price = isset( $_POST['max_price'] ) ? trim( wp_unslash( $_POST['max_price'] ) ) : '';
+    $min_ok    = is_numeric( $min_price );
+    $max_ok    = is_numeric( $max_price );
+
+    if ( $min_ok && $max_ok ) {
+        $args['meta_query'][] = array(
+            'key'     => '_price',
+            'value'   => array( (float) $min_price, (float) $max_price ),
+            'type'    => 'NUMERIC',
+            'compare' => 'BETWEEN',
+        );
+    } elseif ( $min_ok ) {
+        $args['meta_query'][] = array(
+            'key'     => '_price',
+            'value'   => (float) $min_price,
+            'type'    => 'NUMERIC',
+            'compare' => '>=',
+        );
+    } elseif ( $max_ok ) {
+        $args['meta_query'][] = array(
+            'key'     => '_price',
+            'value'   => (float) $max_price,
+            'type'    => 'NUMERIC',
+            'compare' => '<=',
+        );
+    }
+
+    if ( empty( $args['tax_query'] ) )  unset( $args['tax_query'] );
+    if ( empty( $args['meta_query'] ) ) unset( $args['meta_query'] );
+
     // Sort
-    $orderby = sanitize_text_field( $_POST['orderby'] ?? 'date' );
+    $orderby = sanitize_text_field( wp_unslash( $_POST['orderby'] ?? 'date' ) );
     switch ( $orderby ) {
         case 'price':
             $args['orderby']  = 'meta_value_num';
@@ -1047,23 +1181,28 @@ function kaiko_ajax_filter_products() {
 
     ob_start();
     if ( $query->have_posts() ) {
+        echo '<ul class="products columns-3">';
         while ( $query->have_posts() ) {
             $query->the_post();
             wc_get_template_part( 'content', 'product' );
         }
+        echo '</ul>';
     } else {
-        echo '<p class="kaiko-no-products">No products found matching your criteria.</p>';
+        echo '<div class="kaiko-no-products">';
+        echo '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+        echo '<h3>' . esc_html__( 'No products match your filters', 'kaiko-child' ) . '</h3>';
+        echo '<p>' . esc_html__( 'Try adjusting or clearing your filters to see more products.', 'kaiko-child' ) . '</p>';
+        echo '</div>';
     }
     $html = ob_get_clean();
 
-    wp_send_json_success( array(
-        'html'       => $html,
-        'found'      => $query->found_posts,
-        'max_pages'  => $query->max_num_pages,
-    ) );
-
     wp_reset_postdata();
-    wp_die();
+
+    wp_send_json_success( array(
+        'html'      => $html,
+        'found'     => (int) $query->found_posts,
+        'max_pages' => (int) $query->max_num_pages,
+    ) );
 }
 
 
