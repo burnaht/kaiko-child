@@ -463,6 +463,13 @@ body.kaiko-contact .form-success {
   padding: 14px 18px; border-radius: var(--kaiko-radius-lg);
   font-size: 0.9rem; margin-top: var(--kaiko-space-md); display: none;
 }
+body.kaiko-contact .form-error {
+  background: rgba(239,68,68,0.05);
+  border: 1px solid var(--kaiko-error);
+  color: #991b1b;
+  padding: 14px 18px; border-radius: var(--kaiko-radius-lg);
+  font-size: 0.9rem; margin-top: var(--kaiko-space-md); display: none;
+}
 
 /* Right: info panel */
 body.kaiko-contact .info-panel {
@@ -889,9 +896,15 @@ body.kaiko-contact .footer-bottom {
               <label for="kc-message">Your Message</label>
               <textarea id="kc-message" name="message" placeholder="Tell us how we can help&hellip;" required></textarea>
             </div>
-            <div class="form-success" id="kc-success" role="status" aria-live="polite">
+            <!-- Honeypot: real users never fill this; bots often do. -->
+            <div style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+              <label for="kc-website">Website (leave blank)</label>
+              <input type="text" id="kc-website" name="website_url" tabindex="-1" autocomplete="off">
+            </div>
+            <div class="form-success" id="kc-success" role="status" aria-live="polite" style="display:none;">
               &#10003; Message sent &mdash; we&rsquo;ll get back to you within 24 hours.
             </div>
+            <div class="form-error" id="kc-error" role="alert" aria-live="assertive" style="display:none;"></div>
             <button type="submit" class="form-submit">Send Message &rarr;</button>
           </form>
         <?php endif; ?>
@@ -1172,19 +1185,63 @@ body.kaiko-contact .footer-bottom {
     });
   });
 
-  /* Native contact form */
+  /* Native contact form — real AJAX submit via kaikoContact.ajaxUrl */
   var form = document.getElementById('kaikoContactForm');
-  if (form) {
+  if (form && typeof window.kaikoContact !== 'undefined') {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var btn = form.querySelector('.form-submit');
-      btn.textContent = 'Sending\u2026'; btn.disabled = true;
-      setTimeout(function () {
-        var success = document.getElementById('kc-success');
-        if (success) { success.style.display = 'block'; }
-        btn.textContent = 'Message Sent \u2713';
-        form.reset();
-      }, 1000);
+      var success = document.getElementById('kc-success');
+      var errBox = document.getElementById('kc-error');
+
+      // Basic HTML5 validity check
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Reset any previous messages
+      if (success) success.style.display = 'none';
+      if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
+
+      btn.textContent = 'Sending\u2026';
+      btn.disabled = true;
+
+      var fd = new FormData(form);
+      fd.append('action', 'kaiko_contact_submit');
+      fd.append('nonce', window.kaikoContact.nonce);
+
+      fetch(window.kaikoContact.ajaxUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: fd
+      })
+      .then(function (res) { return res.json().then(function (json) { return { ok: res.ok, status: res.status, json: json }; }); })
+      .then(function (result) {
+        if (result.json && result.json.success) {
+          if (success) {
+            success.textContent = '\u2713 ' + (result.json.data && result.json.data.message ? result.json.data.message : 'Message sent \u2014 we\'ll get back to you within 24 hours.');
+            success.style.display = 'block';
+          }
+          btn.textContent = 'Message Sent \u2713';
+          form.reset();
+        } else {
+          var msg = (result.json && result.json.data && result.json.data.message)
+            ? result.json.data.message
+            : 'Something went wrong. Please try again or email info@kaikoproducts.com directly.';
+          if (errBox) { errBox.textContent = msg; errBox.style.display = 'block'; }
+          btn.textContent = 'Send Message \u2192';
+          btn.disabled = false;
+        }
+      })
+      .catch(function () {
+        if (errBox) {
+          errBox.textContent = 'Network error. Please check your connection and try again, or email info@kaikoproducts.com directly.';
+          errBox.style.display = 'block';
+        }
+        btn.textContent = 'Send Message \u2192';
+        btn.disabled = false;
+      });
     });
   }
 

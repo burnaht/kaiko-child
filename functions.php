@@ -32,6 +32,7 @@ require_once KAIKO_DIR . '/inc/chatbot-integration.php';
 require_once KAIKO_DIR . '/inc/performance.php';
 require_once KAIKO_DIR . '/inc/seo.php';
 require_once KAIKO_DIR . '/inc/security.php';
+require_once KAIKO_DIR . '/inc/contact-form.php';
 
 
 /* ============================================
