@@ -66,11 +66,14 @@ body.kaiko-homepage .species-card.has-photo .species-icon img { width: 100%; hei
 body.kaiko-homepage .species-card.has-photo:hover .species-icon img { transform: scale(1.04); }
 body.kaiko-homepage .species-card h3 { font-family: var(--kaiko-font-display); font-size: 1rem; font-weight: 600; color: var(--kaiko-dark); margin: 0 0 4px; }
 body.kaiko-homepage .species-card p { font-size: 0.8rem; color: var(--kaiko-mid-gray); margin: 0; }
-body.kaiko-homepage .testimonial-card { background: var(--kaiko-white); border: 1px solid var(--kaiko-border); border-radius: 16px; padding: 48px; max-width: 700px; margin: 0 auto; }
-body.kaiko-homepage .testimonial-stars { color: var(--kaiko-gold); font-size: 1.25rem; margin-bottom: 16px; }
-body.kaiko-homepage .testimonial-text { font-size: 1.15rem; line-height: 1.75; color: var(--kaiko-dark); margin-bottom: 24px; font-style: italic; }
-body.kaiko-homepage .testimonial-author { font-weight: 600; color: var(--kaiko-dark); }
-body.kaiko-homepage .testimonial-role { font-size: 0.85rem; color: var(--kaiko-mid-gray); }
+body.kaiko-homepage .testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; max-width: 1200px; margin: 0 auto; }
+body.kaiko-homepage .testimonial-card { background: var(--kaiko-white); border: 1px solid var(--kaiko-border); border-radius: 16px; padding: 36px 32px; display: flex; flex-direction: column; transition: transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease; }
+body.kaiko-homepage .testimonial-card:hover { transform: translateY(-4px); box-shadow: 0 18px 42px rgba(26,92,82,0.08); border-color: rgba(26,92,82,0.2); }
+body.kaiko-homepage .testimonial-stars { color: var(--kaiko-gold); font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 16px; }
+body.kaiko-homepage .testimonial-text { font-size: 1rem; line-height: 1.7; color: var(--kaiko-dark); margin-bottom: 24px; font-style: italic; flex: 1; }
+body.kaiko-homepage .testimonial-author { font-weight: 600; color: var(--kaiko-dark); font-size: 0.95rem; }
+body.kaiko-homepage .testimonial-role { font-size: 0.8rem; color: var(--kaiko-mid-gray); margin-top: 2px; }
+@media (max-width: 980px) { body.kaiko-homepage .testimonial-grid { grid-template-columns: 1fr; max-width: 560px; } }
 body.kaiko-homepage .newsletter-form { display: flex; gap: 12px; max-width: 500px; margin: 0 auto; }
 body.kaiko-homepage .newsletter-form input { flex: 1; padding: 14px 20px; border: 1px solid var(--kaiko-border); border-radius: 8px; font-family: var(--kaiko-font-body); font-size: 0.95rem; background: var(--kaiko-white); color: var(--kaiko-dark); }
 body.kaiko-homepage .newsletter-form input:focus { outline: none; border-color: var(--kaiko-teal); box-shadow: 0 0 0 3px rgba(26,92,82,0.1); }
@@ -270,7 +273,7 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
       <div class="section-header">
         <div class="section-tag">Shop by Species</div>
         <h2 class="section-title">Find the Perfect Fit</h2>
-        <p class="section-subtitle">Every product is designed with specific species in mind. Browse by your reptile to find compatible equipment.</p>
+        <p class="section-subtitle">Every product is designed with specific species in mind. Browse by reptile to find compatible equipment.</p>
       </div>
       <?php $kaiko_species_img_base = get_stylesheet_directory_uri() . '/assets/images/species/'; ?>
       <div class="species-grid">
@@ -291,11 +294,50 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
         <div class="section-tag">What Keepers Say</div>
         <h2 class="section-title">Trusted by the Community</h2>
       </div>
-      <div class="testimonial-card">
-        <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="testimonial-text">&ldquo;Finally, a supplier that understands what species actually need. The escape proof design roach bowls are exactly what I needed.&rdquo;</p>
-        <div class="testimonial-author">Sarah M.</div>
-        <div class="testimonial-role">Reptile Keeper, Manchester</div>
+      <div class="testimonial-grid">
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testimonial-text">&ldquo;Finally, a supplier that understands what species actually need. The escape-proof roach bowls are exactly what I needed.&rdquo;</p>
+          <div class="testimonial-author">Sarah M.</div>
+          <div class="testimonial-role">Reptile Keeper, Manchester</div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testimonial-text">&ldquo;The quality of the feeding bowls is on another level. My customers notice the difference, and they keep coming back for more Kaiko stock.&rdquo;</p>
+          <div class="testimonial-author">James R.</div>
+          <div class="testimonial-role">Exotic Pet Shop Owner, Bristol</div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testimonial-text">&ldquo;Species-specific design that actually works. My bearded dragon finally has a water bowl he can&rsquo;t flip and his humidity hide is a proper upgrade.&rdquo;</p>
+          <div class="testimonial-author">Emma T.</div>
+          <div class="testimonial-role">Bearded Dragon Keeper, Leeds</div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testimonial-text">&ldquo;Trade signup was painless and shipping was next-day. Finally a UK supplier built for reptile shops who knows the brief.&rdquo;</p>
+          <div class="testimonial-author">Daniel K.</div>
+          <div class="testimonial-role">Reptile Store Manager, Glasgow</div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testimonial-text">&ldquo;The tortoise water dish is a huge step up on anything I&rsquo;ve tried before. Looks great in the enclosure and it&rsquo;s easy to clean.&rdquo;</p>
+          <div class="testimonial-author">Olivia P.</div>
+          <div class="testimonial-role">Tortoise Keeper, Brighton</div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="testimonial-text">&ldquo;Proper thought has gone into every product. The chameleon drip system is the first one I&rsquo;ve used that my animals actually drink from reliably.&rdquo;</p>
+          <div class="testimonial-author">Michael H.</div>
+          <div class="testimonial-role">Chameleon Breeder, Cardiff</div>
+        </div>
+
       </div>
     </div>
   </section>
