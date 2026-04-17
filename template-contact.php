@@ -701,18 +701,21 @@ body.kaiko-contact .kaiko-accordion-answer a:hover { text-decoration: underline;
    Real Google Maps iframe embed + details grid
    ============================================================== */
 body.kaiko-contact .location-grid {
-  display: grid; grid-template-columns: 1.1fr 1fr; gap: var(--kaiko-space-3xl); align-items: stretch;
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--kaiko-space-3xl); align-items: start;
 }
 body.kaiko-contact .location-map {
-  aspect-ratio: 4/3;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 480px;
   background: var(--kaiko-warm-gray);
   border-radius: var(--kaiko-radius-2xl);
   border: 1px solid var(--kaiko-border);
   overflow: hidden;
   box-shadow: var(--kaiko-shadow-xs);
-  min-height: 380px;
 }
 body.kaiko-contact .location-map iframe {
+  position: absolute; inset: 0;
   display: block; width: 100%; height: 100%; border: 0;
   filter: saturate(0.9) contrast(1.02);
 }
@@ -818,6 +821,7 @@ body.kaiko-contact .footer-bottom {
   body.kaiko-contact .form-info-grid { grid-template-columns: 1fr; gap: 48px; }
   body.kaiko-contact .info-panel { position: static; }
   body.kaiko-contact .location-grid { grid-template-columns: 1fr; gap: 40px; }
+  body.kaiko-contact .location-map { max-height: none; aspect-ratio: 16 / 10; }
 }
 @media (max-width: 768px) {
   body.kaiko-contact {
@@ -833,7 +837,7 @@ body.kaiko-contact .footer-bottom {
   body.kaiko-contact .footer-inner { grid-template-columns: 1fr; gap: 40px; }
   body.kaiko-contact .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
   body.kaiko-contact .contact-hero-badges { flex-direction: column; align-items: flex-start; }
-  body.kaiko-contact .location-map { min-height: 280px; }
+  body.kaiko-contact .location-map { aspect-ratio: 4 / 3; }
 }
 @media (max-width: 480px) {
   body.kaiko-contact {
@@ -928,7 +932,7 @@ body.kaiko-contact .footer-bottom {
         <h3>Great Dunmow, Essex</h3>
         <p>We&rsquo;re a British brand based in Great Dunmow, Essex. Every product is designed, tested, and shipped from our Essex base.</p>
         <div class="method-card-value">Great Dunmow, Essex</div>
-        <div class="method-card-note">Free UK shipping on orders over &pound;150</div>
+        <div class="method-card-note">Free UK shipping on every trade order</div>
       </div>
 
     </div>
@@ -1101,7 +1105,7 @@ body.kaiko-contact .footer-bottom {
         </button>
         <div class="kaiko-accordion-panel" id="faq-4" role="region">
           <div class="kaiko-accordion-answer">
-            UK standard shipping is 2&ndash;5 working days. Orders over &pound;150 ship free within the UK. International shipping is available to 30+ countries &mdash; contact our trade team for bulk international rates. All orders are fully tracked.
+            UK standard shipping is 2&ndash;5 working days and is free on every trade order &mdash; no threshold, no surcharge. International shipping is available to 30+ countries &mdash; contact our trade team for bulk international rates. All orders are fully tracked.
           </div>
         </div>
       </div>
@@ -1171,8 +1175,8 @@ body.kaiko-contact .footer-bottom {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4L7.55 4.24"/><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
             </div>
             <div class="location-detail-text">
-              <strong>Free UK Shipping &pound;150+</strong>
-              <span>Tracked delivery on every order</span>
+              <strong>Free UK Shipping</strong>
+              <span>Tracked delivery included on every trade order</span>
             </div>
           </div>
           <div class="location-detail-row">
