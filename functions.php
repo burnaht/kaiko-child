@@ -486,9 +486,13 @@ function kaiko_send_rejection_email( $user_id ) {
 add_action( 'woocommerce_created_customer', 'kaiko_send_pending_email', 30 );
 
 function kaiko_send_pending_email( $customer_id ) {
-    $user = get_userdata( $customer_id );
+    $user     = get_userdata( $customer_id );
+    $business = get_user_meta( $customer_id, 'kaiko_business_name', true );
+    $greeting = $user->first_name
+        ? 'Hi ' . $user->first_name
+        : ( $business ? 'Hi ' . $business : 'Hi there' );
     wp_mail( $user->user_email, 'Kaiko — Application Received',
-        "Hi {$user->first_name},\n\nThank you for applying for a Kaiko trade account.\n\nYour application is now being reviewed. We'll be in touch shortly.\n\nIn the meantime, browse our range: " . wc_get_page_permalink( 'shop' ) . "\n\n— The Kaiko Team"
+        "{$greeting},\n\nThank you for applying for a Kaiko trade account.\n\nYour application is now being reviewed. We'll be in touch within 24 hours.\n\nIn the meantime, browse our range: " . wc_get_page_permalink( 'shop' ) . "\n\n— The Kaiko Team"
     );
 }
 
@@ -522,6 +526,43 @@ function kaiko_redirect_pending_from_checkout() {
 }
 
 add_filter( 'woocommerce_enable_myaccount_registration', '__return_true' );
+
+/**
+ * Trade applications are NOT auto-logged-in. Pending users shouldn't be
+ * dropped onto the "logged in" dashboard before a human has approved them —
+ * that reads as auto-approval and isn't the trade flow we want.
+ *
+ * Instead, after submitting the register form the user is signed out and
+ * redirected back to /my-account/?application=received, where the logged-out
+ * template renders a branded "Application received" confirmation banner.
+ */
+add_filter( 'woocommerce_registration_auth_automatically', '__return_false' );
+
+add_filter( 'woocommerce_registration_redirect', 'kaiko_registration_redirect', 10, 1 );
+
+function kaiko_registration_redirect( $redirect ) {
+    $myaccount = wc_get_page_permalink( 'myaccount' );
+    return add_query_arg( 'application', 'received', $myaccount );
+}
+
+/**
+ * Safety-net: if any other plugin forces an auth cookie during trade
+ * registration, log the user straight back out so they hit the logged-out
+ * confirmation state. Only applies to newly-registered pending users.
+ */
+add_action( 'woocommerce_created_customer', 'kaiko_force_logout_after_registration', 999, 1 );
+
+function kaiko_force_logout_after_registration( $customer_id ) {
+    if ( is_admin() ) {
+        return;
+    }
+    // Only force-logout if WC (or a plugin) has already set the auth cookie
+    // for this brand new customer. Existing sessions are untouched.
+    if ( get_current_user_id() === (int) $customer_id ) {
+        wp_logout();
+        wp_clear_auth_cookie();
+    }
+}
 
 
 /* ============================================

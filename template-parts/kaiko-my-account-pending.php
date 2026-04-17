@@ -13,7 +13,33 @@
 defined( 'ABSPATH' ) || exit;
 
 $current_user = wp_get_current_user();
-$first_name   = $current_user->first_name ?: ( $current_user->display_name ?: $current_user->user_login );
+
+/**
+ * Greeting fallback chain.
+ *
+ * The WC register form only captures email + business name — WooCommerce
+ * then auto-generates a username from the email local part (e.g.
+ * "silkwormstore.co.uk-0344"). If we fall through to $user_login the
+ * greeting reads "HELLO, SILKWORMSTORE.CO.UK-0344" which looks broken.
+ *
+ * Order: Business name → First name → Email local part → "Trade Partner"
+ */
+$business_name = get_user_meta( $current_user->ID, 'kaiko_business_name', true );
+$email_local   = $current_user->user_email ? strstr( $current_user->user_email, '@', true ) : '';
+
+if ( ! empty( $business_name ) ) {
+	$first_name = $business_name;
+} elseif ( ! empty( $current_user->first_name ) ) {
+	$first_name = $current_user->first_name;
+} elseif ( $email_local && false === strpos( $email_local, '.' ) ) {
+	// Only use email local part if it looks like a person's handle
+	// (not "mail" or "info" or "contact" — those read weird).
+	$generic = array( 'mail', 'info', 'contact', 'hello', 'admin', 'sales', 'support', 'trade' );
+	$first_name = in_array( strtolower( $email_local ), $generic, true ) ? __( 'Trade Partner', 'kaiko-child' ) : ucfirst( $email_local );
+} else {
+	$first_name = __( 'Trade Partner', 'kaiko-child' );
+}
+
 $applied_date = $current_user->user_registered
 	? date_i18n( get_option( 'date_format' ), strtotime( $current_user->user_registered ) )
 	: '—';
@@ -42,6 +68,57 @@ $pending_nav_items = array(
 
 $active_key = ( ! $endpoint || 'dashboard' === $endpoint ) ? 'dashboard' : $endpoint;
 ?>
+<style>
+/* Defensive layout rules — scoped so theme / plugin CSS can't
+   collapse the sidebar or horizontalise the nav items. */
+.kaiko-account-layout {
+	display: grid !important;
+	grid-template-columns: 260px minmax(0, 1fr) !important;
+	gap: 36px !important;
+	align-items: start !important;
+	max-width: 1240px;
+	margin: 0 auto;
+	padding: 0 24px;
+	box-sizing: border-box;
+}
+.kaiko-account-layout .kaiko-account-nav { min-width: 0; }
+.kaiko-account-layout .kaiko-account-nav ul {
+	display: block !important;
+	list-style: none !important;
+	padding: 10px 0 !important;
+	margin: 0 !important;
+}
+.kaiko-account-layout .kaiko-account-nav li {
+	display: block !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+}
+.kaiko-account-layout .kaiko-account-nav li a {
+	display: flex !important;
+	width: 100% !important;
+	padding: 14px 28px !important;
+	font-size: 0.9rem !important;
+	color: #78716C;
+	text-decoration: none !important;
+	border-left: 3px solid transparent;
+}
+.kaiko-account-layout .kaiko-account-nav li.active a {
+	background: rgba(26,92,82,0.06);
+	color: #1a5c52;
+	font-weight: 600;
+	border-left-color: #1a5c52;
+}
+.kaiko-account-layout .kaiko-account-content {
+	min-width: 0;
+}
+@media (max-width: 860px) {
+	.kaiko-account-layout {
+		grid-template-columns: 1fr !important;
+		gap: 20px !important;
+	}
+}
+</style>
 <div class="kaiko-account-layout">
 
 	<nav class="kaiko-account-nav" aria-label="<?php esc_attr_e( 'Account navigation', 'kaiko-child' ); ?>">
