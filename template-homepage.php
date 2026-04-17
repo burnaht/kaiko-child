@@ -275,9 +275,9 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
       <?php $kaiko_species_img_base = get_stylesheet_directory_uri() . '/assets/images/species/'; ?>
       <div class="species-grid">
         <div class="species-card has-photo"><div class="species-icon"><img src="<?php echo esc_url( $kaiko_species_img_base . 'bearded-dragon.png' ); ?>" alt="Bearded Dragon" loading="lazy" decoding="async" width="120" height="120" /></div><h3>Bearded Dragons</h3><p>42 products</p></div>
-        <div class="species-card"><div class="species-icon">&#128013;</div><h3>Ball Pythons</h3><p>38 products</p></div>
+        <div class="species-card"><div class="species-icon">&#128013;</div><h3>Snakes</h3><p>38 products</p></div>
         <div class="species-card has-photo"><div class="species-icon"><img src="<?php echo esc_url( $kaiko_species_img_base . 'leopard-gecko.png' ); ?>" alt="Leopard Gecko" loading="lazy" decoding="async" width="120" height="120" /></div><h3>Leopard Geckos</h3><p>35 products</p></div>
-        <div class="species-card"><div class="species-icon">&#128034;</div><h3>Tortoises</h3><p>28 products</p></div>
+        <div class="species-card has-photo"><div class="species-icon"><img src="<?php echo esc_url( $kaiko_species_img_base . 'tortoise.png' ); ?>" alt="Tortoise" loading="lazy" decoding="async" width="120" height="120" /></div><h3>Tortoises</h3><p>28 products</p></div>
         <div class="species-card has-photo"><div class="species-icon"><img src="<?php echo esc_url( $kaiko_species_img_base . 'chameleon.png' ); ?>" alt="Chameleon" loading="lazy" decoding="async" width="120" height="120" /></div><h3>Chameleons</h3><p>24 products</p></div>
         <div class="species-card has-photo"><div class="species-icon"><img src="<?php echo esc_url( $kaiko_species_img_base . 'crested-gecko.png' ); ?>" alt="Crested Gecko" loading="lazy" decoding="async" width="120" height="120" /></div><h3>Crested Geckos</h3><p>31 products</p></div>
       </div>

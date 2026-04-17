@@ -41,11 +41,11 @@ function kaiko_species_grid_shortcode( $atts ) {
      */
     $species_list = array(
         array(
-            'name'       => 'Ball Pythons',
-            'slug'       => 'ball-python',
-            'scientific' => 'Python regius',
+            'name'       => 'Snakes',
+            'slug'       => 'snake',
+            'scientific' => '',
             'emoji'      => '🐍',
-            'image'      => '', // TODO: add ball-python.png to assets/images/species/
+            'image'      => '', // TODO: add snake.png to assets/images/species/ (GS.png available in pet images copy/)
         ),
         array(
             'name'       => 'Leopard Geckos',
@@ -426,7 +426,7 @@ function kaiko_testimonial_slider_shortcode( $atts ) {
         array(
             'quote'   => 'Kaiko is the only place I trust for my ball python setups. The species-specific filtering saved me hours of research, and the quality is genuinely premium.',
             'name'    => 'James H.',
-            'species' => 'Ball Python keeper',
+            'species' => 'Snake keeper',
             'rating'  => 5,
         ),
         array(
