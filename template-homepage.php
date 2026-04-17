@@ -60,7 +60,10 @@ body.kaiko-homepage .section-subtitle { font-size: 1.05rem; color: var(--kaiko-m
 body.kaiko-homepage .species-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--kaiko-space-lg); }
 body.kaiko-homepage .species-card { background: var(--kaiko-white); border: 1px solid var(--kaiko-border); border-radius: 16px; padding: var(--kaiko-space-xl); text-align: center; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); cursor: pointer; }
 body.kaiko-homepage .species-card:hover { transform: translateY(-6px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); border-color: var(--kaiko-teal); }
-body.kaiko-homepage .species-icon { width: 64px; height: 64px; background: var(--kaiko-off-white); border-radius: 9999px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; }
+body.kaiko-homepage .species-icon { width: 64px; height: 64px; background: var(--kaiko-off-white); border-radius: 9999px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; overflow: hidden; }
+body.kaiko-homepage .species-card.has-photo .species-icon { width: 120px; height: 120px; background: transparent; border-radius: 0; }
+body.kaiko-homepage .species-card.has-photo .species-icon img { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); }
+body.kaiko-homepage .species-card.has-photo:hover .species-icon img { transform: scale(1.04); }
 body.kaiko-homepage .species-card h3 { font-family: var(--kaiko-font-display); font-size: 1rem; font-weight: 600; color: var(--kaiko-dark); margin: 0 0 4px; }
 body.kaiko-homepage .species-card p { font-size: 0.8rem; color: var(--kaiko-mid-gray); margin: 0; }
 body.kaiko-homepage .testimonial-card { background: var(--kaiko-white); border: 1px solid var(--kaiko-border); border-radius: 16px; padding: 48px; max-width: 700px; margin: 0 auto; }
@@ -269,13 +272,14 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
         <h2 class="section-title">Find the Perfect Fit</h2>
         <p class="section-subtitle">Every product is designed with specific species in mind. Browse by your reptile to find compatible equipment.</p>
       </div>
+      <?php $kaiko_species_img_base = get_stylesheet_directory_uri() . '/assets/images/species/'; ?>
       <div class="species-grid">
-        <div class="species-card"><div class="species-icon">&#128013;</div><h3>Bearded Dragons</h3><p>42 products</p></div>
-        <div class="species-card"><div class="species-icon">&#128014;</div><h3>Ball Pythons</h3><p>38 products</p></div>
-        <div class="species-card"><div class="species-icon">&#129422;</div><h3>Leopard Geckos</h3><p>35 products</p></div>
+        <div class="species-card has-photo"><div class="species-icon"><img src="<?php echo esc_url( $kaiko_species_img_base . 'bearded-dragon.png' ); ?>" alt="Bearded Dragon" loading="lazy" decoding="async" width="120" height="120" /></div><h3>Bearded Dragons</h3><p>42 products</p></div>
+        <div class="species-card"><div class="species-icon">&#128013;</div><h3>Ball Pythons</h3><p>38 products</p></div>
+        <div class="species-card has-photo"><div class="species-icon"><img src="<?php echo esc_url( $kaiko_species_img_base . 'leopard-gecko.png' ); ?>" alt="Leopard Gecko" loading="lazy" decoding="async" width="120" height="120" /></div><h3>Leopard Geckos</h3><p>35 products</p></div>
         <div class="species-card"><div class="species-icon">&#128034;</div><h3>Tortoises</h3><p>28 products</p></div>
-        <div class="species-card"><div class="species-icon">&#128038;</div><h3>Chameleons</h3><p>24 products</p></div>
-        <div class="species-card"><div class="species-icon">&#128375;</div><h3>Crested Geckos</h3><p>31 products</p></div>
+        <div class="species-card has-photo"><div class="species-icon"><img src="<?php echo esc_url( $kaiko_species_img_base . 'chameleon.png' ); ?>" alt="Chameleon" loading="lazy" decoding="async" width="120" height="120" /></div><h3>Chameleons</h3><p>24 products</p></div>
+        <div class="species-card has-photo"><div class="species-icon"><img src="<?php echo esc_url( $kaiko_species_img_base . 'crested-gecko.png' ); ?>" alt="Crested Gecko" loading="lazy" decoding="async" width="120" height="120" /></div><h3>Crested Geckos</h3><p>31 products</p></div>
       </div>
     </div>
   </section>
