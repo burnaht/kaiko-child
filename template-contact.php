@@ -31,6 +31,63 @@ $cf7_id = (int) get_option( 'kaiko_cf7_contact_id', 0 );
    Uses --kaiko-* design tokens throughout
    ============================================================ */
 
+/* ---- Token fallbacks (defined here so the page renders
+       even if kaiko-design-system.css fails to load, and to
+       define the few tokens this template uses that aren't
+       in the global design system: container widths, section
+       padding, font stack overrides, extended colour palette). */
+body.kaiko-contact {
+  --kaiko-white: #ffffff;
+  --kaiko-off-white: #f6f5f1;
+  --kaiko-warm-gray: #ece9e0;
+  --kaiko-cream: #f3ede0;
+  --kaiko-dark: #1a1a1a;
+  --kaiko-teal: #1a5c52;
+  --kaiko-deep-teal: #0d3d35;
+  --kaiko-lime: #7ab800;
+  --kaiko-gold: #c4a962;
+  --kaiko-error: #ef4444;
+  --kaiko-border: #e4e2de;
+  --kaiko-mid-gray: #6b6b6b;
+  --kaiko-light-gray: #a8a6a0;
+  --kaiko-font-display: 'Gotham', 'Gotham Bold', -apple-system, sans-serif;
+  --kaiko-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --kaiko-weight-medium: 500;
+  --kaiko-weight-semibold: 600;
+  --kaiko-weight-bold: 700;
+  --kaiko-line-height-tight: 1.15;
+  --kaiko-line-height-relaxed: 1.7;
+  --kaiko-letter-spacing-tight: -0.02em;
+  --kaiko-letter-spacing-wide: 0.025em;
+  --kaiko-letter-spacing-wider: 0.05em;
+  --kaiko-radius-sm: 6px;
+  --kaiko-radius-md: 10px;
+  --kaiko-radius-lg: 14px;
+  --kaiko-radius-xl: 18px;
+  --kaiko-radius-2xl: 22px;
+  --kaiko-radius-full: 9999px;
+  --kaiko-shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --kaiko-shadow-lift: 0 18px 42px rgba(26,92,82,0.12);
+  --kaiko-transition-fast: 150ms ease;
+  --kaiko-transition-base: 260ms cubic-bezier(0.4,0,0.2,1);
+  --kaiko-transition-slow: 420ms cubic-bezier(0.4,0,0.2,1);
+  --kaiko-ease-out-expo: cubic-bezier(0.19,1,0.22,1);
+  --kaiko-z-navbar: 1010;
+
+  /* Container + section spacing (these are the ones that were
+     missing — the cause of the edge-to-edge layout bug). */
+  --kaiko-container-max: 1240px;
+  --kaiko-container-narrow: 880px;
+  --kaiko-section-pad: 96px;
+  --kaiko-space-xs: 0.5rem;
+  --kaiko-space-sm: 0.75rem;
+  --kaiko-space-md: 1rem;
+  --kaiko-space-lg: 1.5rem;
+  --kaiko-space-xl: 2.5rem;
+  --kaiko-space-2xl: 3rem;
+  --kaiko-space-3xl: 4rem;
+}
+
 /* Hide WoodMart chrome */
 .whb-header,
 .woodmart-prefooter,
@@ -98,7 +155,10 @@ body.kaiko-contact .kaiko-nav-cta:hover {
 
 /* ---- Shared layout helpers ---- */
 body.kaiko-contact .section {
-  padding: var(--kaiko-section-pad) var(--kaiko-space-xl);
+  padding-top: var(--kaiko-section-pad);
+  padding-bottom: var(--kaiko-section-pad);
+  padding-left: clamp(20px, 5vw, 48px);
+  padding-right: clamp(20px, 5vw, 48px);
 }
 body.kaiko-contact .section--alt {
   background: var(--kaiko-off-white);
@@ -108,9 +168,11 @@ body.kaiko-contact .section--dark {
 }
 body.kaiko-contact .section-inner {
   max-width: var(--kaiko-container-max); margin: 0 auto;
+  width: 100%;
 }
 body.kaiko-contact .section-inner--narrow {
   max-width: var(--kaiko-container-narrow); margin: 0 auto;
+  width: 100%;
 }
 body.kaiko-contact .section-header {
   text-align: center; margin-bottom: var(--kaiko-space-3xl);
@@ -336,7 +398,8 @@ body.kaiko-contact .method-card-note {
    Two-column layout: CF7 form left, business info right
    ============================================================== */
 body.kaiko-contact .form-info-grid {
-  display: grid; grid-template-columns: 1fr 380px; gap: 80px; align-items: start;
+  display: grid; grid-template-columns: minmax(0, 1fr) 360px;
+  gap: clamp(40px, 5vw, 72px); align-items: start;
 }
 
 /* Left: form column */
@@ -611,33 +674,24 @@ body.kaiko-contact .kaiko-accordion-answer a {
 body.kaiko-contact .kaiko-accordion-answer a:hover { text-decoration: underline; }
 
 /* ==============================================================
-   SECTION 5 — LOCATION / MAP PLACEHOLDER
-   Styled location card with placeholder for Google Maps
+   SECTION 5 — LOCATION (Great Dunmow, Essex)
+   Real Google Maps iframe embed + details grid
    ============================================================== */
 body.kaiko-contact .location-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: var(--kaiko-space-3xl); align-items: center;
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: var(--kaiko-space-3xl); align-items: stretch;
 }
-body.kaiko-contact .location-map-placeholder {
-  aspect-ratio: 16/10;
-  background: linear-gradient(135deg, var(--kaiko-warm-gray) 0%, var(--kaiko-cream) 100%);
+body.kaiko-contact .location-map {
+  aspect-ratio: 4/3;
+  background: var(--kaiko-warm-gray);
   border-radius: var(--kaiko-radius-2xl);
   border: 1px solid var(--kaiko-border);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: var(--kaiko-space-md); position: relative; overflow: hidden;
+  overflow: hidden;
+  box-shadow: var(--kaiko-shadow-xs);
+  min-height: 380px;
 }
-body.kaiko-contact .location-map-placeholder::before {
-  content: '';
-  position: absolute;
-  width: 120px; height: 120px; border-radius: 50%;
-  background: rgba(26,92,82,0.06); top: 20%; left: 30%;
-}
-body.kaiko-contact .location-map-pin {
-  font-size: 2.5rem; position: relative; z-index: 1;
-}
-body.kaiko-contact .location-map-text {
-  font-size: 0.8rem; color: var(--kaiko-mid-gray); font-weight: var(--kaiko-weight-medium);
-  text-align: center; position: relative; z-index: 1;
+body.kaiko-contact .location-map iframe {
+  display: block; width: 100%; height: 100%; border: 0;
+  filter: saturate(0.9) contrast(1.02);
 }
 body.kaiko-contact .location-info { display: flex; flex-direction: column; gap: var(--kaiko-space-lg); }
 body.kaiko-contact .location-info h2 {
@@ -743,19 +797,32 @@ body.kaiko-contact .footer-bottom {
   body.kaiko-contact .location-grid { grid-template-columns: 1fr; gap: 40px; }
 }
 @media (max-width: 768px) {
+  body.kaiko-contact {
+    --kaiko-section-pad: 64px;
+  }
   body.kaiko-contact .kaiko-nav-links { display: none; }
-  body.kaiko-contact .section { padding: 60px 20px; }
+  body.kaiko-contact .section {
+    padding-left: 20px; padding-right: 20px;
+  }
   body.kaiko-contact .contact-hero { padding: 100px 20px 60px; min-height: auto; }
   body.kaiko-contact .native-form .form-row { grid-template-columns: 1fr; }
   body.kaiko-contact .newsletter-form { flex-direction: column; }
   body.kaiko-contact .footer-inner { grid-template-columns: 1fr; gap: 40px; }
   body.kaiko-contact .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
   body.kaiko-contact .contact-hero-badges { flex-direction: column; align-items: flex-start; }
+  body.kaiko-contact .location-map { min-height: 280px; }
 }
 @media (max-width: 480px) {
-  body.kaiko-contact .section { padding: 48px 16px; }
+  body.kaiko-contact {
+    --kaiko-section-pad: 48px;
+  }
+  body.kaiko-contact .section { padding-left: 16px; padding-right: 16px; }
   body.kaiko-contact .contact-hero { padding: 90px 16px 48px; }
   body.kaiko-contact .kaiko-footer { padding: 60px 16px 32px; }
+  body.kaiko-contact .kaiko-accordion-trigger { padding: 18px 20px; }
+  body.kaiko-contact .kaiko-accordion-panel { padding: 0 20px; }
+  body.kaiko-contact .kaiko-accordion-item.is-active .kaiko-accordion-panel { padding: 0 20px 20px; }
+  body.kaiko-contact .method-card { padding: var(--kaiko-space-xl); }
 }
 </style>
 </head>
@@ -815,7 +882,7 @@ body.kaiko-contact .footer-bottom {
         <div class="method-card-label">General Enquiries</div>
         <h3>Send Us an Email</h3>
         <p>Product questions, press enquiries, community collaborations. Our general inbox is monitored daily.</p>
-        <div class="method-card-value"><a href="mailto:hello@kaikoproducts.com">hello@kaikoproducts.com</a></div>
+        <div class="method-card-value"><a href="mailto:info@kaikoproducts.com">info@kaikoproducts.com</a></div>
         <div class="method-card-note">Typical response: within 24 hours</div>
       </div>
 
@@ -826,7 +893,7 @@ body.kaiko-contact .footer-bottom {
         <div class="method-card-label">Trade &amp; Wholesale</div>
         <h3>Trade Enquiries</h3>
         <p>Wholesale accounts, pricing, minimum orders, and distribution. Fast-tracked for business accounts.</p>
-        <div class="method-card-value"><a href="mailto:trade@kaikoproducts.com">trade@kaikoproducts.com</a></div>
+        <div class="method-card-value"><a href="mailto:info@kaikoproducts.com">info@kaikoproducts.com</a></div>
         <div class="method-card-note">Priority response: within 12 hours</div>
       </div>
 
@@ -835,9 +902,9 @@ body.kaiko-contact .footer-bottom {
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a08030" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
         <div class="method-card-label">Based in</div>
-        <h3>United Kingdom</h3>
-        <p>We&rsquo;re a UK-based brand. All products are designed, tested, and shipped from England. Post and returns to UK address.</p>
-        <div class="method-card-value">England, UK</div>
+        <h3>Great Dunmow, Essex</h3>
+        <p>We&rsquo;re a British brand based in Great Dunmow, Essex. Every product is designed, tested, and shipped from our Essex base.</p>
+        <div class="method-card-value">Great Dunmow, Essex</div>
         <div class="method-card-note">Free UK shipping on orders over &pound;150</div>
       </div>
 
@@ -1023,7 +1090,7 @@ body.kaiko-contact .footer-bottom {
         </button>
         <div class="kaiko-accordion-panel" id="faq-5" role="region">
           <div class="kaiko-accordion-answer">
-            We offer a 30-day returns policy on all orders. Items must be unused and in their original packaging for a full refund. If something arrived damaged or faulty, contact us at <a href="mailto:hello@kaikoproducts.com">hello@kaikoproducts.com</a> with your order number and a photo &mdash; we&rsquo;ll sort it immediately.
+            We offer a 30-day returns policy on all orders. Items must be unused and in their original packaging for a full refund. If something arrived damaged or faulty, contact us at <a href="mailto:info@kaikoproducts.com">info@kaikoproducts.com</a> with your order number and a photo &mdash; we&rsquo;ll sort it immediately.
           </div>
         </div>
       </div>
@@ -1045,44 +1112,60 @@ body.kaiko-contact .footer-bottom {
 </section>
 
 <!-- ========================================================
-     SECTION 5 — LOCATION
+     SECTION 5 — LOCATION (Great Dunmow, Essex)
      ======================================================== -->
 <section class="section section--alt">
   <div class="section-inner">
     <div class="location-grid kaiko-reveal">
 
-      <div class="location-map-placeholder">
-        <div class="location-map-pin">📍</div>
-        <div class="location-map-text">England, United Kingdom<br><small>Map embed coming soon</small></div>
+      <div class="location-map">
+        <iframe
+          src="https://www.google.com/maps?q=Great+Dunmow,+Essex,+UK&amp;output=embed"
+          width="100%" height="100%"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Kaiko HQ — Great Dunmow, Essex"></iframe>
       </div>
 
       <div class="location-info">
         <div class="section-tag">Where We Are</div>
-        <h2>Designed &amp; Shipped<br>from the UK.</h2>
-        <p>Kaiko is a British brand. Our products are designed, tested with real animals, and fulfilled here in England. Every package ships from UK soil.</p>
+        <h2>Designed &amp; Shipped<br>from Essex.</h2>
+        <p>Kaiko is a British brand based in Great Dunmow, Essex. Every product is designed, tested with real animals, and fulfilled from our Essex base &mdash; no middlemen, no overseas warehouses.</p>
         <div class="location-details">
           <div class="location-detail-row">
-            <div class="location-detail-icon">🇬🇧</div>
+            <div class="location-detail-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
             <div class="location-detail-text">
-              <strong>Based in England, UK</strong>
-              <span>All fulfilment and customer service from the UK</span>
+              <strong>Great Dunmow, Essex</strong>
+              <span>UK-based team, UK fulfilment, UK customer service</span>
             </div>
           </div>
           <div class="location-detail-row">
-            <div class="location-detail-icon">📦</div>
+            <div class="location-detail-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4L7.55 4.24"/><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            </div>
             <div class="location-detail-text">
               <strong>Free UK Shipping &pound;150+</strong>
               <span>Tracked delivery on every order</span>
             </div>
           </div>
           <div class="location-detail-row">
-            <div class="location-detail-icon">🌍</div>
+            <div class="location-detail-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+            </div>
             <div class="location-detail-text">
               <strong>Worldwide Distribution</strong>
               <span>Shipping to 30+ countries for trade partners</span>
             </div>
           </div>
         </div>
+        <a href="https://www.google.com/maps/place/Great+Dunmow" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="align-self:flex-start; margin-top:var(--kaiko-space-md);">
+          Open in Google Maps
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
       </div>
 
     </div>
