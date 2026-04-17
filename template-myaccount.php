@@ -965,16 +965,7 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
     <?php
     // ─────────────── Page header ───────────────
     if ( ! $logged_in ) :
-      ?>
-      <div class="kaiko-page-header">
-        <div class="kaiko-tag">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Trade Partners
-        </div>
-        <h1>Welcome to Your<br>Trade Portal</h1>
-        <p>Kaiko offers wholesale pricing exclusively to approved trade partners. Log in to your account or apply below.</p>
-      </div>
-      <?php
+      // Logged-out: no page header — go straight into the login/signup cards.
     elseif ( $is_pending ) :
       ?>
       <div class="kaiko-page-header">

@@ -442,6 +442,7 @@ body.kaiko-contact .native-form input,
 body.kaiko-contact .native-form select,
 body.kaiko-contact .native-form textarea {
   width: 100%; padding: 13px 18px;
+  line-height: 1.4;
   background: var(--kaiko-white);
   border: 1.5px solid var(--kaiko-border);
   border-radius: var(--kaiko-radius-lg);
@@ -518,7 +519,16 @@ body.kaiko-contact .native-form input::placeholder,
 body.kaiko-contact .native-form textarea::placeholder {
   color: var(--kaiko-light-gray);
 }
-body.kaiko-contact .native-form select { cursor: pointer; }
+body.kaiko-contact .native-form select {
+  cursor: pointer;
+  line-height: 1.4;
+  min-height: 50px;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8' fill='none' stroke='%236b6b6b' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><polyline points='1,1 7,7 13,1'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  background-size: 12px 7px;
+}
 body.kaiko-contact .form-success {
   background: rgba(122,184,0,0.08);
   border: 1px solid var(--kaiko-lime);
@@ -630,7 +640,7 @@ body.kaiko-contact .kaiko-accordion-item.is-active {
 body.kaiko-contact .kaiko-accordion-trigger {
   width: 100%; padding: 22px var(--kaiko-space-xl);
   background: transparent; border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  display: flex; align-items: center; justify-content: flex-start; gap: 20px;
   text-align: left;
   transition: background var(--kaiko-transition-base);
 }
@@ -650,6 +660,19 @@ body.kaiko-contact .kaiko-accordion-icon {
   flex-shrink: 0;
   font-size: 1.25rem; line-height: 1; color: var(--kaiko-mid-gray);
   transition: all var(--kaiko-transition-base);
+}
+body.kaiko-contact .kaiko-accordion-trigger::before,
+body.kaiko-contact .kaiko-accordion-trigger::after {
+  content: none !important;
+  display: none !important;
+}
+body.kaiko-contact .kaiko-accordion-item::before,
+body.kaiko-contact .kaiko-accordion-item::after {
+  content: none !important;
+  display: none !important;
+}
+body.kaiko-contact .kaiko-accordion-icon {
+  margin-left: auto;
 }
 body.kaiko-contact .kaiko-accordion-item.is-active .kaiko-accordion-icon {
   background: var(--kaiko-teal); border-color: var(--kaiko-teal);
@@ -1131,7 +1154,7 @@ body.kaiko-contact .footer-bottom {
 
       <div class="location-info">
         <div class="section-tag">Where We Are</div>
-        <h2>Designed &amp; Shipped<br>from Essex.</h2>
+        <h2>Designed &amp; Shipped<br>direct from the manufacturer.</h2>
         <p>Kaiko is a British brand based in Great Dunmow, Essex. Every product is designed, tested with real animals, and fulfilled from our Essex base &mdash; no middlemen, no overseas warehouses.</p>
         <div class="location-details">
           <div class="location-detail-row">
