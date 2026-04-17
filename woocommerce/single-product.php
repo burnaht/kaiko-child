@@ -258,7 +258,7 @@ while ( have_posts() ) : the_post();
 						if ( $product->is_purchasable() && $product->is_in_stock() ) {
 							woocommerce_template_single_add_to_cart();
 						} else {
-							echo '<p class="kaiko-pp-oos">' . esc_html__( 'Currently out of stock — contact trade@kaikoproducts.com for availability.', 'kaiko-child' ) . '</p>';
+							echo '<p class="kaiko-pp-oos">' . esc_html__( 'Currently out of stock — contact info@kaikoproducts.com for availability.', 'kaiko-child' ) . '</p>';
 						}
 						?>
 					</div>
@@ -281,7 +281,7 @@ while ( have_posts() ) : the_post();
 						<span class="kaiko-pp-trust__icon" aria-hidden="true">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
 						</span>
-						<span class="kaiko-pp-trust__text"><strong><?php esc_html_e( 'Free UK shipping', 'kaiko-child' ); ?></strong><?php esc_html_e( 'On every trade order', 'kaiko-child' ); ?></span>
+						<span class="kaiko-pp-trust__text"><strong><?php esc_html_e( 'Free UK shipping', 'kaiko-child' ); ?></strong><?php esc_html_e( 'On trade orders over £150', 'kaiko-child' ); ?></span>
 					</li>
 					<li class="kaiko-pp-trust__item">
 						<span class="kaiko-pp-trust__icon" aria-hidden="true">
@@ -339,11 +339,6 @@ while ( have_posts() ) : the_post();
 					<button type="button" class="kaiko-pp-tab" data-tab="species" role="tab" aria-selected="false"><?php esc_html_e( 'Species Compatibility', 'kaiko-child' ); ?></button>
 				<?php endif; ?>
 				<button type="button" class="kaiko-pp-tab" data-tab="shipping" role="tab" aria-selected="false"><?php esc_html_e( 'Shipping & Returns', 'kaiko-child' ); ?></button>
-				<?php if ( comments_open() || $rating_count > 0 ) : ?>
-					<button type="button" class="kaiko-pp-tab" data-tab="reviews" role="tab" aria-selected="false">
-						<?php echo esc_html( sprintf( __( 'Trade Reviews (%d)', 'kaiko-child' ), $rating_count ) ); ?>
-					</button>
-				<?php endif; ?>
 			</div>
 
 			<!-- Description -->
@@ -458,26 +453,19 @@ while ( have_posts() ) : the_post();
 			<div class="kaiko-pp-panel" id="tab-shipping" role="tabpanel" hidden>
 				<table class="kaiko-pp-specs">
 					<tr><td><?php esc_html_e( 'UK shipping', 'kaiko-child' ); ?></td>
-						<td><?php esc_html_e( 'Free on every trade order — tracked via DPD 24h', 'kaiko-child' ); ?></td></tr>
+						<td><?php esc_html_e( 'Free on trade orders over £150 — tracked via DPD 24h. Orders under £150 are charged at a standard tracked rate calculated at checkout.', 'kaiko-child' ); ?></td></tr>
 					<tr><td><?php esc_html_e( 'Dispatch', 'kaiko-child' ); ?></td>
-						<td><?php esc_html_e( 'Orders before 2pm dispatch same working day; otherwise next working day', 'kaiko-child' ); ?></td></tr>
+						<td><?php esc_html_e( 'Same working day for stock items on orders placed before 2pm. If any item is unavailable or dispatch is delayed, we\'ll contact you directly with an updated timeline.', 'kaiko-child' ); ?></td></tr>
 					<tr><td><?php esc_html_e( 'Europe', 'kaiko-child' ); ?></td>
-						<td><?php esc_html_e( '£18 flat rate · 3–5 working days tracked', 'kaiko-child' ); ?></td></tr>
+						<td><?php echo wp_kses_post( __( 'Contact <a href="mailto:info@kaikoproducts.com">info@kaikoproducts.com</a> for a shipping quote — rates depend on destination and order weight.', 'kaiko-child' ) ); ?></td></tr>
 					<tr><td><?php esc_html_e( 'Rest of world', 'kaiko-child' ); ?></td>
-						<td><?php esc_html_e( 'Quoted per consignment — contact trade@kaikoproducts.com for rates', 'kaiko-child' ); ?></td></tr>
+						<td><?php echo wp_kses_post( __( 'Quoted per consignment — contact <a href="mailto:info@kaikoproducts.com">info@kaikoproducts.com</a> for rates.', 'kaiko-child' ) ); ?></td></tr>
 					<tr><td><?php esc_html_e( 'Returns', 'kaiko-child' ); ?></td>
-						<td><?php esc_html_e( '30-day hassle-free returns on undamaged stock in original packaging', 'kaiko-child' ); ?></td></tr>
+						<td><?php esc_html_e( '30-day hassle-free returns on undamaged stock in original packaging.', 'kaiko-child' ); ?></td></tr>
 					<tr><td><?php esc_html_e( 'Damaged goods', 'kaiko-child' ); ?></td>
-						<td><?php esc_html_e( 'Photograph on receipt and email within 48h — immediate replacement or credit', 'kaiko-child' ); ?></td></tr>
+						<td><?php echo wp_kses_post( __( 'Photograph on receipt and email <a href="mailto:info@kaikoproducts.com">info@kaikoproducts.com</a> within 48h — immediate replacement or credit.', 'kaiko-child' ) ); ?></td></tr>
 				</table>
 			</div>
-
-			<!-- Reviews -->
-			<?php if ( comments_open() || $rating_count > 0 ) : ?>
-				<div class="kaiko-pp-panel" id="tab-reviews" role="tabpanel" hidden>
-					<?php comments_template(); ?>
-				</div>
-			<?php endif; ?>
 		</section>
 
 		<!-- Related -->
@@ -565,6 +553,20 @@ body.kaiko-product-page #kaiko-main {
 	   Zero left/right/bottom so our own containers control inner padding. */
 	padding: 72px 0 0 !important;
 	float: none !important;
+}
+/* WP admin bar: 32px desktop, 46px mobile — push the Kaiko nav below it
+   and add matching extra top padding on .kaiko-main so content still clears. */
+body.kaiko-product-page.admin-bar .kaiko-nav { top: 32px !important; }
+body.kaiko-product-page.admin-bar .kaiko-main,
+body.kaiko-product-page.admin-bar #kaiko-main {
+	padding-top: calc(72px + 32px) !important;
+}
+@media screen and (max-width: 782px) {
+	body.kaiko-product-page.admin-bar .kaiko-nav { top: 46px !important; }
+	body.kaiko-product-page.admin-bar .kaiko-main,
+	body.kaiko-product-page.admin-bar #kaiko-main {
+		padding-top: calc(72px + 46px) !important;
+	}
 }
 body.kaiko-product-page .main-page-wrapper,
 body.kaiko-product-page .site-content,
@@ -1026,7 +1028,16 @@ body.kaiko-product-page .kaiko-pp-info {
 body.kaiko-product-page .kaiko-pp-tabs {
 	display: flex; gap: 6px;
 	border-bottom: 1px solid var(--k-stone-200);
-	margin-bottom: 48px; overflow-x: auto;
+	margin-bottom: 48px;
+	overflow-x: auto;
+	/* Hide scrollbar (still scrollable on mobile via touch) */
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+body.kaiko-product-page .kaiko-pp-tabs::-webkit-scrollbar {
+	display: none;
+	width: 0;
+	height: 0;
 }
 body.kaiko-product-page .kaiko-pp-tab {
 	padding: 16px 24px;

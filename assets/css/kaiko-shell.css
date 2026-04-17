@@ -18,12 +18,54 @@
 .kaiko-page .website-wrapper > footer,
 .kaiko-page .whb-sticked,
 .kaiko-page .whb-clone,
-.kaiko-page .woodmart-sticky-header-wrap {
+.kaiko-page .woodmart-sticky-header-wrap,
+/* Woodmart mobile bottom-nav (Shop / Wishlist / Cart / Account) —
+   we have our own Kaiko mobile menu so this must be hidden everywhere. */
+.kaiko-page .wd-mobile-nav,
+.kaiko-page .mobile-nav,
+.kaiko-page .wd-sticky-nav-mobile,
+.kaiko-page .wd-bottom-navigation,
+.kaiko-page .woodmart-mobile-bottom-bar,
+.kaiko-page .whb-mobile-nav,
+.kaiko-page .mobile-sticky-toolbar,
+.kaiko-page .wd-sticky-toolbar,
+.kaiko-page .wd-header-mobile-nav {
   display: none !important;
+}
+
+/* Belt-and-braces catch-all for any Woodmart mobile toolbar that renders
+   as position:fixed at the bottom of the viewport — match by behaviour. */
+@media (max-width: 1024px) {
+  .kaiko-page [class*="mobile-nav"][class*="wd-"],
+  .kaiko-page [class*="mobile-bottom"][class*="wd-"],
+  .kaiko-page [class*="wd-sticky"][class*="mobile"],
+  .kaiko-page [class*="woodmart-mobile-bottom"] {
+    display: none !important;
+  }
 }
 
 .kaiko-page .website-wrapper {
   padding-top: 0 !important;
+}
+
+/* ===========================
+   WP ADMIN BAR — sit the fixed Kaiko nav BELOW the black admin bar
+   (32px desktop, 46px at ≤782px) so it doesn't clip over the header.
+   =========================== */
+
+body.admin-bar .kaiko-nav {
+  top: 32px;
+}
+body.admin-bar .kaiko-main {
+  padding-top: calc(72px + 32px);
+}
+@media screen and (max-width: 782px) {
+  body.admin-bar .kaiko-nav {
+    top: 46px;
+  }
+  body.admin-bar .kaiko-main {
+    padding-top: calc(72px + 46px);
+  }
 }
 
 
