@@ -168,10 +168,20 @@ function kaiko_inline_critical_css() {
 
 /**
  * Defer non-critical JavaScript.
+ *
+ * IMPORTANT: Frontend only. Deferring admin scripts (underscore, wp-i18n,
+ * wp-data, moment, tinymce, etc.) breaks the wp-admin product edit page
+ * because inline scripts printed by core (post.php:89+) run before the
+ * deferred deps finish loading. Early-return on is_admin() or customizer.
  */
 add_filter( 'script_loader_tag', 'kaiko_defer_scripts', 10, 3 );
 
 function kaiko_defer_scripts( $tag, $handle, $src ) {
+    // Never defer in wp-admin, login, or customizer — dependency order must be preserved.
+    if ( is_admin() || is_customize_preview() || ( function_exists( 'is_login' ) && is_login() ) ) {
+        return $tag;
+    }
+
     // Scripts that should NOT be deferred
     $no_defer = apply_filters( 'kaiko_no_defer_scripts', array(
         'jquery',
