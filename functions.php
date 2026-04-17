@@ -669,58 +669,139 @@ function kaiko_register_acf_fields() {
    ============================================ */
 
 /**
+ * Default wholesale-tier schedule applied to every purchasable product
+ * when no per-product ACF tiers are configured.
+ *
+ * Matches the silkwormstore.co.uk/wholesale pattern: 6+=12% off, 12+=22% off,
+ * 24+=30% off. Filterable so the schedule can be tuned without a code change.
+ *
+ * @return array of ['min_qty'=>int,'max_qty'=>int,'discount_pct'=>float]
+ */
+function kaiko_get_default_tier_schedule() {
+    return apply_filters( 'kaiko_default_tier_schedule', array(
+        array( 'min_qty' => 1,  'max_qty' => 5,  'discount_pct' => 0 ),
+        array( 'min_qty' => 6,  'max_qty' => 11, 'discount_pct' => 12 ),
+        array( 'min_qty' => 12, 'max_qty' => 23, 'discount_pct' => 22 ),
+        array( 'min_qty' => 24, 'max_qty' => 0,  'discount_pct' => 30 ),
+    ) );
+}
+
+/**
  * Get normalised tier array for a product.
  *
+ * First honours per-product ACF tiers (kaiko_wholesale_tiers). If none are
+ * configured, falls back to the default schedule applied to the product's
+ * base price — guaranteeing every purchasable product shows bulk discounts.
+ *
+ * For variable products, $base comes from $product->get_price() which is
+ * the min variation price. Callers (single-product page JS) can recompute
+ * tier prices per-variation using the emitted discount_pct.
+ *
  * @param int $product_id
- * @return array of ['min_qty'=>int,'max_qty'=>int,'unit_price'=>float,'label'=>string]
+ * @return array of ['min_qty'=>int,'max_qty'=>int,'unit_price'=>float,'discount_pct'=>float,'label'=>string,'is_default'=>bool]
  */
 function kaiko_get_product_tiers( $product_id ) {
-    if ( ! function_exists( 'get_field' ) ) {
-        return array();
+    // 1) ACF-configured per-product tiers take precedence.
+    if ( function_exists( 'get_field' ) ) {
+        $raw = get_field( 'kaiko_wholesale_tiers', $product_id );
+        if ( ! empty( $raw ) && is_array( $raw ) ) {
+            $tiers = array();
+            $max_price = 0;
+            foreach ( $raw as $row ) {
+                $price = isset( $row['unit_price'] ) ? (float) $row['unit_price'] : 0;
+                if ( $price <= 0 ) continue;
+                if ( $price > $max_price ) $max_price = $price;
+                $tiers[] = array(
+                    'min_qty'      => max( 1, isset( $row['min_qty'] ) ? (int) $row['min_qty'] : 1 ),
+                    'max_qty'      => max( 0, isset( $row['max_qty'] ) ? (int) $row['max_qty'] : 0 ),
+                    'unit_price'   => $price,
+                    'discount_pct' => 0,
+                    'label'        => isset( $row['label'] ) ? sanitize_text_field( $row['label'] ) : '',
+                    'is_default'   => false,
+                );
+            }
+            if ( ! empty( $tiers ) ) {
+                // Compute discount_pct vs highest configured price so the
+                // JS recompute + "X% off" labels are consistent.
+                foreach ( $tiers as $i => $t ) {
+                    $tiers[ $i ]['discount_pct'] = ( $max_price > 0 )
+                        ? round( ( 1 - ( $t['unit_price'] / $max_price ) ) * 100, 2 )
+                        : 0;
+                }
+                usort( $tiers, function( $a, $b ) { return $a['min_qty'] - $b['min_qty']; } );
+                return $tiers;
+            }
+        }
     }
-    $raw = get_field( 'kaiko_wholesale_tiers', $product_id );
-    if ( empty( $raw ) || ! is_array( $raw ) ) {
-        return array();
-    }
-    $tiers = array();
-    foreach ( $raw as $row ) {
-        $min = isset( $row['min_qty'] ) ? (int) $row['min_qty'] : 1;
-        $max = isset( $row['max_qty'] ) ? (int) $row['max_qty'] : 0;
-        $price = isset( $row['unit_price'] ) ? (float) $row['unit_price'] : 0;
-        if ( $price <= 0 ) continue;
+
+    // 2) Fallback: default schedule applied to product base price.
+    $product = wc_get_product( $product_id );
+    if ( ! $product ) return array();
+    $base = (float) $product->get_price();
+    if ( $base <= 0 ) return array();
+
+    $schedule = kaiko_get_default_tier_schedule();
+    $tiers    = array();
+    foreach ( $schedule as $row ) {
+        $pct  = isset( $row['discount_pct'] ) ? (float) $row['discount_pct'] : 0;
+        $unit = round( $base * ( 1 - $pct / 100 ), 2 );
         $tiers[] = array(
-            'min_qty'    => max( 1, $min ),
-            'max_qty'    => max( 0, $max ),
-            'unit_price' => $price,
-            'label'      => isset( $row['label'] ) ? sanitize_text_field( $row['label'] ) : '',
+            'min_qty'      => (int) $row['min_qty'],
+            'max_qty'      => (int) $row['max_qty'],
+            'unit_price'   => $unit,
+            'discount_pct' => $pct,
+            'label'        => '',
+            'is_default'   => true,
         );
     }
-    // Sort by min_qty asc
-    usort( $tiers, function( $a, $b ) { return $a['min_qty'] - $b['min_qty']; } );
     return $tiers;
+}
+
+/**
+ * Find the tier that matches a given quantity (or null).
+ */
+function kaiko_find_tier_for_qty( $tiers, $qty ) {
+    foreach ( $tiers as $tier ) {
+        $in_band = ( $tier['max_qty'] === 0 )
+            ? ( $qty >= $tier['min_qty'] )
+            : ( $qty >= $tier['min_qty'] && $qty <= $tier['max_qty'] );
+        if ( $in_band ) return $tier;
+    }
+    return null;
 }
 
 /**
  * Return the unit price for a given qty based on configured tiers,
  * falling back to the product's base price.
+ *
+ * For per-product ACF tiers, returns the tier's absolute unit_price.
+ * For default-schedule tiers, applies the tier's discount_pct to $override_base
+ * (if provided) — this is how variations inherit per-variation tier pricing.
  */
-function kaiko_get_tier_price( $product_id, $qty ) {
-    $tiers = kaiko_get_product_tiers( $product_id );
+function kaiko_get_tier_price( $product_id, $qty, $override_base = null ) {
+    $tiers   = kaiko_get_product_tiers( $product_id );
     $product = wc_get_product( $product_id );
-    $base = $product ? (float) $product->get_price() : 0;
+    $base    = ( $override_base !== null )
+        ? (float) $override_base
+        : ( $product ? (float) $product->get_price() : 0 );
     if ( empty( $tiers ) ) return $base;
-    foreach ( $tiers as $tier ) {
-        $in_band = ( $tier['max_qty'] === 0 )
-            ? ( $qty >= $tier['min_qty'] )
-            : ( $qty >= $tier['min_qty'] && $qty <= $tier['max_qty'] );
-        if ( $in_band ) return (float) $tier['unit_price'];
+
+    $tier = kaiko_find_tier_for_qty( $tiers, $qty );
+    if ( ! $tier ) return $base;
+
+    // Default schedule → apply discount_pct to the (possibly overridden) base
+    if ( ! empty( $tier['is_default'] ) ) {
+        $pct = (float) $tier['discount_pct'];
+        return round( $base * ( 1 - $pct / 100 ), 2 );
     }
-    return $base;
+    // ACF absolute unit_price
+    return (float) $tier['unit_price'];
 }
 
 /**
  * Apply tier pricing to cart items based on quantity.
- * Runs on every cart recalculation.
+ * Runs on every cart recalculation. For variable products, uses the
+ * selected variation's base price so each variation gets its own tier.
  */
 add_action( 'woocommerce_before_calculate_totals', 'kaiko_apply_tier_pricing_to_cart', 20, 1 );
 
@@ -732,7 +813,12 @@ function kaiko_apply_tier_pricing_to_cart( $cart ) {
     foreach ( $cart->get_cart() as $cart_item ) {
         $product_id = $cart_item['product_id'];
         $qty        = $cart_item['quantity'];
-        $tier_price = kaiko_get_tier_price( $product_id, $qty );
+        // Use the variation/product's own current price as the base so each
+        // variation gets per-variation tier pricing under the default schedule.
+        $item_base  = isset( $cart_item['data'] ) && is_object( $cart_item['data'] )
+            ? (float) $cart_item['data']->get_price()
+            : null;
+        $tier_price = kaiko_get_tier_price( $product_id, $qty, $item_base );
         if ( $tier_price > 0 ) {
             $cart_item['data']->set_price( $tier_price );
         }

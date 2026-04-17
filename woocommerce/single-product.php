@@ -223,22 +223,20 @@ while ( have_posts() ) : the_post();
 									}
 								}
 								foreach ( $tiers as $t ) :
-									$min   = (int) $t['min_qty'];
-									$max   = isset( $t['max_qty'] ) ? (int) $t['max_qty'] : 0;
-									$price = (float) $t['unit_price'];
-									$label = $max > 0 ? $min . ' – ' . $max : $min . '+';
-									$off   = '';
-									if ( $highest_price > 0 && $price < $highest_price ) {
-										$pct = round( ( 1 - ( $price / $highest_price ) ) * 100 );
-										if ( $pct > 0 ) {
-											$off = $pct . '% off';
-										}
-									}
+									$min        = (int) $t['min_qty'];
+									$max        = isset( $t['max_qty'] ) ? (int) $t['max_qty'] : 0;
+									$price      = (float) $t['unit_price'];
+									$pct        = isset( $t['discount_pct'] ) ? (float) $t['discount_pct'] : 0;
+									$is_default = ! empty( $t['is_default'] );
+									$label      = $max > 0 ? $min . ' – ' . $max : $min . '+';
+									$off        = ( $pct > 0 ) ? round( $pct ) . '% off' : '';
 									?>
 									<div class="kaiko-pp-tier"
 										 data-min="<?php echo esc_attr( $min ); ?>"
 										 data-max="<?php echo esc_attr( $max ); ?>"
-										 data-price="<?php echo esc_attr( $price ); ?>">
+										 data-price="<?php echo esc_attr( $price ); ?>"
+										 data-discount-pct="<?php echo esc_attr( $pct ); ?>"
+										 data-default-schedule="<?php echo $is_default ? '1' : '0'; ?>">
 										<div class="kaiko-pp-tier__qty"><?php echo esc_html( $label ); ?></div>
 										<div class="kaiko-pp-tier__price"><?php echo wp_kses_post( wc_price( $price ) ); ?></div>
 										<div class="kaiko-pp-tier__unit">
@@ -1334,10 +1332,48 @@ body.kaiko-product-page .kaiko-pp-tile__value {
 	}
 	refresh();
 
-	// ---- Variable products: react to WC's found_variation event ----
+	// ---------------------------------------------------------
+	// Variable products: recompute tier prices from the picked
+	// variation. For default-schedule tiers we apply the stored
+	// discount_pct to the variation's display_price. ACF absolute
+	// tiers are left untouched.
+	// ---------------------------------------------------------
+	function formatMoney(n) {
+		// Match site currency format roughly — can be upgraded via wc_price on server if needed.
+		return '£' + n.toFixed(2);
+	}
+
+	function recomputeTiersFromBase(baseUnit) {
+		if (!tiersRoot || !isFinite(baseUnit) || baseUnit <= 0) return;
+		var cells = tiersRoot.querySelectorAll('.kaiko-pp-tier');
+		cells.forEach(function (c) {
+			if (c.getAttribute('data-default-schedule') !== '1') return;
+			var pct = parseFloat(c.getAttribute('data-discount-pct')) || 0;
+			var unit = Math.round(baseUnit * (1 - pct / 100) * 100) / 100;
+			c.dataset.price = unit.toFixed(2);
+			var priceEl = c.querySelector('.kaiko-pp-tier__price');
+			if (priceEl) priceEl.innerHTML = '<bdi>' + formatMoney(unit) + '</bdi>';
+		});
+		refresh();
+	}
+
 	if (window.jQuery) {
-		jQuery(document.body).on('found_variation', function () {
+		jQuery(document.body).on('found_variation', function (evt, form, variation) {
+			if (variation && typeof variation.display_price !== 'undefined') {
+				recomputeTiersFromBase(parseFloat(variation.display_price));
+			}
 			setTimeout(refresh, 50);
+		});
+		jQuery(document.body).on('reset_data', function () {
+			// Fall back to the original base (embedded as data-price on first tier if default).
+			var first = tiersRoot ? tiersRoot.querySelector('.kaiko-pp-tier[data-default-schedule="1"]') : null;
+			if (first) {
+				var pct0 = parseFloat(first.getAttribute('data-discount-pct')) || 0;
+				var baseFromFirst = parseFloat(first.dataset.price) / (1 - pct0 / 100);
+				if (isFinite(baseFromFirst) && baseFromFirst > 0) {
+					recomputeTiersFromBase(baseFromFirst);
+				}
+			}
 		});
 	}
 
@@ -1348,17 +1384,22 @@ body.kaiko-product-page .kaiko-pp-tile__value {
 	// so WC's variations_form JS handles the rest.
 	// ---------------------------------------------------------
 	function splitOptionText(raw) {
-		// Split "Large 22cm diameter" / "Large (22cm)" / "Large - 22cm" / "Large — 22cm"
-		// Into { label: "Large", sub: "22cm diameter" }
+		// Split option text into { label, sub } ONLY when there's a clear
+		// separator, so "Reptile Green" / "Stone Grey" / "Volcanic Red" stay
+		// as single labels and only "Large 22cm" / "Bowl (500ml)" split.
 		var t = (raw || '').trim();
 		var m;
-		if ((m = t.match(/^([^\-\—\(]+)[\-\—]\s*(.+)$/))) {
-			return { label: m[1].trim(), sub: m[2].replace(/[\)\s]+$/, '').trim() };
-		}
-		if ((m = t.match(/^(.+?)\s*\((.+?)\)\s*$/))) {
+		// En-dash, em-dash, hyphen with spaces, middle-dot
+		if ((m = t.match(/^(.+?)\s*[\-\—\–·]\s*(.+?)\s*$/))) {
 			return { label: m[1].trim(), sub: m[2].trim() };
 		}
-		if ((m = t.match(/^(\S+)\s+(.+)$/)) && /^\d|cm|mm|ml|g|kg|"/i.test(m[2])) {
+		// Parenthesised suffix: "Large (22cm diameter)"
+		if ((m = t.match(/^(.+?)\s*\(([^)]+)\)\s*$/))) {
+			return { label: m[1].trim(), sub: m[2].trim() };
+		}
+		// Measurement-suffix: "Large 22cm", "Bowl 500ml", "Cube 15g" — only
+		// when the trailing token starts with a digit and ends in a unit.
+		if ((m = t.match(/^(.+?)\s+(\d+(?:\.\d+)?\s*(?:cm|mm|m|ml|l|g|kg|oz|lb|in|ft|"|'')\b.*?)\s*$/i))) {
 			return { label: m[1].trim(), sub: m[2].trim() };
 		}
 		return { label: t, sub: '' };
