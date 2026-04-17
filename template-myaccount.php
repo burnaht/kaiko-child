@@ -3,14 +3,32 @@
  * Template Name: Kaiko My Account
  * Template Post Type: page
  *
- * Custom my-account template that bypasses WoodMart's default layout
- * and renders login/register + account dashboard in the Kaiko design system.
- * Restyled with UI UX Pro Max — Liquid Glass style, Cormorant/Montserrat typography.
+ * Role-aware account template with three states:
+ *   A — Logged out:  login + apply forms (form-login.php override)
+ *   B — kaiko_pending: application status dashboard, no shop access
+ *   C — Approved (kaiko_trade / customer / admin / shop_manager): full dashboard
+ *
+ * Bypasses the [woocommerce_my_account] shortcode entirely. Sub-endpoints
+ * (orders, addresses, edit-account, etc.) are rendered inside our own layout
+ * by dispatching the same action WC uses internally.
  *
  * @package KaikoChild
  */
 
 defined( 'ABSPATH' ) || exit;
+
+$current_user    = wp_get_current_user();
+$logged_in       = is_user_logged_in();
+$is_admin_role   = $logged_in && user_can( $current_user, 'manage_options' );
+$is_shop_manager = $logged_in && user_can( $current_user, 'manage_woocommerce' );
+$user_roles      = $logged_in ? (array) $current_user->roles : array();
+
+$is_pending = $logged_in
+	&& in_array( 'kaiko_pending', $user_roles, true )
+	&& ! $is_admin_role
+	&& ! $is_shop_manager;
+
+$is_approved = $logged_in && ! $is_pending;
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -19,7 +37,7 @@ defined( 'ABSPATH' ) || exit;
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700&display=swap">
 <?php wp_head(); ?>
 
 <style>
@@ -27,14 +45,12 @@ defined( 'ABSPATH' ) || exit;
    KAIKO DESIGN TOKENS — Liquid Glass
    ============================================ */
 :root {
-  /* Brand palette */
   --k-teal:        #1a5c52;
   --k-deep-teal:   #134840;
   --k-lime:        #b8d435;
   --k-gold:        #c89b3c;
   --k-gold-soft:   #d4a853;
 
-  /* Neutrals */
   --k-dark:        #1C1917;
   --k-charcoal:    #292524;
   --k-stone-700:   #44403C;
@@ -46,7 +62,6 @@ defined( 'ABSPATH' ) || exit;
   --k-stone-50:    #FAFAF9;
   --k-white:       #FFFFFF;
 
-  /* Glass tokens */
   --k-glass-bg:        rgba(255,255,255,0.72);
   --k-glass-bg-strong: rgba(255,255,255,0.88);
   --k-glass-border:    rgba(255,255,255,0.45);
@@ -55,17 +70,14 @@ defined( 'ABSPATH' ) || exit;
   --k-glass-blur:      blur(20px);
   --k-glass-blur-lg:   blur(32px);
 
-  /* Typography */
   --k-font-display: 'Cormorant Garamond', 'Georgia', serif;
-  --k-font-body:    'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+  --k-font-body:    'Inter', 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Radius */
   --k-radius-sm:  8px;
   --k-radius-md:  12px;
   --k-radius-lg:  20px;
   --k-radius-xl:  28px;
 
-  /* Transitions */
   --k-ease:       cubic-bezier(0.23, 1, 0.32, 1);
   --k-duration:   0.25s;
   --k-duration-lg: 0.4s;
@@ -94,7 +106,6 @@ body.kaiko-myaccount-page {
 .kaiko-myaccount-wrap *::before,
 .kaiko-myaccount-wrap *::after { box-sizing: border-box; }
 
-/* Subtle background grain texture */
 .kaiko-myaccount-wrap::before {
   content: '';
   position: fixed; inset: 0;
@@ -165,9 +176,7 @@ body.kaiko-myaccount-page {
   transform: translateY(-1px) !important;
 }
 
-/* ============================================
-   HAMBURGER — Animated lines
-   ============================================ */
+/* HAMBURGER */
 .kaiko-myaccount-wrap .kaiko-hamburger {
   display: none; background: none; border: none; cursor: pointer;
   padding: 8px; z-index: 1001; position: relative;
@@ -189,17 +198,13 @@ body.kaiko-myaccount-page {
 .kaiko-myaccount-wrap .kaiko-hamburger.active span:nth-child(3) {
   transform: translateY(-6.5px) rotate(-45deg);
 }
-
-/* Focus visible for keyboard nav */
 .kaiko-myaccount-wrap .kaiko-hamburger:focus-visible {
   outline: 2px solid var(--k-teal);
   outline-offset: 4px;
   border-radius: 4px;
 }
 
-/* ============================================
-   MOBILE OVERLAY & SLIDE-OUT MENU
-   ============================================ */
+/* MOBILE MENU */
 .kaiko-mobile-overlay {
   position: fixed; inset: 0;
   background: rgba(28,25,23,0.35);
@@ -222,7 +227,6 @@ body.kaiko-myaccount-page {
   overflow-y: auto;
 }
 .kaiko-mobile-menu.open { right: 0; }
-
 .kaiko-mobile-menu__header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 24px 28px;
@@ -240,9 +244,6 @@ body.kaiko-myaccount-page {
   border-radius: 6px;
 }
 .kaiko-mobile-menu__close:hover { color: var(--k-dark); }
-.kaiko-mobile-menu__close:focus-visible {
-  outline: 2px solid var(--k-teal); outline-offset: 2px;
-}
 
 .kaiko-mobile-menu__links {
   flex: 1; display: flex; flex-direction: column; padding: 12px 0;
@@ -259,7 +260,6 @@ body.kaiko-myaccount-page {
 .kaiko-mobile-menu__links a:hover {
   background: rgba(26,92,82,0.04); color: var(--k-teal);
 }
-
 .kaiko-mobile-menu__footer {
   padding: 24px 28px;
   border-top: 1px solid var(--k-stone-200);
@@ -273,9 +273,7 @@ body.kaiko-myaccount-page {
   letter-spacing: 0.04em;
   transition: all var(--k-duration) var(--k-ease);
 }
-.kaiko-mobile-menu__footer .btn-primary:hover {
-  background: var(--k-deep-teal);
-}
+.kaiko-mobile-menu__footer .btn-primary:hover { background: var(--k-deep-teal); }
 .kaiko-mobile-menu__footer .btn-secondary {
   display: block; text-align: center;
   background: transparent; color: var(--k-stone-700);
@@ -300,7 +298,7 @@ body.kaiko-myaccount-page {
 }
 
 /* ============================================
-   PAGE HEADER — Elegant serif headings
+   PAGE HEADER
    ============================================ */
 .kaiko-page-header {
   text-align: center; margin-bottom: 56px;
@@ -334,7 +332,7 @@ body.kaiko-myaccount-page {
 }
 
 /* ============================================
-   TRADE INTRO BANNER — Glass card
+   TRADE INTRO (logged-out only)
    ============================================ */
 .kaiko-trade-intro {
   background: var(--k-glass-bg);
@@ -348,9 +346,7 @@ body.kaiko-myaccount-page {
   box-shadow: var(--k-glass-shadow);
   transition: box-shadow var(--k-duration-lg) var(--k-ease);
 }
-.kaiko-trade-intro:hover {
-  box-shadow: var(--k-glass-shadow-lg);
-}
+.kaiko-trade-intro:hover { box-shadow: var(--k-glass-shadow-lg); }
 .kaiko-trade-intro h3 {
   font-family: var(--k-font-display);
   font-size: 1.5rem; font-weight: 600;
@@ -361,7 +357,6 @@ body.kaiko-myaccount-page {
   font-size: 0.92rem; color: var(--k-stone-500);
   max-width: 560px; margin: 0 auto 28px; line-height: 1.75;
 }
-
 .kaiko-trade-benefits {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 36px;
 }
@@ -375,7 +370,7 @@ body.kaiko-myaccount-page {
 }
 
 /* ============================================
-   AUTH GRID (LOGIN + REGISTER) — Glass cards
+   AUTH GRID — login + register cards
    ============================================ */
 .kaiko-auth-grid {
   display: grid; grid-template-columns: 1fr 1fr;
@@ -396,7 +391,6 @@ body.kaiko-myaccount-page {
   box-shadow: var(--k-glass-shadow-lg);
   transform: translateY(-2px);
 }
-
 .kaiko-auth-card h2 {
   font-family: var(--k-font-display);
   font-size: 1.65rem; font-weight: 600;
@@ -409,7 +403,7 @@ body.kaiko-myaccount-page {
 }
 
 /* ============================================
-   FORM STYLING — Refined inputs
+   FORMS
    ============================================ */
 .kaiko-myaccount-wrap .woocommerce-form-row,
 .kaiko-myaccount-wrap .form-row {
@@ -424,9 +418,7 @@ body.kaiko-myaccount-page {
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-.kaiko-myaccount-wrap label .required {
-  color: var(--k-gold);
-}
+.kaiko-myaccount-wrap label .required { color: var(--k-gold); }
 
 .kaiko-myaccount-wrap input[type="text"],
 .kaiko-myaccount-wrap input[type="email"],
@@ -463,18 +455,14 @@ body.kaiko-myaccount-page {
   box-shadow: 0 0 0 3px rgba(26,92,82,0.1);
   background: var(--k-white);
 }
-
 .kaiko-myaccount-wrap select {
   cursor: pointer;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 16px center;
   padding-right: 40px;
 }
-.kaiko-myaccount-wrap textarea {
-  min-height: 100px; resize: vertical;
-}
+.kaiko-myaccount-wrap textarea { min-height: 100px; resize: vertical; }
 
-/* Checkbox (Remember me) */
 .kaiko-myaccount-wrap .woocommerce-form__label-for-checkbox {
   display: flex; align-items: center; gap: 10px; cursor: pointer;
   text-transform: none; font-size: 0.88rem; font-weight: 500;
@@ -485,9 +473,7 @@ body.kaiko-myaccount-page {
   cursor: pointer;
 }
 
-/* ============================================
-   BUTTONS — Polished with hover lift
-   ============================================ */
+/* BUTTONS */
 .kaiko-myaccount-wrap button[type="submit"],
 .kaiko-myaccount-wrap .button,
 .kaiko-myaccount-wrap .woocommerce-Button {
@@ -502,14 +488,6 @@ body.kaiko-myaccount-page {
   text-decoration: none; text-align: center;
   position: relative; overflow: hidden;
 }
-.kaiko-myaccount-wrap button[type="submit"]::before,
-.kaiko-myaccount-wrap .button::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-  opacity: 0;
-  transition: opacity var(--k-duration) var(--k-ease);
-}
 .kaiko-myaccount-wrap button[type="submit"]:hover,
 .kaiko-myaccount-wrap .button:hover,
 .kaiko-myaccount-wrap .woocommerce-Button:hover {
@@ -517,22 +495,7 @@ body.kaiko-myaccount-page {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(26,92,82,0.2);
 }
-.kaiko-myaccount-wrap button[type="submit"]:hover::before,
-.kaiko-myaccount-wrap .button:hover::before {
-  opacity: 1;
-}
-.kaiko-myaccount-wrap button[type="submit"]:active,
-.kaiko-myaccount-wrap .button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(26,92,82,0.15);
-}
-.kaiko-myaccount-wrap button[type="submit"]:focus-visible,
-.kaiko-myaccount-wrap .button:focus-visible {
-  outline: 2px solid var(--k-teal);
-  outline-offset: 3px;
-}
 
-/* Lost password link */
 .kaiko-myaccount-wrap .lost_password {
   margin-top: 18px; text-align: center;
 }
@@ -544,7 +507,6 @@ body.kaiko-myaccount-page {
 }
 .kaiko-myaccount-wrap .lost_password a:hover { color: var(--k-teal); }
 
-/* Auto-generate password note */
 .kaiko-myaccount-wrap .woocommerce-form-register > p:not(.form-row) {
   font-size: 0.82rem; color: var(--k-stone-500);
   background: var(--k-stone-100); padding: 14px 18px;
@@ -553,7 +515,7 @@ body.kaiko-myaccount-page {
   border: 1px solid var(--k-stone-200);
 }
 
-/* WooCommerce notices */
+/* WC NOTICES */
 .kaiko-myaccount-wrap .woocommerce-error,
 .kaiko-myaccount-wrap .woocommerce-message,
 .kaiko-myaccount-wrap .woocommerce-info {
@@ -577,11 +539,47 @@ body.kaiko-myaccount-page {
 }
 
 /* ============================================
-   LOGGED-IN ACCOUNT DASHBOARD — Glass layout
+   ACCOUNT DASHBOARD LAYOUT (pending + approved)
    ============================================ */
+.kaiko-account-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 36px;
+  align-items: start;
+}
 
-/* Content area */
-.kaiko-myaccount-wrap .woocommerce-MyAccount-content {
+.kaiko-account-nav {
+  background: var(--k-glass-bg);
+  backdrop-filter: var(--k-glass-blur);
+  -webkit-backdrop-filter: var(--k-glass-blur);
+  border: 1px solid var(--k-glass-border);
+  border-radius: var(--k-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--k-glass-shadow);
+}
+.kaiko-account-nav ul { list-style: none; margin: 0; padding: 10px 0; }
+.kaiko-account-nav li a {
+  display: flex; align-items: center;
+  padding: 14px 28px;
+  font-family: var(--k-font-body);
+  font-size: 0.88rem; font-weight: 500;
+  color: var(--k-stone-500);
+  text-decoration: none;
+  transition: all var(--k-duration) var(--k-ease);
+  border-left: 3px solid transparent;
+}
+.kaiko-account-nav li a:hover {
+  background: rgba(26,92,82,0.04);
+  color: var(--k-teal);
+}
+.kaiko-account-nav li.active a {
+  background: rgba(26,92,82,0.06);
+  color: var(--k-teal);
+  font-weight: 600;
+  border-left-color: var(--k-teal);
+}
+
+.kaiko-account-content {
   background: var(--k-glass-bg);
   backdrop-filter: var(--k-glass-blur);
   -webkit-backdrop-filter: var(--k-glass-blur);
@@ -590,19 +588,24 @@ body.kaiko-myaccount-page {
   padding: 44px;
   box-shadow: var(--k-glass-shadow);
 }
-.kaiko-myaccount-wrap .woocommerce-MyAccount-content > p {
-  font-size: 0.92rem; line-height: 1.8; color: var(--k-stone-500);
+.kaiko-account-content > h2 {
+  font-family: var(--k-font-display);
+  font-size: 1.65rem; font-weight: 600;
+  margin: 0 0 8px; color: var(--k-dark);
+  letter-spacing: 0.01em;
 }
-.kaiko-myaccount-wrap .woocommerce-MyAccount-content a {
+.kaiko-account-content .kaiko-greeting {
+  font-size: 0.92rem; color: var(--k-stone-500);
+  margin: 0 0 32px; line-height: 1.7;
+}
+.kaiko-account-content a {
   color: var(--k-teal); text-decoration: none; font-weight: 500;
   transition: color var(--k-duration) var(--k-ease);
 }
-.kaiko-myaccount-wrap .woocommerce-MyAccount-content a:hover {
-  color: var(--k-deep-teal);
-}
+.kaiko-account-content a:hover { color: var(--k-deep-teal); }
 
-/* Account notice banners */
-.kaiko-myaccount-wrap .kaiko-account-notice {
+/* Account notice */
+.kaiko-account-notice {
   padding: 22px 28px; border-radius: var(--k-radius-md);
   margin-bottom: 28px;
   border: 1px solid var(--k-glass-border);
@@ -610,48 +613,151 @@ body.kaiko-myaccount-page {
   backdrop-filter: var(--k-glass-blur);
   -webkit-backdrop-filter: var(--k-glass-blur);
 }
-.kaiko-myaccount-wrap .kaiko-account-notice h3 {
+.kaiko-account-notice h3 {
   font-family: var(--k-font-display); font-size: 1.15rem;
   font-weight: 600; margin: 0 0 6px; color: var(--k-dark);
 }
-.kaiko-myaccount-wrap .kaiko-account-notice p {
+.kaiko-account-notice p {
   font-size: 0.88rem; margin: 0; line-height: 1.65; color: var(--k-stone-500);
 }
-.kaiko-myaccount-wrap .kaiko-account-notice.info {
+.kaiko-account-notice.info {
   background: rgba(26,92,82,0.04); border-color: rgba(26,92,82,0.12);
 }
-.kaiko-myaccount-wrap .kaiko-account-notice.warning {
-  background: rgba(220,38,38,0.04); border-color: rgba(220,38,38,0.12);
-}
-.kaiko-myaccount-wrap .kaiko-account-notice.success {
+.kaiko-account-notice.success {
   background: rgba(26,92,82,0.04); border-color: var(--k-teal);
+}
+.kaiko-account-notice.pending {
+  background: rgba(200,155,60,0.08);
+  border-color: rgba(200,155,60,0.35);
+}
+.kaiko-account-notice.pending h3 { color: var(--k-charcoal); }
+
+/* Stats grid */
+.kaiko-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 32px;
+}
+.kaiko-stat-card {
+  background: var(--k-stone-50);
+  border: 1px solid var(--k-stone-200);
+  border-radius: var(--k-radius-md);
+  padding: 22px;
+  transition: box-shadow var(--k-duration) var(--k-ease);
+}
+.kaiko-stat-card:hover { box-shadow: 0 4px 16px rgba(28,25,23,0.06); }
+.kaiko-stat-card .label {
+  font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--k-stone-500); margin: 0 0 8px;
+}
+.kaiko-stat-card .value {
+  font-family: var(--k-font-display);
+  font-size: 1.85rem; font-weight: 700;
+  color: var(--k-dark); line-height: 1; margin: 0;
+  letter-spacing: -0.01em;
+}
+.kaiko-stat-card .delta {
+  font-size: 0.78rem; color: var(--k-teal);
+  margin-top: 6px; font-weight: 500;
+}
+.kaiko-stat-card .value.is-text {
+  font-size: 1.1rem; padding-top: 4px;
+}
+
+/* Section heading */
+.kaiko-section-heading {
+  font-family: var(--k-font-display);
+  font-size: 1.15rem; font-weight: 600;
+  color: var(--k-dark);
+  margin: 32px 0 18px;
+  letter-spacing: 0.01em;
 }
 
 /* Orders table */
-.kaiko-myaccount-wrap table.woocommerce-orders-table,
-.kaiko-myaccount-wrap .woocommerce-table {
+.kaiko-orders-table {
   width: 100%; border-collapse: collapse; font-size: 0.88rem;
 }
-.kaiko-myaccount-wrap .woocommerce-table th {
-  font-family: var(--k-font-body); font-size: 0.72rem;
-  font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
-  color: var(--k-stone-400); padding: 14px 18px;
-  border-bottom: 1px solid var(--k-stone-200); text-align: left;
+.kaiko-orders-table th {
+  font-family: var(--k-font-body);
+  font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--k-stone-400);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--k-stone-200);
+  text-align: left;
 }
-.kaiko-myaccount-wrap .woocommerce-table td {
-  padding: 16px 18px; border-bottom: 1px solid var(--k-stone-100);
+.kaiko-orders-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--k-stone-100);
   color: var(--k-dark);
   transition: background var(--k-duration) var(--k-ease);
 }
-.kaiko-myaccount-wrap .woocommerce-table tr:hover td {
-  background: rgba(26,92,82,0.02);
+.kaiko-orders-table tr:hover td { background: rgba(26,92,82,0.02); }
+.kaiko-orders-table .status {
+  display: inline-block;
+  padding: 4px 10px; border-radius: 100px;
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
 }
-.kaiko-myaccount-wrap .woocommerce-table .button {
-  width: auto; padding: 8px 18px; font-size: 0.78rem;
-  text-transform: uppercase; letter-spacing: 0.06em;
+.kaiko-orders-table .status.completed { background: rgba(26,92,82,0.08); color: var(--k-teal); }
+.kaiko-orders-table .status.processing { background: rgba(200,155,60,0.1); color: var(--k-gold); }
+.kaiko-orders-table .status.pending,
+.kaiko-orders-table .status.on-hold,
+.kaiko-orders-table .status.cancelled,
+.kaiko-orders-table .status.refunded,
+.kaiko-orders-table .status.failed { background: var(--k-stone-100); color: var(--k-stone-500); }
+.kaiko-orders-table .button-sm {
+  display: inline-block;
+  background: var(--k-teal); color: var(--k-white);
+  padding: 7px 14px; border-radius: var(--k-radius-sm);
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
+  text-decoration: none; font-weight: 600;
+  width: auto;
+  transition: all var(--k-duration) var(--k-ease);
 }
+.kaiko-orders-table .button-sm:hover { background: var(--k-deep-teal); color: var(--k-white); }
 
-/* Address cards */
+.kaiko-empty-state {
+  background: var(--k-stone-50);
+  border: 1px dashed var(--k-stone-200);
+  border-radius: var(--k-radius-md);
+  padding: 32px; text-align: center;
+  color: var(--k-stone-500);
+  font-size: 0.92rem;
+}
+.kaiko-empty-state a { color: var(--k-teal); font-weight: 600; }
+
+/* WC native content inside our shell (orders/edit-account/etc.) */
+.kaiko-myaccount-wrap .woocommerce-MyAccount-content {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  width: 100% !important; max-width: 100% !important;
+  float: none !important; margin: 0 !important;
+}
+.kaiko-myaccount-wrap .woocommerce-MyAccount-navigation {
+  display: none !important;
+}
+.kaiko-myaccount-wrap table.woocommerce-orders-table,
+.kaiko-myaccount-wrap table.woocommerce-table {
+  width: 100%; border-collapse: collapse; font-size: 0.88rem;
+}
+.kaiko-myaccount-wrap .woocommerce-table th {
+  font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--k-stone-400);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--k-stone-200);
+  text-align: left;
+}
+.kaiko-myaccount-wrap .woocommerce-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--k-stone-100);
+  color: var(--k-dark);
+}
 .kaiko-myaccount-wrap .woocommerce-Addresses {
   display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
 }
@@ -660,19 +766,37 @@ body.kaiko-myaccount-page {
   border: 1px solid var(--k-stone-200);
   border-radius: var(--k-radius-md);
   padding: 28px;
-  transition: box-shadow var(--k-duration) var(--k-ease);
-}
-.kaiko-myaccount-wrap .woocommerce-Address:hover {
-  box-shadow: 0 4px 16px rgba(28,25,23,0.06);
 }
 .kaiko-myaccount-wrap .woocommerce-Address h3 {
-  font-family: var(--k-font-display); font-size: 1.05rem;
-  font-weight: 600; margin: 0 0 14px;
+  font-family: var(--k-font-display);
+  font-size: 1.05rem; font-weight: 600;
+  margin: 0 0 14px;
   letter-spacing: 0.02em;
 }
 
+/* Suppress "lost your password" form inside dashboard if it tries to render */
+.kaiko-myaccount-wrap .woocommerce-MyAccount-content .lost_password { display: none; }
+
+/* CTA helper button */
+.kaiko-cta-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--k-teal); color: var(--k-white) !important;
+  padding: 12px 26px;
+  border-radius: var(--k-radius-sm);
+  font-size: 0.82rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  text-decoration: none;
+  width: auto !important;
+  transition: all var(--k-duration) var(--k-ease);
+}
+.kaiko-cta-button:hover {
+  background: var(--k-deep-teal); color: var(--k-white) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(26,92,82,0.2);
+}
+
 /* ============================================
-   FOOTER — Rich dark with gold accents
+   FOOTER
    ============================================ */
 .kaiko-myaccount-footer {
   background: var(--k-dark);
@@ -686,7 +810,6 @@ body.kaiko-myaccount-page {
   background: linear-gradient(90deg, transparent, var(--k-gold-soft), transparent);
   opacity: 0.3;
 }
-
 .kaiko-footer-inner {
   max-width: 1140px; margin: 0 auto;
   display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -714,7 +837,6 @@ body.kaiko-myaccount-page {
   font-weight: 400;
 }
 .kaiko-footer-col a:hover { color: var(--k-gold-soft); }
-
 .kaiko-footer-bottom {
   max-width: 1140px; margin: 0 auto;
   border-top: 1px solid rgba(255,255,255,0.06);
@@ -724,9 +846,7 @@ body.kaiko-myaccount-page {
   color: var(--k-stone-500);
 }
 
-/* ============================================
-   HIDE WOODMART ELEMENTS
-   ============================================ */
+/* HIDE WOODMART ELEMENTS */
 .whb-header, .woodmart-prefooter, .footer-container,
 .website-wrapper > footer, .page-title, .breadcrumbs,
 .woodmart-breadcrumbs, .title-size-default, .woodmart-main-container,
@@ -737,24 +857,7 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
 .wd-footer { display: none !important; }
 .website-wrapper { padding-top: 0 !important; }
 
-/* ============================================
-   FIX DOUBLE RENDERING — Hide WC's default
-   account nav; KAIKO provides its own header.
-   WC content area shown full-width for endpoints.
-   ============================================ */
-.kaiko-myaccount-wrap .woocommerce-MyAccount-navigation {
-  display: none !important;
-}
-.kaiko-myaccount-wrap .woocommerce-MyAccount-content {
-  width: 100% !important;
-  max-width: 100% !important;
-  float: none !important;
-  margin: 0 !important;
-}
-
-/* ============================================
-   REDUCED MOTION — Respect user preference
-   ============================================ */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -763,10 +866,9 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
   }
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+/* RESPONSIVE */
 @media (max-width: 1024px) {
+  .kaiko-account-layout { grid-template-columns: 1fr; }
   .kaiko-footer-inner { grid-template-columns: 1fr 1fr; }
   .kaiko-myaccount-content { padding: 120px 3rem 80px; }
 }
@@ -788,7 +890,8 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
   .kaiko-auth-grid { grid-template-columns: 1fr; gap: 24px; }
   .kaiko-auth-card { padding: 32px 24px; border-radius: var(--k-radius-lg); }
 
-  .kaiko-myaccount-wrap .woocommerce-MyAccount-content { padding: 28px 22px; }
+  .kaiko-account-content { padding: 28px 22px; }
+  .kaiko-stats-grid { grid-template-columns: 1fr; }
   .kaiko-myaccount-wrap .woocommerce-Addresses { grid-template-columns: 1fr; }
 
   .kaiko-myaccount-footer { padding: 48px 1.25rem 24px; }
@@ -812,11 +915,15 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
   <nav class="kaiko-nav" id="kaiko-nav" role="navigation" aria-label="Main navigation">
     <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="kaiko-nav-logo">KAIKO</a>
     <div class="kaiko-nav-links">
-      <a href="/products/">Products</a>
-      <?php if ( is_user_logged_in() ) : ?><a href="/shop/">Shop</a><?php endif; ?>
-      <a href="/about/">About</a>
-      <a href="/contact/">Contact</a>
-      <a href="/my-account/" class="kaiko-nav-cta active"><?php echo is_user_logged_in() ? 'My Account' : 'Trade Login'; ?></a>
+      <a href="<?php echo esc_url( home_url( '/products/' ) ); ?>">Products</a>
+      <?php if ( $is_approved ) : ?>
+        <a href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">Shop</a>
+      <?php endif; ?>
+      <a href="<?php echo esc_url( home_url( '/about/' ) ); ?>">About</a>
+      <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact</a>
+      <a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" class="kaiko-nav-cta active">
+        <?php echo $logged_in ? esc_html__( 'My Account', 'kaiko-child' ) : esc_html__( 'Trade Login', 'kaiko-child' ); ?>
+      </a>
     </div>
     <button class="kaiko-hamburger" id="kaiko-hamburger" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -826,7 +933,7 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
   <!-- MOBILE OVERLAY -->
   <div class="kaiko-mobile-overlay" id="kaiko-mobile-overlay"></div>
 
-  <!-- MOBILE SLIDE-OUT MENU -->
+  <!-- MOBILE MENU -->
   <div class="kaiko-mobile-menu" id="kaiko-mobile-menu" role="dialog" aria-label="Mobile menu">
     <div class="kaiko-mobile-menu__header">
       <span class="kaiko-mobile-menu__logo">KAIKO</span>
@@ -835,17 +942,19 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
       </button>
     </div>
     <div class="kaiko-mobile-menu__links">
-      <a href="/products/">Products</a>
-      <?php if ( is_user_logged_in() ) : ?><a href="/shop/">Shop</a><?php endif; ?>
-      <a href="/about/">About</a>
-      <a href="/contact/">Contact</a>
+      <a href="<?php echo esc_url( home_url( '/products/' ) ); ?>">Products</a>
+      <?php if ( $is_approved ) : ?>
+        <a href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">Shop</a>
+      <?php endif; ?>
+      <a href="<?php echo esc_url( home_url( '/about/' ) ); ?>">About</a>
+      <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact</a>
     </div>
     <div class="kaiko-mobile-menu__footer">
-      <?php if ( is_user_logged_in() ) : ?>
-        <a href="/my-account/" class="btn-primary">My Account</a>
-        <a href="<?php echo esc_url( wp_logout_url( home_url() ) ); ?>" class="btn-secondary">Log Out</a>
+      <?php if ( $logged_in ) : ?>
+        <a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" class="btn-primary">My Account</a>
+        <a href="<?php echo esc_url( wp_logout_url( wc_get_page_permalink( 'myaccount' ) ) ); ?>" class="btn-secondary">Log Out</a>
       <?php else : ?>
-        <a href="/my-account/" class="btn-primary">Trade Login</a>
+        <a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" class="btn-primary">Trade Login</a>
       <?php endif; ?>
     </div>
   </div>
@@ -853,8 +962,10 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
   <!-- MAIN CONTENT -->
   <div class="kaiko-myaccount-content">
 
-    <?php if ( ! is_user_logged_in() ) : ?>
-      <!-- LOGGED-OUT: Show page header -->
+    <?php
+    // ─────────────── Page header ───────────────
+    if ( ! $logged_in ) :
+      ?>
       <div class="kaiko-page-header">
         <div class="kaiko-tag">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -863,8 +974,20 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
         <h1>Welcome to Your<br>Trade Portal</h1>
         <p>Kaiko offers wholesale pricing exclusively to approved trade partners. Log in to your account or apply below.</p>
       </div>
-    <?php else : ?>
-      <!-- LOGGED-IN: Show account header -->
+      <?php
+    elseif ( $is_pending ) :
+      ?>
+      <div class="kaiko-page-header">
+        <div class="kaiko-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Trade Application
+        </div>
+        <h1>My Account</h1>
+        <p>Your application is being reviewed. We&rsquo;ll be in touch within 24 hours.</p>
+      </div>
+      <?php
+    else :
+      ?>
       <div class="kaiko-page-header">
         <div class="kaiko-tag">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -873,11 +996,17 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
         <h1>My Account</h1>
         <p>Manage your orders, addresses, and account details.</p>
       </div>
-    <?php endif; ?>
+      <?php
+    endif;
 
-    <?php
-    // Let WooCommerce handle the content (uses our template overrides)
-    echo do_shortcode( '[woocommerce_my_account]' );
+    // ─────────────── State routing ───────────────
+    if ( ! $logged_in ) {
+      get_template_part( 'template-parts/kaiko-my-account', 'logged-out' );
+    } elseif ( $is_pending ) {
+      get_template_part( 'template-parts/kaiko-my-account', 'pending' );
+    } else {
+      get_template_part( 'template-parts/kaiko-my-account', 'approved' );
+    }
     ?>
 
   </div>
@@ -892,7 +1021,7 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
       <div class="kaiko-footer-col">
         <h4>Shop</h4>
         <ul>
-          <li><a href="/products/">All Products</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/products/' ) ); ?>">All Products</a></li>
           <li><a href="#">Feeding Bowls</a></li>
           <li><a href="#">Humidity Hides</a></li>
           <li><a href="#">Accessories</a></li>
@@ -901,22 +1030,22 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
       <div class="kaiko-footer-col">
         <h4>Company</h4>
         <ul>
-          <li><a href="/about/">About Us</a></li>
-          <li><a href="/contact/">Contact</a></li>
-          <li><a href="/my-account/">Trade Account</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/about/' ) ); ?>">About Us</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact</a></li>
+          <li><a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>">Trade Account</a></li>
         </ul>
       </div>
       <div class="kaiko-footer-col">
         <h4>Support</h4>
         <ul>
-          <li><a href="/contact/">Help Centre</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Help Centre</a></li>
           <li><a href="#">Shipping Info</a></li>
           <li><a href="#">Returns Policy</a></li>
         </ul>
       </div>
     </div>
     <div class="kaiko-footer-bottom">
-      <span>&copy; <?php echo date('Y'); ?> KAIKO. All rights reserved.</span>
+      <span>&copy; <?php echo esc_html( date( 'Y' ) ); ?> KAIKO. All rights reserved.</span>
       <span>Designed for reptile enthusiasts</span>
     </div>
   </footer>
@@ -943,7 +1072,6 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
     mobileMenu.classList.add('open');
     if (overlay) overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
-    /* Focus the close button for accessibility */
     if (closeBtn) closeBtn.focus();
   }
 
@@ -979,40 +1107,6 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
       }
     }, { passive: true });
   }
-
-})();
-
-// Logged-in nav updates (bypasses page cache)
-(function() {
-  function applyLoggedInNav() {
-    var isLoggedIn = document.body.classList.contains('logged-in')
-                     || document.getElementById('wpadminbar') !== null;
-    if (!isLoggedIn) return;
-
-    document.querySelectorAll('.kaiko-nav .kaiko-nav-cta').forEach(function(el) {
-      if (el.textContent.trim() === 'Trade Login') el.textContent = 'My Account';
-    });
-
-    document.querySelectorAll('.kaiko-nav').forEach(function(nav) {
-      if (nav.querySelector('[data-kaiko-shop-link]')) return;
-      var aboutLink = Array.from(nav.querySelectorAll('a')).find(function(a) {
-        return a.textContent.trim() === 'About';
-      });
-      if (!aboutLink || !aboutLink.parentNode) return;
-      var shopLink = document.createElement('a');
-      shopLink.href = '/shop/';
-      shopLink.textContent = 'Shop';
-      shopLink.setAttribute('data-kaiko-shop-link', '1');
-      shopLink.className = aboutLink.className;
-      aboutLink.parentNode.insertBefore(shopLink, aboutLink);
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', applyLoggedInNav);
-  } else {
-    applyLoggedInNav();
-  }
-  window.addEventListener('load', applyLoggedInNav);
 })();
 </script>
 </body>
