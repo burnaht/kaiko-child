@@ -563,7 +563,9 @@ body.kaiko-product-page #kaiko-main {
 	width: 100% !important;
 	max-width: none !important;
 	margin: 0 !important;
-	padding: 0 !important;
+	/* Keep the 72px top offset so content clears the fixed .kaiko-nav.
+	   Zero left/right/bottom so our own containers control inner padding. */
+	padding: 72px 0 0 !important;
 	float: none !important;
 }
 body.kaiko-product-page .main-page-wrapper,
