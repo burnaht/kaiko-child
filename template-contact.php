@@ -1125,7 +1125,7 @@ body.kaiko-contact .footer-bottom {
         </button>
         <div class="kaiko-accordion-panel" id="faq-6" role="region">
           <div class="kaiko-accordion-answer">
-            Trade partners have a minimum first order of &pound;200. Repeat orders have no minimum. We want to make it easy to keep your shelves stocked without tying up capital in large initial orders. Volume discounts apply at &pound;500+.
+            Our minimum first order is &pound;99 &mdash; intentionally low so it&rsquo;s easy to trial our range without tying up capital. There&rsquo;s no minimum on repeat orders. Volume discounts are applied per product based on the quantity you order, and you&rsquo;ll see the exact tier pricing on each individual product page once your trade account is approved.
           </div>
         </div>
       </div>
