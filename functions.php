@@ -33,6 +33,7 @@ require_once KAIKO_DIR . '/inc/performance.php';
 require_once KAIKO_DIR . '/inc/seo.php';
 require_once KAIKO_DIR . '/inc/security.php';
 require_once KAIKO_DIR . '/inc/contact-form.php';
+require_once KAIKO_DIR . '/inc/mini-cart.php';
 
 
 /* ============================================

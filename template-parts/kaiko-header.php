@@ -31,14 +31,14 @@ $can_buy     = function_exists( 'kaiko_user_can_see_prices' ) ? kaiko_user_can_s
         <a href="<?php echo esc_url( home_url( '/about/' ) ); ?>"<?php if ( is_page( 'about' ) ) echo ' class="active"'; ?>>About</a>
         <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"<?php if ( is_page( 'contact' ) ) echo ' class="active"'; ?>>Contact</a>
 
-        <?php if ( $can_buy ) : ?>
-            <a href="<?php echo $cart_url; ?>" class="kaiko-nav-cart" aria-label="Cart">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-                <?php if ( $cart_count > 0 ) : ?>
-                    <span class="kaiko-nav-cart-count"><?php echo esc_html( $cart_count ); ?></span>
-                <?php endif; ?>
-            </a>
-        <?php endif; ?>
+        <?php
+        // Header cart — always emit the wrapper so WC fragments can swap its
+        // contents on cart changes. The button itself only renders when the
+        // cart has items; an empty cart shows no icon at all.
+        if ( function_exists( 'kaiko_render_nav_cart' ) ) {
+            echo kaiko_render_nav_cart();
+        }
+        ?>
 
         <?php if ( $is_logged ) : ?>
             <a href="<?php echo $account_url; ?>" class="kaiko-nav-cta">My Account</a>
