@@ -151,6 +151,21 @@ function kaiko_hide_price_html( $price, $product ) {
         return $price;
     }
 
+    // On shop archives (shop, category, tag, search, product loops) keep cards
+    // clean — the "View details" CTA on the card is enough. The full pending /
+    // trade-gating messaging is shown on the single product page and in the
+    // my-account dashboard. This avoids the cluttered pill on every card.
+    $in_shop_loop = function_exists( 'is_shop' ) && (
+        is_shop()
+        || is_product_category()
+        || is_product_tag()
+        || is_product_taxonomy()
+        || ( function_exists( 'is_search' ) && is_search() && isset( $_GET['post_type'] ) && 'product' === $_GET['post_type'] )
+    );
+    if ( $in_shop_loop ) {
+        return '';
+    }
+
     $lock_icon = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="7" width="12" height="7" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 7V5a3.5 3.5 0 117 0v2" stroke="currentColor" stroke-width="1.2"/></svg>';
 
     if ( is_user_logged_in() ) {
