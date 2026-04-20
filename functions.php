@@ -34,6 +34,7 @@ require_once KAIKO_DIR . '/inc/seo.php';
 require_once KAIKO_DIR . '/inc/security.php';
 require_once KAIKO_DIR . '/inc/contact-form.php';
 require_once KAIKO_DIR . '/inc/mini-cart.php';
+require_once KAIKO_DIR . '/inc/cart-layout.php';
 
 
 /* ============================================
@@ -74,6 +75,12 @@ function kaiko_enqueue_assets() {
         if ( is_shop() || is_product_category() || is_product_tag() ) {
             wp_enqueue_style( 'kaiko-shop', KAIKO_URI . '/assets/css/kaiko-shop.css', array( 'kaiko-woocommerce' ), KAIKO_VERSION );
             wp_enqueue_script( 'kaiko-shop', KAIKO_URI . '/assets/js/kaiko-shop.js', array(), KAIKO_VERSION, true );
+        }
+
+        // Cart page — full rebuild
+        if ( function_exists( 'is_cart' ) && is_cart() ) {
+            wp_enqueue_style( 'kaiko-cart', KAIKO_URI . '/assets/css/kaiko-cart.css', array( 'kaiko-woocommerce' ), KAIKO_VERSION );
+            wp_enqueue_script( 'kaiko-cart', KAIKO_URI . '/assets/js/kaiko-cart.js', array( 'jquery', 'kaiko-mini-cart' ), KAIKO_VERSION, true );
         }
     }
 
@@ -1235,23 +1242,9 @@ function kaiko_ajax_filter_products() {
 remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
 remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
 
-// Cart page hero
-add_action( 'woocommerce_before_cart', 'kaiko_cart_page_hero', 5 );
-
-function kaiko_cart_page_hero() {
-    echo '<div class="kaiko-page-hero">
-        <div class="kaiko-page-hero__tag kaiko-reveal">Your Cart</div>
-        <h1 class="kaiko-page-hero__title kaiko-hero-title">Shopping Cart</h1>
-        <p class="kaiko-page-hero__subtitle">Review your items before proceeding to checkout.</p>
-    </div>
-    <div class="kaiko-cart-section">';
-}
-
-add_action( 'woocommerce_after_cart', 'kaiko_cart_page_close', 99 );
-
-function kaiko_cart_page_close() {
-    echo '</div><!-- .kaiko-cart-section -->';
-}
+// Cart hero + layout are rendered by template-cart.php + inc/cart-layout.php —
+// the legacy kaiko_cart_page_hero / _close hooks were removed to stop the hero
+// from double-rendering inside the new template.
 
 // Checkout page hero
 add_action( 'woocommerce_before_checkout_form', 'kaiko_checkout_page_hero', 5 );

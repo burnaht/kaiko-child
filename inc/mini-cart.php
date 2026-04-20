@@ -91,10 +91,21 @@ function kaiko_mini_cart_print_drawer() {
 add_filter( 'woocommerce_add_to_cart_fragments', 'kaiko_mini_cart_fragments', 20 );
 
 function kaiko_mini_cart_fragments( $fragments ) {
+	// Mini-cart drawer + header
 	$fragments['div.kaiko-nav-cart-wrap']             = kaiko_render_nav_cart();
 	$fragments['div.kaiko-drawer__body']              = kaiko_render_drawer_body();
 	$fragments['div.kaiko-drawer__subtotal']          = kaiko_render_drawer_subtotal();
 	$fragments['small.kaiko-drawer__head__meta']      = kaiko_render_drawer_head_meta();
+
+	// Full cart page — only meaningful when those selectors are in the DOM,
+	// WC's fragment applier no-ops when they aren't.
+	if ( function_exists( 'kaiko_render_cart_lines' ) ) {
+		$fragments['div.kaiko-cart-lines']                = kaiko_render_cart_lines();
+		$fragments['div.kaiko-cart-summary__shipbar']     = kaiko_render_cart_shipbar();
+		$fragments['.kaiko-cart-summary__subtotal__amt']  = kaiko_render_cart_summary_subtotal_amt();
+		$fragments['.kaiko-cart-summary__savings__amt']   = kaiko_render_cart_summary_savings_amt();
+		$fragments['.kaiko-cart-summary__total__amt']     = kaiko_render_cart_summary_total_amt();
+	}
 	return $fragments;
 }
 
