@@ -109,15 +109,28 @@ while ( have_posts() ) : the_post();
 						<span class="kaiko-pp-gallery__badge"><?php echo esc_html( $badge ); ?></span>
 					<?php endif; ?>
 					<?php if ( ! empty( $gallery_ids ) ) :
-						$main_id = (int) $gallery_ids[0];
-						$main    = wp_get_attachment_image_src( $main_id, 'large' );
+						$main_id       = (int) $gallery_ids[0];
+						$main          = wp_get_attachment_image_src( $main_id, 'large' );
+						$main_full     = wp_get_attachment_image_src( $main_id, 'full' );
+						$main_full_url = $main_full ? $main_full[0] : ( $main ? $main[0] : '' );
 						if ( $main ) :
 							?>
-							<img id="kaiko-pp-main-img"
-								 src="<?php echo esc_url( $main[0] ); ?>"
-								 alt="<?php echo esc_attr( $product->get_name() ); ?>"
-								 width="<?php echo esc_attr( $main[1] ); ?>"
-								 height="<?php echo esc_attr( $main[2] ); ?>">
+							<button type="button"
+									class="kaiko-pp-gallery__main-trigger"
+									data-kaiko-lightbox-trigger
+									data-full="<?php echo esc_url( $main_full_url ); ?>"
+									data-index="0"
+									aria-label="<?php esc_attr_e( 'View full-size image', 'kaiko-child' ); ?>">
+								<img id="kaiko-pp-main-img"
+									 src="<?php echo esc_url( $main[0] ); ?>"
+									 data-full="<?php echo esc_url( $main_full_url ); ?>"
+									 alt="<?php echo esc_attr( $product->get_name() ); ?>"
+									 width="<?php echo esc_attr( $main[1] ); ?>"
+									 height="<?php echo esc_attr( $main[2] ); ?>">
+								<span class="kaiko-pp-gallery__zoom-hint" aria-hidden="true">
+									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+								</span>
+							</button>
 						<?php endif;
 					else :
 						echo wc_placeholder_img( 'large' );
@@ -126,20 +139,47 @@ while ( have_posts() ) : the_post();
 				<?php if ( count( $gallery_ids ) > 1 ) : ?>
 					<div class="kaiko-pp-gallery__thumbs">
 						<?php foreach ( $gallery_ids as $i => $gid ) :
-							$thumb = wp_get_attachment_image_src( $gid, 'thumbnail' );
-							$large = wp_get_attachment_image_src( $gid, 'large' );
+							$thumb  = wp_get_attachment_image_src( $gid, 'thumbnail' );
+							$large  = wp_get_attachment_image_src( $gid, 'large' );
+							$fullsz = wp_get_attachment_image_src( $gid, 'full' );
 							if ( ! $thumb || ! $large ) { continue; }
+							$full_url = $fullsz ? $fullsz[0] : $large[0];
 							?>
 							<button type="button"
 									class="kaiko-pp-gallery__thumb<?php echo 0 === $i ? ' is-active' : ''; ?>"
 									data-src="<?php echo esc_url( $large[0] ); ?>"
+									data-full="<?php echo esc_url( $full_url ); ?>"
+									data-index="<?php echo (int) $i; ?>"
 									aria-label="<?php esc_attr_e( 'View image', 'kaiko-child' ); ?> <?php echo (int) ( $i + 1 ); ?>">
-								<img src="<?php echo esc_url( $thumb[0] ); ?>" alt="" loading="lazy">
+							<img src="<?php echo esc_url( $thumb[0] ); ?>" alt="" loading="lazy">
 							</button>
 						<?php endforeach; ?>
 					</div>
 				<?php endif; ?>
 			</div>
+
+			<!-- Lightbox (fullscreen image viewer) -->
+			<?php if ( ! empty( $gallery_ids ) ) : ?>
+				<div class="kaiko-pp-lightbox" id="kaiko-pp-lightbox" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Product image viewer', 'kaiko-child' ); ?>" hidden>
+					<button type="button" class="kaiko-pp-lightbox__close" data-kaiko-lightbox-close aria-label="<?php esc_attr_e( 'Close image viewer', 'kaiko-child' ); ?>">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+					</button>
+					<?php if ( count( $gallery_ids ) > 1 ) : ?>
+						<button type="button" class="kaiko-pp-lightbox__nav kaiko-pp-lightbox__prev" data-kaiko-lightbox-prev aria-label="<?php esc_attr_e( 'Previous image', 'kaiko-child' ); ?>">
+							<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+						</button>
+						<button type="button" class="kaiko-pp-lightbox__nav kaiko-pp-lightbox__next" data-kaiko-lightbox-next aria-label="<?php esc_attr_e( 'Next image', 'kaiko-child' ); ?>">
+							<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+						</button>
+					<?php endif; ?>
+					<figure class="kaiko-pp-lightbox__stage">
+						<img class="kaiko-pp-lightbox__img" id="kaiko-pp-lightbox-img" src="" alt="">
+						<figcaption class="kaiko-pp-lightbox__caption">
+							<span class="kaiko-pp-lightbox__count" id="kaiko-pp-lightbox-count"></span>
+						</figcaption>
+					</figure>
+				</div>
+			<?php endif; ?>
 
 			<!-- Summary -->
 			<div class="kaiko-pp-summary">
@@ -692,6 +732,142 @@ body.kaiko-product-page .kaiko-pp-gallery__thumb {
 body.kaiko-product-page .kaiko-pp-gallery__thumb.is-active { border-color: var(--k-teal); }
 body.kaiko-product-page .kaiko-pp-gallery__thumb:hover     { border-color: var(--k-stone-400); }
 body.kaiko-product-page .kaiko-pp-gallery__thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Main image trigger (clickable to open fullscreen lightbox) */
+body.kaiko-product-page .kaiko-pp-gallery__main-trigger {
+	appearance: none;
+	-webkit-appearance: none;
+	background: transparent;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	cursor: zoom-in;
+	position: relative;
+	font: inherit;
+	color: inherit;
+}
+body.kaiko-product-page .kaiko-pp-gallery__main-trigger:focus-visible {
+	outline: 2px solid var(--k-teal);
+	outline-offset: 4px;
+}
+body.kaiko-product-page .kaiko-pp-gallery__zoom-hint {
+	position: absolute;
+	bottom: 14px; right: 14px;
+	width: 40px; height: 40px;
+	display: flex; align-items: center; justify-content: center;
+	background: rgba(255,255,255,0.95);
+	color: var(--k-teal);
+	border-radius: 50%;
+	box-shadow: var(--k-shadow-sm);
+	opacity: 0;
+	transform: translateY(6px);
+	transition: opacity 200ms ease, transform 200ms ease;
+	pointer-events: none;
+	z-index: 2;
+}
+body.kaiko-product-page .kaiko-pp-gallery__main:hover .kaiko-pp-gallery__zoom-hint,
+body.kaiko-product-page .kaiko-pp-gallery__main-trigger:focus-visible .kaiko-pp-gallery__zoom-hint {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Lightbox (fullscreen image viewer) */
+body.kaiko-product-page .kaiko-pp-lightbox {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: clamp(16px, 5vw, 72px);
+	background: rgba(12, 22, 20, 0.92);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	opacity: 0;
+	transition: opacity 180ms ease;
+}
+body.kaiko-product-page .kaiko-pp-lightbox[hidden] { display: none; }
+body.kaiko-product-page .kaiko-pp-lightbox.is-open { opacity: 1; }
+body.kaiko-product-page .kaiko-pp-lightbox__stage {
+	position: relative;
+	max-width: min(1400px, 100%);
+	max-height: 100%;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+}
+body.kaiko-product-page .kaiko-pp-lightbox__img {
+	display: block;
+	max-width: 100%;
+	max-height: calc(100vh - 180px);
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	border-radius: var(--k-r-md);
+	box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+	user-select: none;
+	-webkit-user-drag: none;
+}
+body.kaiko-product-page .kaiko-pp-lightbox__caption {
+	color: rgba(255,255,255,0.72);
+	font-size: 0.82rem;
+	letter-spacing: 0.05em;
+	text-align: center;
+}
+body.kaiko-product-page .kaiko-pp-lightbox__count { font-variant-numeric: tabular-nums; }
+body.kaiko-product-page .kaiko-pp-lightbox__close,
+body.kaiko-product-page .kaiko-pp-lightbox__nav {
+	appearance: none;
+	-webkit-appearance: none;
+	background: rgba(255,255,255,0.12);
+	border: 1px solid rgba(255,255,255,0.25);
+	color: #fff;
+	border-radius: 50%;
+	width: 48px; height: 48px;
+	display: flex; align-items: center; justify-content: center;
+	cursor: pointer;
+	padding: 0;
+	transition: background 180ms ease, transform 180ms ease;
+}
+body.kaiko-product-page .kaiko-pp-lightbox__close:hover,
+body.kaiko-product-page .kaiko-pp-lightbox__nav:hover {
+	background: rgba(255,255,255,0.22);
+	transform: scale(1.05);
+}
+body.kaiko-product-page .kaiko-pp-lightbox__close:focus-visible,
+body.kaiko-product-page .kaiko-pp-lightbox__nav:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 3px;
+}
+body.kaiko-product-page .kaiko-pp-lightbox__close {
+	position: absolute;
+	top: clamp(14px, 2.5vw, 28px);
+	right: clamp(14px, 2.5vw, 28px);
+	z-index: 2;
+}
+body.kaiko-product-page .kaiko-pp-lightbox__nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 52px; height: 52px;
+	z-index: 2;
+}
+body.kaiko-product-page .kaiko-pp-lightbox__nav:hover {
+	transform: translateY(-50%) scale(1.05);
+}
+body.kaiko-product-page .kaiko-pp-lightbox__prev { left: clamp(14px, 3vw, 40px); }
+body.kaiko-product-page .kaiko-pp-lightbox__next { right: clamp(14px, 3vw, 40px); }
+@media (max-width: 640px) {
+	body.kaiko-product-page .kaiko-pp-lightbox__nav { width: 44px; height: 44px; }
+	body.kaiko-product-page .kaiko-pp-lightbox__img { max-height: calc(100vh - 140px); }
+}
+body.kaiko-pp-lightbox-open { overflow: hidden; }
 
 /* Summary */
 body.kaiko-product-page .kaiko-pp-summary { padding: 8px 0; }
@@ -1293,15 +1469,114 @@ body.kaiko-product-page .kaiko-pp-tile__value {
 (function () {
 	if (!document.body.classList.contains('kaiko-product-page')) return;
 
-	// ---- Gallery thumbs ----
-	var thumbs = document.querySelectorAll('.kaiko-pp-gallery__thumb');
-	var mainImg = document.getElementById('kaiko-pp-main-img');
-	thumbs.forEach(function (t) {
+	// ---- Gallery thumbs + fullscreen lightbox ----
+	var thumbs       = Array.prototype.slice.call(document.querySelectorAll('.kaiko-pp-gallery__thumb'));
+	var mainImg      = document.getElementById('kaiko-pp-main-img');
+	var mainTrigger  = document.querySelector('.kaiko-pp-gallery__main-trigger');
+	var lightbox     = document.getElementById('kaiko-pp-lightbox');
+	var lightboxImg  = document.getElementById('kaiko-pp-lightbox-img');
+	var lightboxCount = document.getElementById('kaiko-pp-lightbox-count');
+	var lightboxClose = lightbox ? lightbox.querySelector('[data-kaiko-lightbox-close]') : null;
+	var lightboxPrev  = lightbox ? lightbox.querySelector('[data-kaiko-lightbox-prev]')  : null;
+	var lightboxNext  = lightbox ? lightbox.querySelector('[data-kaiko-lightbox-next]')  : null;
+	var prevFocus    = null;
+
+	// Build slides from thumbs (preferred) or from the main image alone.
+	var slides = thumbs.length
+		? thumbs.map(function (t) {
+			return {
+				full: t.dataset.full || t.dataset.src || '',
+				large: t.dataset.src || t.dataset.full || '',
+				alt: (t.querySelector('img') && t.querySelector('img').alt) || ''
+			};
+		})
+		: (mainImg ? [{ full: mainImg.dataset.full || mainImg.src, large: mainImg.src, alt: mainImg.alt || '' }] : []);
+
+	var activeIndex = 0;
+
+	function syncMainFromIndex(i) {
+		if (!mainImg) return;
+		var slide = slides[i];
+		if (!slide) return;
+		mainImg.src = slide.large;
+		mainImg.dataset.full = slide.full;
+		if (mainTrigger) mainTrigger.dataset.full = slide.full;
+		thumbs.forEach(function (x, n) { x.classList.toggle('is-active', n === i); });
+		activeIndex = i;
+	}
+
+	function updateLightboxImage() {
+		var slide = slides[activeIndex];
+		if (!slide || !lightboxImg) return;
+		lightboxImg.src = slide.full;
+		lightboxImg.alt = slide.alt;
+		if (lightboxCount) {
+			lightboxCount.textContent = slides.length > 1
+				? (activeIndex + 1) + ' / ' + slides.length
+				: '';
+		}
+	}
+
+	function openLightbox() {
+		if (!lightbox) return;
+		prevFocus = document.activeElement;
+		updateLightboxImage();
+		lightbox.hidden = false;
+		// Force reflow so the transition fires.
+		void lightbox.offsetWidth;
+		lightbox.classList.add('is-open');
+		document.body.classList.add('kaiko-pp-lightbox-open');
+		if (lightboxClose) lightboxClose.focus();
+	}
+
+	function closeLightbox() {
+		if (!lightbox) return;
+		lightbox.classList.remove('is-open');
+		document.body.classList.remove('kaiko-pp-lightbox-open');
+		// Hide after transition.
+		setTimeout(function () { lightbox.hidden = true; }, 200);
+		if (prevFocus && typeof prevFocus.focus === 'function') prevFocus.focus();
+	}
+
+	function lightboxStep(dir) {
+		if (!slides.length) return;
+		activeIndex = (activeIndex + dir + slides.length) % slides.length;
+		syncMainFromIndex(activeIndex);
+		updateLightboxImage();
+	}
+
+	// Thumb click — swap main image, update active state, update lightbox index.
+	thumbs.forEach(function (t, i) {
 		t.addEventListener('click', function () {
-			thumbs.forEach(function (x) { x.classList.remove('is-active'); });
-			t.classList.add('is-active');
-			if (mainImg && t.dataset.src) mainImg.src = t.dataset.src;
+			syncMainFromIndex(i);
 		});
+	});
+
+	// Main image click — open lightbox.
+	if (mainTrigger) {
+		mainTrigger.addEventListener('click', function () {
+			openLightbox();
+		});
+	}
+
+	// Lightbox controls.
+	if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+	if (lightboxPrev)  lightboxPrev.addEventListener('click', function () { lightboxStep(-1); });
+	if (lightboxNext)  lightboxNext.addEventListener('click', function () { lightboxStep(1); });
+
+	// Backdrop click closes the lightbox.
+	if (lightbox) {
+		lightbox.addEventListener('click', function (e) {
+			if (e.target === lightbox) closeLightbox();
+		});
+	}
+
+	// Keyboard — ESC closes, arrow keys navigate.
+	document.addEventListener('keydown', function (e) {
+		if (!lightbox || lightbox.hidden) return;
+		if (e.key === 'Escape') { e.preventDefault(); closeLightbox(); }
+		else if (e.key === 'ArrowLeft')  { e.preventDefault(); lightboxStep(-1); }
+		else if (e.key === 'ArrowRight') { e.preventDefault(); lightboxStep(1); }
 	});
 
 	// ---- Tabs ----
