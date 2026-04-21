@@ -197,14 +197,20 @@ function kaiko_render_drawer_item( $cart_item_key, $cart_item ) {
 
 	// The currently-applied per-unit price. For variations + tiered simple
 	// products this is the WC-cart-applied unit price (already tier-discounted
-	// when kaiko_apply_tier_pricing_to_cart has run on the current request).
+	// when kaiko_apply_mix_and_match_tiers has run on the current request —
+	// see inc/mix-and-match-pricing.php).
 	$applied_unit = (float) $product->get_price();
 	$line_total   = $applied_unit * $qty;
 
 	// Tier data — single source of truth. Same call the cart page uses so
 	// the chip + nudge + strikethrough render identically on both surfaces.
+	// Mix-and-match: tier is picked from the parent's cart-wide total qty,
+	// not this line's qty, so the chip mirrors what's actually applied.
+	$lookup_qty = function_exists( 'kaiko_cart_parent_total_qty' )
+		? (int) kaiko_cart_parent_total_qty( (int) $product_id )
+		: $qty;
 	$tier = function_exists( 'kaiko_cart_line_tier_data' )
-		? kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit )
+		? kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit, $lookup_qty )
 		: null;
 
 	// Variation attrs (e.g. "Large · Moss Green")
