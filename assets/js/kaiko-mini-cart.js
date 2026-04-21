@@ -166,6 +166,163 @@
 		updateQty(wrap, key, next);
 	});
 
+
+	/* ---------- Remove + undo (shared between cart page and drawer) ---------- */
+
+	var undoToken = null;
+	var undoTimer = null;
+
+	doc.addEventListener('click', function (e) {
+		var target = e.target;
+		if (!target || !target.closest) return;
+
+		// Cart-page row × button lives inside .kaiko-cart-row.
+		var rowLink = target.closest('.kaiko-cart-row__remove');
+		if (rowLink) {
+			var row = rowLink.closest('.kaiko-cart-row');
+			if (!row) return;
+			e.preventDefault();
+			var rowKey = rowLink.getAttribute('data-cart-item-key') || row.getAttribute('data-cart-item-key');
+			if (!rowKey) return;
+			removeItem(rowKey, row, { surface: 'cart' });
+			return;
+		}
+
+		// Drawer × button lives inside .kaiko-drawer__item.
+		var drawerBtn = target.closest('.kaiko-drawer__item__remove');
+		if (drawerBtn) {
+			e.preventDefault();
+			var item = drawerBtn.closest('.kaiko-drawer__item');
+			var drawerKey = drawerBtn.getAttribute('data-cart-item-key') || (item && item.getAttribute('data-cart-item-key'));
+			if (!drawerKey) return;
+			removeItem(drawerKey, item, { surface: 'drawer' });
+		}
+	});
+
+	function removeItem(cartItemKey, rowEl, opts) {
+		if (!cfg.ajaxUrl || !cfg.nonce) return;
+		opts = opts || {};
+
+		if (rowEl) rowEl.classList.add('is-removing');
+
+		var body = new URLSearchParams();
+		body.append('action', 'kaiko_remove_cart_item');
+		body.append('nonce', cfg.nonce);
+		body.append('cart_item_key', cartItemKey);
+
+		fetch(cfg.ajaxUrl, {
+			method: 'POST',
+			credentials: 'same-origin',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+			body: body.toString()
+		})
+		.then(function (r) { return r.json(); })
+		.then(function (res) {
+			if (!res || !res.success) {
+				if (rowEl) rowEl.classList.remove('is-removing');
+				return;
+			}
+			if (res.data && res.data.undo) showUndoToast(res.data.undo);
+
+			var isEmpty    = !!(res.data && res.data.is_empty);
+			var drawerOpen = drawer.classList.contains('is-open');
+			var fragments  = res.data && res.data.fragments;
+
+			// Fade the drawer body to the empty state BEFORE swapping fragments
+			// (only when there's a visible drawer body to fade).
+			if (isEmpty && drawerOpen && opts.surface === 'drawer') {
+				var bodyEl = drawer.querySelector('.kaiko-drawer__body');
+				if (bodyEl) bodyEl.classList.add('is-emptying');
+				setTimeout(function () {
+					applyFragments(fragments);
+					$(doc.body).trigger('updated_cart_totals');
+					$(doc.body).trigger('wc_fragments_refreshed');
+				}, 320);
+				return;
+			}
+
+			// Default path: wait for the row's 220ms slide-out, then swap.
+			setTimeout(function () {
+				applyFragments(fragments);
+				$(doc.body).trigger('updated_cart_totals');
+				$(doc.body).trigger('wc_fragments_refreshed');
+				if (isEmpty && opts.surface === 'cart') maybeSwapCartEmpty();
+			}, 240);
+		})
+		.catch(function () {
+			if (rowEl) rowEl.classList.remove('is-removing');
+		});
+	}
+
+	function maybeSwapCartEmpty() {
+		var wrap = doc.querySelector('.kaiko-cart-wrap');
+		if (!wrap) return;
+		wrap.style.transition = 'opacity 320ms ease';
+		wrap.style.opacity = '0';
+		setTimeout(function () { window.location.reload(); }, 340);
+	}
+
+	function showUndoToast(token) {
+		undoToken = token;
+		var toastEl = getOrCreateUndoToast();
+		// Anchor toast to drawer when drawer is the active surface.
+		if (drawer.classList.contains('is-open')) {
+			toastEl.classList.add('is-in-drawer');
+		} else {
+			toastEl.classList.remove('is-in-drawer');
+		}
+		toastEl.classList.add('is-visible');
+		clearTimeout(undoTimer);
+		undoTimer = setTimeout(hideUndoToast, 4000);
+	}
+
+	function hideUndoToast() {
+		var toastEl = doc.getElementById('kaiko-undo-toast');
+		if (toastEl) toastEl.classList.remove('is-visible');
+		undoToken = null;
+	}
+
+	function getOrCreateUndoToast() {
+		var existing = doc.getElementById('kaiko-undo-toast');
+		if (existing) return existing;
+		var el = doc.createElement('div');
+		el.id = 'kaiko-undo-toast';
+		el.className = 'kaiko-undo-toast';
+		el.setAttribute('role', 'status');
+		el.innerHTML = '<span>Removed from cart</span><button type="button">Undo</button>';
+		doc.body.appendChild(el);
+		el.querySelector('button').addEventListener('click', function () {
+			if (!undoToken) return;
+			var token = undoToken;
+			hideUndoToast();
+			var ubody = new URLSearchParams();
+			ubody.append('action', 'kaiko_undo_cart_remove');
+			ubody.append('nonce', cfg.nonce);
+			ubody.append('token', token);
+			fetch(cfg.ajaxUrl, {
+				method: 'POST',
+				credentials: 'same-origin',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+				body: ubody.toString()
+			})
+			.then(function (r) { return r.json(); })
+			.then(function (res) {
+				if (!res || !res.success) return;
+				// Full reload is the simplest way to restore the row in place
+				// (on the cart page) AND rehydrate the drawer body on the next
+				// navigation — avoids bespoke insert-at-index logic.
+				window.location.reload();
+			})
+			.catch(function () {});
+		});
+		return el;
+	}
+
+	// Expose for cart-page JS to reuse without duplication.
+	window.kaikoCart = window.kaikoCart || {};
+	window.kaikoCart.showUndoToast = showUndoToast;
+	window.kaikoCart.hideUndoToast = hideUndoToast;
+
 	function updateQty(wrap, key, qty) {
 		if (!cfg.ajaxUrl || !cfg.nonce) return;
 		wrap.classList.add('is-busy');

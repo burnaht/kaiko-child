@@ -275,44 +275,9 @@ body.kaiko-cart-page .kaiko-attr-chip {
   font-weight: 600;
 }
 
-body.kaiko-cart-page .kaiko-tier-applied {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  background: rgba(26, 92, 82, 0.08);
-  color: var(--kaiko-teal);
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-body.kaiko-cart-page .kaiko-tier-applied svg {
-  color: var(--kaiko-teal);
-}
-
-body.kaiko-cart-page .kaiko-tier-nudge {
-  display: block;
-  margin-top: 8px;
-  padding: 8px 12px;
-  background: linear-gradient(180deg, rgba(184, 212, 53, 0.08), rgba(26, 92, 82, 0.05));
-  border: 1px dashed rgba(26, 92, 82, 0.25);
-  border-radius: var(--k-r-sm);
-  font-size: 0.76rem;
-  color: var(--kaiko-deep-teal);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 180ms ease;
-}
-
-body.kaiko-cart-page .kaiko-tier-nudge:hover {
-  background: linear-gradient(180deg, rgba(184, 212, 53, 0.15), rgba(26, 92, 82, 0.08));
-  border-color: var(--kaiko-teal);
-}
-
-body.kaiko-cart-page .kaiko-tier-nudge strong {
-  color: var(--kaiko-teal);
-}
+/* Tier chip + nudge styles moved to kaiko-mini-cart.css so the drawer
+   (which renders on every page) can consume the same rules. Cart-page-only
+   overrides, if ever needed, can be re-added here scoped to body.kaiko-cart-page. */
 
 body.kaiko-cart-page .kaiko-cart-row__body .sku {
   font-size: 0.72rem;
@@ -929,55 +894,8 @@ body.kaiko-cart-page .kaiko-empty-card__cta:hover {
 }
 
 
-/* ===========================
-   UNDO TOAST (separate from kaiko-toast pill)
-   =========================== */
-
-body.kaiko-cart-page .kaiko-undo-toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(60px);
-  background: var(--kaiko-dark);
-  color: var(--kaiko-white);
-  padding: 12px 16px 12px 18px;
-  border-radius: 999px;
-  box-shadow: 0 24px 60px rgba(28, 25, 23, 0.18);
-  font-family: var(--kaiko-font-body);
-  font-size: 0.9rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 280ms ease, transform 280ms ease;
-  z-index: 2000;
-}
-
-body.kaiko-cart-page .kaiko-undo-toast.is-visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-
-body.kaiko-cart-page .kaiko-undo-toast button {
-  background: transparent;
-  color: var(--kaiko-lime);
-  border: 0;
-  padding: 2px 10px;
-  font-family: var(--kaiko-font-body);
-  font-size: 0.9rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  cursor: pointer;
-  border-radius: 999px;
-  transition: background 180ms ease;
-}
-
-body.kaiko-cart-page .kaiko-undo-toast button:hover {
-  background: rgba(184, 212, 53, 0.15);
-}
+/* Undo-toast styles moved to kaiko-mini-cart.css so the drawer × remove
+   can reuse the same toast across every page, not just /cart/. */
 
 
 /* ===========================

@@ -195,37 +195,24 @@ function kaiko_render_drawer_item( $cart_item_key, $cart_item ) {
 		? wp_get_attachment_image( $thumb_id, array( 144, 144 ), false, array( 'alt' => $title ) )
 		: wc_placeholder_img( array( 144, 144 ) );
 
-	$unit_price = (float) $product->get_price();
-	$line_total = $unit_price * $qty;
+	// The currently-applied per-unit price. For variations + tiered simple
+	// products this is the WC-cart-applied unit price (already tier-discounted
+	// when kaiko_apply_tier_pricing_to_cart has run on the current request).
+	$applied_unit = (float) $product->get_price();
+	$line_total   = $applied_unit * $qty;
+
+	// Tier data — single source of truth. Same call the cart page uses so
+	// the chip + nudge + strikethrough render identically on both surfaces.
+	$tier = function_exists( 'kaiko_cart_line_tier_data' )
+		? kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit )
+		: null;
 
 	// Variation attrs (e.g. "Large · Moss Green")
 	$attr_bits = array();
 	if ( ! empty( $cart_item['variation'] ) ) {
 		foreach ( $cart_item['variation'] as $name => $value ) {
 			if ( '' === $value ) continue;
-			$label = wc_attribute_label( str_replace( 'attribute_', '', $name ), $product );
 			$attr_bits[] = esc_html( ucwords( str_replace( array( '-', '_' ), ' ', $value ) ) );
-		}
-	}
-
-	// Tier badge — show when an actual discount is applied.
-	$tier_badge = '';
-	if ( function_exists( 'kaiko_get_product_tiers' ) && function_exists( 'kaiko_find_tier_for_qty' ) ) {
-		$tiers = kaiko_get_product_tiers( $product_id );
-		if ( ! empty( $tiers ) ) {
-			$tier = kaiko_find_tier_for_qty( $tiers, $qty );
-			if ( $tier && ! empty( $tier['discount_pct'] ) && $tier['discount_pct'] > 0 ) {
-				$tier_idx   = 1;
-				foreach ( $tiers as $i => $t ) {
-					if ( $t === $tier ) { $tier_idx = $i + 1; break; }
-				}
-				$tier_badge = sprintf(
-					/* translators: 1: tier index, 2: percent off */
-					esc_html__( 'Tier %1$d unlocked · –%2$s%%', 'kaiko-child' ),
-					(int) $tier_idx,
-					esc_html( rtrim( rtrim( number_format( (float) $tier['discount_pct'], 1 ), '0' ), '.' ) )
-				);
-			}
 		}
 	}
 	?>
@@ -233,7 +220,7 @@ function kaiko_render_drawer_item( $cart_item_key, $cart_item ) {
 		<div class="kaiko-drawer__thumb">
 			<?php if ( $permalink ) : ?><a href="<?php echo esc_url( $permalink ); ?>"><?php echo $thumb_html; ?></a><?php else : ?><?php echo $thumb_html; ?><?php endif; ?>
 		</div>
-		<div>
+		<div class="kaiko-drawer__item__body">
 			<div class="kaiko-drawer__title">
 				<?php if ( $permalink ) : ?><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $title ); ?></a><?php else : ?><?php echo esc_html( $title ); ?><?php endif; ?>
 			</div>
@@ -242,17 +229,12 @@ function kaiko_render_drawer_item( $cart_item_key, $cart_item ) {
 					<?php foreach ( $attr_bits as $bit ) : ?><span><?php echo $bit; ?></span><?php endforeach; ?>
 				</div>
 			<?php endif; ?>
-			<?php if ( $tier_badge ) : ?>
-				<span class="kaiko-drawer__tier-tag">
-					<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-					<?php echo $tier_badge; ?>
-				</span>
-			<?php endif; ?>
+			<?php kaiko_render_cart_line_tier( $tier, $cart_item_key, $qty, $applied_unit, true ); ?>
 		</div>
 		<div class="kaiko-drawer__right">
 			<div>
 				<div class="kaiko-drawer__line-total"><?php echo wp_kses_post( wc_price( $line_total ) ); ?></div>
-				<div class="kaiko-drawer__unit"><?php echo esc_html( $qty ); ?> × <?php echo wp_kses_post( wc_price( $unit_price ) ); ?></div>
+				<div class="kaiko-drawer__unit"><?php echo kaiko_tier_unit_line_html( $tier, $qty, $applied_unit ); ?></div>
 			</div>
 			<div class="kaiko-drawer__qtymini" data-cart-item-key="<?php echo esc_attr( $cart_item_key ); ?>">
 				<button type="button" data-action="dec" aria-label="<?php esc_attr_e( 'Decrease quantity', 'kaiko-child' ); ?>">−</button>
@@ -260,6 +242,9 @@ function kaiko_render_drawer_item( $cart_item_key, $cart_item ) {
 				<button type="button" data-action="inc" aria-label="<?php esc_attr_e( 'Increase quantity', 'kaiko-child' ); ?>">+</button>
 			</div>
 		</div>
+		<button type="button" class="kaiko-drawer__item__remove" data-cart-item-key="<?php echo esc_attr( $cart_item_key ); ?>" aria-label="<?php esc_attr_e( 'Remove this item', 'kaiko-child' ); ?>">
+			<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+		</button>
 	</div>
 	<?php
 }

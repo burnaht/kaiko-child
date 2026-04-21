@@ -4,11 +4,12 @@
  * Shares the ajax_url + nonce localised by the mini-cart PR
  * (window.kaikoMiniCart) so endpoints and fragments stay consistent.
  *
+ * Remove × + undo-toast logic is handled in kaiko-mini-cart.js so the
+ * drawer's × button works on every page (this file only loads on /cart/).
+ *
  * Binds:
  *   - Qty steppers (and qty input)            → kaiko_update_cart_qty
  *   - Tier nudge "Add N more"                  → kaiko_update_cart_qty (to next tier min)
- *   - Remove × button                          → kaiko_remove_cart_item (with undo toast)
- *   - Undo toast link                          → kaiko_undo_cart_remove
  *   - Cross-sell +                             → add-to-cart URL (native WC form)
  *   - Promo code Apply                         → kaiko_apply_coupon
  *   - Coupon chip ×                            → kaiko_remove_coupon
@@ -23,8 +24,6 @@
 	var doc = document;
 
 	var qtyTimers = Object.create(null); // per-cart-item-key debounce
-	var undoToken = null;
-	var undoTimer = null;
 
 
 	/* ---------- Fragment application ---------- */
@@ -147,82 +146,13 @@
 	}
 
 
-	/* ---------- Remove + undo ---------- */
-
-	function bindRemoveClick(e) {
-		var link = e.target.closest ? e.target.closest('.kaiko-cart-row__remove') : null;
-		if (!link) return;
-		// Only hijack cart-page removes; leave cart_url fallback for no-JS.
-		var row = link.closest('.kaiko-cart-row');
-		if (!row) return;
-		e.preventDefault();
-		var key = link.getAttribute('data-cart-item-key') || row.getAttribute('data-cart-item-key');
-		if (!key) return;
-
-		row.classList.add('is-removing');
-		post('kaiko_remove_cart_item', { cart_item_key: key })
-			.then(function (res) {
-				if (!res || !res.success) {
-					row.classList.remove('is-removing');
-					return;
-				}
-				if (res.data && res.data.undo) showUndoToast(res.data.undo);
-				// Wait for the CSS transition before re-rendering the card
-				setTimeout(function () {
-					applyFragments(res.data && res.data.fragments);
-					if (res.data && res.data.is_empty) maybeSwapEmpty();
-				}, 240);
-			})
-			.catch(function () { row.classList.remove('is-removing'); });
-	}
-
-	function showUndoToast(token) {
-		undoToken = token;
-		var toast = getOrCreateUndoToast();
-		toast.classList.add('is-visible');
-		clearTimeout(undoTimer);
-		undoTimer = setTimeout(function () { hideUndoToast(); }, 4000);
-	}
-
-	function hideUndoToast() {
-		var toast = doc.getElementById('kaiko-undo-toast');
-		if (toast) toast.classList.remove('is-visible');
-		undoToken = null;
-	}
-
-	function getOrCreateUndoToast() {
-		var existing = doc.getElementById('kaiko-undo-toast');
-		if (existing) return existing;
-		var el = doc.createElement('div');
-		el.id = 'kaiko-undo-toast';
-		el.className = 'kaiko-undo-toast';
-		el.setAttribute('role', 'status');
-		el.innerHTML = '<span>Removed from cart</span><button type="button">Undo</button>';
-		doc.body.appendChild(el);
-		el.querySelector('button').addEventListener('click', function () {
-			if (!undoToken) return;
-			var token = undoToken;
-			hideUndoToast();
-			post('kaiko_undo_cart_remove', { token: token })
-				.then(function (res) {
-					if (!res || !res.success) return;
-					// Full reload is the simplest path to restore the removed row
-					// at the right position in the lines card. Server-render beats
-					// re-building row markup client-side after an async replay.
-					window.location.reload();
-				})
-				.catch(function () {});
-		});
-		return el;
-	}
-
-
 	/* ---------- Empty-state swap ---------- */
+	// Used by the qty-stepper path when a decrement lands the cart at zero.
+	// Remove × flow lives in kaiko-mini-cart.js and calls its own variant.
 
 	function maybeSwapEmpty() {
 		var wrap = doc.querySelector('.kaiko-cart-wrap');
 		if (!wrap) return;
-		// Fade then full reload — server handles the hero subline copy.
 		wrap.style.transition = 'opacity 320ms ease';
 		wrap.style.opacity = '0';
 		setTimeout(function () { window.location.reload(); }, 340);
@@ -325,7 +255,6 @@
 	doc.addEventListener('click', function (e) {
 		bindStepperClicks(e);
 		bindTierNudge(e);
-		bindRemoveClick(e);
 		bindUpsellAdd(e);
 		bindCouponApply(e);
 		bindCouponRemove(e);

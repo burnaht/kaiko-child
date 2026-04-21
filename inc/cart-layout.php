@@ -256,6 +256,59 @@ function kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit ) {
 }
 
 
+/**
+ * Echo the shared cart-line tier partial (chip + nudge).
+ *
+ * Used by BOTH woocommerce/cart/cart.php (via kaiko_render_cart_line_row)
+ * AND the mini-cart drawer (inc/mini-cart.php::kaiko_render_drawer_item)
+ * so tier display is parity-by-construction.
+ *
+ * @param array|null $tier          Output of kaiko_cart_line_tier_data(), or null.
+ * @param string     $cart_item_key WC cart item key.
+ * @param int        $qty           Line quantity.
+ * @param float      $applied_unit  Per-unit price currently applied.
+ * @param bool       $compact       Pass true in the drawer for tighter padding.
+ */
+function kaiko_render_cart_line_tier( $tier, $cart_item_key, $qty, $applied_unit, $compact = false ) {
+	if ( ! is_array( $tier ) ) {
+		return;
+	}
+	get_template_part(
+		'template-parts/kaiko-cart-line-tier',
+		null,
+		array(
+			'tier'          => $tier,
+			'cart_item_key' => (string) $cart_item_key,
+			'qty'           => (int) $qty,
+			'applied_unit'  => (float) $applied_unit,
+			'compact'       => (bool) $compact,
+		)
+	);
+}
+
+/**
+ * Return the "<s>£base</s> qty × £applied" unit line for a cart/drawer row.
+ *
+ * Drops the strikethrough when no saving is applied so the markup is
+ * identical for tier-1 / simple products. Both cart.php and the drawer
+ * route through this so the line-total sub-copy stays consistent.
+ *
+ * @param array|null $tier         Output of kaiko_cart_line_tier_data(), or null.
+ * @param int        $qty          Line quantity.
+ * @param float      $applied_unit Per-unit price currently applied.
+ * @return string
+ */
+function kaiko_tier_unit_line_html( $tier, $qty, $applied_unit ) {
+	$qty          = (int) $qty;
+	$applied_unit = (float) $applied_unit;
+	$strike       = '';
+	if ( is_array( $tier ) && ! empty( $tier['saved_per_unit'] ) && (float) $tier['saved_per_unit'] > 0 ) {
+		$strike = '<s>' . wp_kses_post( wc_price( (float) $tier['base_unit'] ) ) . '</s> ';
+	}
+	return $strike . esc_html( $qty ) . ' &times; ' . wp_kses_post( wc_price( $applied_unit ) );
+}
+
+
 /* ============================================================
    5. RENDER HELPERS — summary sidebar + lines
    ============================================================ */
@@ -510,35 +563,7 @@ function kaiko_render_cart_line_row( $cart_item_key, $cart_item ) {
 			<?php do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key ); ?>
 			<?php echo wc_get_formatted_cart_item_data( $cart_item ); ?>
 
-			<?php if ( $tier && $tier['active_index'] > 1 && $tier['saved_total'] > 0 ) : ?>
-				<span class="kaiko-tier-applied">
-					<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-					<?php
-					/* translators: 1: tier index, 2: money saved */
-					printf( esc_html__( 'Tier %1$d applied — saved %2$s', 'kaiko-child' ),
-						(int) $tier['active_index'],
-						wp_kses_post( wc_price( $tier['saved_total'] ) )
-					);
-					?>
-				</span>
-			<?php endif; ?>
-
-			<?php if ( $tier && $tier['next'] && $tier['next_unit'] !== null && $tier['next_unit'] < $applied_unit ) :
-				$delta = (int) $tier['next']['min_qty'] - $qty;
-				if ( $delta > 0 && $delta <= 3 ) : ?>
-					<button type="button" class="kaiko-tier-nudge" data-cart-item-key="<?php echo esc_attr( $cart_item_key ); ?>" data-next-qty="<?php echo esc_attr( (int) $tier['next']['min_qty'] ); ?>">
-						<?php
-						/* translators: 1: qty to add, 2: tier index, 3: per-unit price */
-						printf(
-							esc_html__( 'Add %1$d more to unlock Tier %2$d — %3$s each', 'kaiko-child' ),
-							(int) $delta,
-							(int) $tier['next_index'],
-							wp_kses_post( wc_price( $tier['next_unit'] ) )
-						);
-						?>
-					</button>
-				<?php endif;
-			endif; ?>
+			<?php kaiko_render_cart_line_tier( $tier, $cart_item_key, $qty, $applied_unit ); ?>
 
 			<?php if ( $sku ) : ?>
 				<div class="sku">SKU · <?php echo esc_html( $sku ); ?></div>
@@ -556,10 +581,7 @@ function kaiko_render_cart_line_row( $cart_item_key, $cart_item ) {
 		<div class="kaiko-cart-row__total">
 			<?php echo wp_kses_post( wc_price( $line_total ) ); ?>
 			<span class="kaiko-cart-row__total__unit">
-				<?php if ( $tier && $tier['saved_per_unit'] > 0 ) : ?>
-					<s><?php echo wp_kses_post( wc_price( $tier['base_unit'] ) ); ?></s>
-				<?php endif; ?>
-				<?php echo esc_html( $qty ); ?> × <?php echo wp_kses_post( wc_price( $applied_unit ) ); ?>
+				<?php echo kaiko_tier_unit_line_html( $tier, $qty, $applied_unit ); ?>
 			</span>
 		</div>
 
