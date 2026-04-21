@@ -19,13 +19,20 @@ defined( 'ABSPATH' ) || exit;
 
 $user_id = get_current_user_id();
 
+// 'customer_id' (strict int) rather than 'customer' (email-or-int) — explicit
+// intent + matches WC's documented query arg. Status list is the full set of
+// registered statuses with the wc- prefix stripped, which wc_get_orders expects.
 $customer_orders = $user_id
 	? wc_get_orders( array(
-		'customer' => $user_id,
-		'limit'    => -1,
-		'orderby'  => 'date',
-		'order'    => 'DESC',
-		'type'     => 'shop_order',
+		'customer_id' => $user_id,
+		'limit'       => -1,
+		'orderby'     => 'date',
+		'order'       => 'DESC',
+		'type'        => 'shop_order',
+		'status'      => array_map(
+			static function ( $s ) { return 0 === strpos( $s, 'wc-' ) ? substr( $s, 3 ) : $s; },
+			array_keys( wc_get_order_statuses() )
+		),
 	) )
 	: array();
 
@@ -126,10 +133,17 @@ $chip_labels = array(
 				</thead>
 				<tbody data-kaiko-orders-tbody>
 					<?php foreach ( $customer_orders as $customer_order ) :
+						if ( ! $customer_order instanceof WC_Order ) {
+							continue;
+						}
 						$status       = $customer_order->get_status();
 						$status_label = wc_get_order_status_name( $status );
 						$status_class = sanitize_html_class( $status );
-						$item_count   = $customer_order->get_item_count() - $customer_order->get_item_count_refunded();
+						// Item count is a subtitle line, not a data point we
+						// need to be precise about — drop the refund subtraction
+						// (get_item_count_refunded isn't universally available
+						// across every WC order class).
+						$item_count   = (int) $customer_order->get_item_count();
 						?>
 						<tr data-status="<?php echo esc_attr( $status ); ?>">
 							<td><span class="order-num">#<?php echo esc_html( $customer_order->get_order_number() ); ?></span></td>

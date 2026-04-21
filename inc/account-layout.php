@@ -190,3 +190,18 @@ function kaiko_handle_reorder() {
 	exit;
 }
 add_action( 'admin_post_kaiko_reorder', 'kaiko_handle_reorder' );
+
+
+/**
+ * Suppress WooCommerce's default my-account navigation.
+ *
+ * Our Kaiko sidebar (template-parts/kaiko-my-account-approved.php) is the
+ * single source of truth. The stock <nav class="woocommerce-MyAccount-navigation">
+ * was leaking through on every sub-endpoint view because the WC shortcode
+ * fallback path (via wc_get_template('myaccount/my-account.php')) still fires
+ * do_action('woocommerce_account_navigation'). Unregistering the default
+ * callback means that action can still fire without rendering a second nav.
+ */
+add_action( 'init', function () {
+	remove_action( 'woocommerce_account_navigation', 'woocommerce_account_navigation' );
+}, 20 );

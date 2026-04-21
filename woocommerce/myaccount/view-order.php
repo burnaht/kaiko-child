@@ -13,9 +13,21 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$order = wc_get_order( $order_id );
+// WC passes $order_id (and sometimes $order) via wc_get_template() args, but
+// don't trust that — rederive defensively. The previous version relied on
+// current_user_can('view_order', $order_id), which goes through WC's meta-cap
+// mapping and can fatal if the order isn't loadable at map time. Direct
+// customer-id comparison avoids that code path entirely.
+if ( ! isset( $order_id ) ) {
+	$order_id = absint( get_query_var( 'view-order' ) );
+}
+$order = isset( $order ) && $order instanceof WC_Order ? $order : wc_get_order( $order_id );
 
-if ( ! $order || ! current_user_can( 'view_order', $order_id ) ) {
+$user_id    = get_current_user_id();
+$owns_order = $order && $user_id && (int) $order->get_customer_id() === $user_id;
+$is_staff   = current_user_can( 'manage_woocommerce' );
+
+if ( ! $order || ! ( $owns_order || $is_staff ) ) {
 	?>
 	<div class="kaiko-empty-state">
 		<h4 class="kaiko-empty-state__title"><?php esc_html_e( 'Order not found', 'kaiko-child' ); ?></h4>

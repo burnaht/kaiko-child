@@ -4,8 +4,8 @@
  *
  * Overrides WC's default `myaccount/my-address.php`. Two-card grid
  * (Billing / Shipping) with edit links, formatted address, Default
- * badge on the primary address, and an inline "Add now" empty state
- * when the type is unset.
+ * badge on billing, and an inline "Add now" empty state when the type
+ * is unset.
  *
  * @package KaikoChild
  */
@@ -18,18 +18,14 @@ if ( ! $customer_id ) {
 	return;
 }
 
-$customer = new WC_Customer( $customer_id );
-
-$address_types = array(
-	'billing'  => __( 'Billing address', 'kaiko-child' ),
-	'shipping' => __( 'Shipping address', 'kaiko-child' ),
+$address_types = apply_filters(
+	'woocommerce_my_account_get_addresses',
+	array(
+		'billing'  => __( 'Billing address', 'kaiko-child' ),
+		'shipping' => __( 'Shipping address', 'kaiko-child' ),
+	),
+	$customer_id
 );
-$address_types = apply_filters( 'woocommerce_my_account_get_addresses', $address_types, $customer_id );
-
-// WC marks billing as "default" implicitly (every customer has one if it's
-// populated). Shipping is separate and only rendered as default when the
-// "ship to different address" meta was used — we treat billing as the
-// canonical default, matching WC's own UX.
 ?>
 
 <section class="kaiko-addresses-view">
@@ -45,11 +41,16 @@ $address_types = apply_filters( 'woocommerce_my_account_get_addresses', $address
 
 	<div class="kaiko-addresses-grid">
 		<?php foreach ( $address_types as $type => $label ) :
-			$getter       = 'get_' . $type . '_address';
-			$address      = is_callable( array( $customer, $getter ) ) ? $customer->$getter() : '';
-			$edit_url     = wc_get_endpoint_url( 'edit-address', $type, wc_get_page_permalink( 'myaccount' ) );
-			$is_default   = ( 'billing' === $type ); // Billing is the canonical default.
-			$has_content  = ! empty( trim( wp_strip_all_tags( (string) $address ) ) );
+			// wc_get_account_formatted_address() is the idiomatic helper. It
+			// returns the fully-formatted HTML address string for billing or
+			// shipping, or an empty string when the type is unset. The previous
+			// pass used $customer->get_billing_address()/get_shipping_address(),
+			// which aren't real methods on WC_Customer — they resolved via the
+			// legacy __call magic and threw on the live site.
+			$formatted  = wc_get_account_formatted_address( $type, $customer_id );
+			$edit_url   = wc_get_endpoint_url( 'edit-address', $type, wc_get_page_permalink( 'myaccount' ) );
+			$is_default = ( 'billing' === $type );
+			$has_content = '' !== trim( wp_strip_all_tags( (string) $formatted ) );
 			?>
 			<div class="kaiko-address-card">
 				<div class="kaiko-address-card__head">
@@ -60,7 +61,7 @@ $address_types = apply_filters( 'woocommerce_my_account_get_addresses', $address
 				</div>
 				<div class="kaiko-address-card__body">
 					<?php if ( $has_content ) : ?>
-						<?php echo wp_kses_post( $address ); ?>
+						<?php echo wp_kses_post( $formatted ); ?>
 						<?php if ( $is_default ) : ?>
 							<span class="kaiko-address-card__default"><?php esc_html_e( 'Default', 'kaiko-child' ); ?></span>
 						<?php endif; ?>
