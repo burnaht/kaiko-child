@@ -644,3 +644,303 @@ body.kaiko-myaccount-page .kaiko-account-content .woocommerce-MyAccount-navigati
   body.kaiko-myaccount-page .kaiko-welcome-card { padding: 22px; }
   body.kaiko-myaccount-page .kaiko-welcome-card__title { font-size: 22px; }
 }
+
+
+/* ============================================
+   PHASE 2 — sub-endpoint views
+   (orders / view-order / addresses / edit-account)
+   ============================================ */
+
+/* ---- Orders filter chips ---- */
+body.kaiko-myaccount-page .kaiko-orders-filters {
+  display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+}
+body.kaiko-myaccount-page .kaiko-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  font-family: var(--k-font-body);
+  font-size: 12px; font-weight: 600;
+  color: var(--k-stone-700);
+  background: #fff;
+  border: 1px solid var(--k-stone-200);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s var(--k-ease);
+  letter-spacing: 0.02em;
+}
+body.kaiko-myaccount-page .kaiko-chip:hover {
+  border-color: var(--k-teal-border, rgba(26,92,82,0.16));
+  color: var(--k-teal);
+}
+body.kaiko-myaccount-page .kaiko-chip.active {
+  background: var(--k-teal); color: #fff; border-color: var(--k-teal);
+}
+body.kaiko-myaccount-page .kaiko-chip__count {
+  background: var(--k-stone-100);
+  color: var(--k-stone-500);
+  padding: 1px 6px; border-radius: 999px;
+  font-size: 10px; font-weight: 700;
+}
+body.kaiko-myaccount-page .kaiko-chip.active .kaiko-chip__count {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+
+/* ---- Addresses grid ---- */
+body.kaiko-myaccount-page .kaiko-addresses-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+body.kaiko-myaccount-page .kaiko-address-card {
+  background: #fff;
+  border: 1px solid var(--k-stone-200);
+  border-radius: var(--k-r-lg, 18px);
+  padding: 24px;
+}
+body.kaiko-myaccount-page .kaiko-address-card__head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+body.kaiko-myaccount-page .kaiko-address-card__label {
+  font-size: 11px; font-weight: 700;
+  color: var(--k-stone-500);
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+body.kaiko-myaccount-page .kaiko-address-card__edit {
+  font-size: 12px; font-weight: 600;
+  color: var(--k-teal);
+  text-decoration: none;
+}
+body.kaiko-myaccount-page .kaiko-address-card__edit:hover { color: var(--k-deep-teal); }
+body.kaiko-myaccount-page .kaiko-address-card__body {
+  font-size: 14px;
+  color: var(--k-dark);
+  line-height: 1.6;
+}
+body.kaiko-myaccount-page .kaiko-address-card__body .name { font-weight: 600; }
+body.kaiko-myaccount-page .kaiko-address-card__default {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  color: var(--k-deep-teal);
+  background: var(--k-teal-soft, rgba(26,92,82,0.08));
+  padding: 2px 8px; border-radius: 4px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-top: 8px;
+}
+body.kaiko-myaccount-page .kaiko-address-card__empty {
+  font-size: 14px; color: var(--k-stone-500);
+  margin: 0;
+}
+body.kaiko-myaccount-page .kaiko-address-card__empty a {
+  color: var(--k-teal); font-weight: 600; text-decoration: none;
+}
+body.kaiko-myaccount-page .kaiko-address-card__empty a:hover { color: var(--k-deep-teal); }
+
+
+/* ---- Form card (edit-account, edit-address) ---- */
+body.kaiko-myaccount-page .kaiko-form-card {
+  background: #fff;
+  border: 1px solid var(--k-stone-200);
+  border-radius: var(--k-r-lg, 18px);
+  padding: 28px 32px;
+}
+body.kaiko-myaccount-page .kaiko-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+body.kaiko-myaccount-page .kaiko-form-row--1 { grid-template-columns: 1fr; }
+body.kaiko-myaccount-page .kaiko-form-field {
+  display: flex; flex-direction: column; gap: 6px;
+}
+body.kaiko-myaccount-page .kaiko-form-field label {
+  font-family: var(--k-font-body);
+  font-size: 12px; font-weight: 600;
+  color: var(--k-stone-700);
+  letter-spacing: 0.02em;
+  text-transform: none; /* override the uppercase label rule further up the shell */
+  margin: 0;
+}
+body.kaiko-myaccount-page .kaiko-form-field .required { color: var(--k-gold); }
+body.kaiko-myaccount-page .kaiko-form-field input,
+body.kaiko-myaccount-page .kaiko-form-field select,
+body.kaiko-myaccount-page .kaiko-form-field textarea {
+  height: 42px;
+  padding: 0 14px;
+  background: var(--k-stone-50);
+  border: 1px solid var(--k-stone-200);
+  border-radius: var(--k-r-sm, 8px);
+  font-family: var(--k-font-body);
+  font-size: 14px;
+  color: var(--k-dark);
+  transition: all 0.15s var(--k-ease);
+}
+body.kaiko-myaccount-page .kaiko-form-field textarea {
+  height: auto; min-height: 96px; padding: 10px 14px;
+}
+body.kaiko-myaccount-page .kaiko-form-field input:focus,
+body.kaiko-myaccount-page .kaiko-form-field select:focus,
+body.kaiko-myaccount-page .kaiko-form-field textarea:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--k-teal);
+  box-shadow: 0 0 0 3px var(--k-teal-soft, rgba(26,92,82,0.08));
+}
+body.kaiko-myaccount-page .kaiko-form-divider {
+  height: 1px; background: var(--k-stone-100);
+  margin: 20px 0;
+}
+body.kaiko-myaccount-page .kaiko-form-section-title {
+  font-family: var(--k-font-display);
+  font-size: 15px; font-weight: 600;
+  color: var(--k-dark);
+  margin: 0 0 14px;
+  letter-spacing: -0.01em;
+}
+body.kaiko-myaccount-page .kaiko-form-actions {
+  display: flex; justify-content: flex-end; gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--k-stone-100);
+}
+
+
+/* ---- Single order head + items + totals ---- */
+body.kaiko-myaccount-page .kaiko-order-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+body.kaiko-myaccount-page .kaiko-order-head__left { min-width: 0; }
+body.kaiko-myaccount-page .kaiko-order-head__back {
+  font-family: var(--k-font-body);
+  font-size: 12px; font-weight: 600;
+  color: var(--k-stone-500);
+  text-decoration: none;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-bottom: 10px;
+}
+body.kaiko-myaccount-page .kaiko-order-head__back:hover { color: var(--k-teal); }
+body.kaiko-myaccount-page .kaiko-order-head__num {
+  font-family: var(--k-font-display);
+  font-size: 28px; font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--k-dark);
+  margin: 0;
+  display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+body.kaiko-myaccount-page .kaiko-order-head__meta {
+  font-size: 13px; color: var(--k-stone-500);
+  margin-top: 4px;
+}
+body.kaiko-myaccount-page .kaiko-order-head__actions {
+  display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap;
+}
+body.kaiko-myaccount-page .kaiko-order-head__actions form { margin: 0; }
+
+body.kaiko-myaccount-page .kaiko-order-items {
+  background: #fff;
+  border: 1px solid var(--k-stone-200);
+  border-radius: var(--k-r-lg, 18px);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+body.kaiko-myaccount-page .kaiko-order-item {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 16px;
+  padding: 16px 20px;
+  align-items: center;
+  border-bottom: 1px solid var(--k-stone-100);
+}
+body.kaiko-myaccount-page .kaiko-order-item:last-child { border-bottom: 0; }
+body.kaiko-myaccount-page .kaiko-order-item__thumb {
+  width: 60px; height: 60px;
+  background: var(--k-stone-100);
+  border-radius: var(--k-r-sm, 8px);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+body.kaiko-myaccount-page .kaiko-order-item__thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+body.kaiko-myaccount-page .kaiko-order-item__body { min-width: 0; }
+body.kaiko-myaccount-page .kaiko-order-item__name {
+  font-weight: 600; font-size: 14px; color: var(--k-dark);
+  margin: 0 0 4px;
+  text-decoration: none;
+}
+body.kaiko-myaccount-page .kaiko-order-item__name:hover { color: var(--k-teal); }
+body.kaiko-myaccount-page .kaiko-order-item__meta {
+  font-size: 12px; color: var(--k-stone-500);
+  margin: 0;
+}
+body.kaiko-myaccount-page .kaiko-order-item__total {
+  font-family: var(--k-font-display);
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--k-dark);
+  text-align: right;
+}
+
+body.kaiko-myaccount-page .kaiko-order-totals {
+  background: #fff;
+  border: 1px solid var(--k-stone-200);
+  border-radius: var(--k-r-lg, 18px);
+  padding: 20px 24px;
+}
+body.kaiko-myaccount-page .kaiko-order-totals__row {
+  display: flex; justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+}
+body.kaiko-myaccount-page .kaiko-order-totals__row .label { color: var(--k-stone-500); }
+body.kaiko-myaccount-page .kaiko-order-totals__row .val {
+  font-weight: 500; color: var(--k-dark);
+  font-variant-numeric: tabular-nums;
+}
+body.kaiko-myaccount-page .kaiko-order-totals__row .val .amount,
+body.kaiko-myaccount-page .kaiko-order-totals__row .val bdi,
+body.kaiko-myaccount-page .kaiko-order-totals__row .val .woocommerce-Price-amount,
+body.kaiko-myaccount-page .kaiko-order-totals__row .val .woocommerce-Price-currencySymbol {
+  font: inherit; color: inherit;
+}
+body.kaiko-myaccount-page .kaiko-order-totals__row .val.savings,
+body.kaiko-myaccount-page .kaiko-order-totals__row .val.savings .amount,
+body.kaiko-myaccount-page .kaiko-order-totals__row .val.savings bdi {
+  color: var(--k-gold);
+  font-weight: 600;
+}
+body.kaiko-myaccount-page .kaiko-order-totals__row--total {
+  border-top: 1px solid var(--k-stone-200);
+  padding-top: 14px; margin-top: 8px;
+  font-family: var(--k-font-display);
+  font-size: 18px; font-weight: 600;
+  color: var(--k-dark);
+}
+
+
+/* ---- Phase 2 responsive ---- */
+@media (max-width: 960px) {
+  body.kaiko-myaccount-page .kaiko-addresses-grid { grid-template-columns: 1fr; }
+  body.kaiko-myaccount-page .kaiko-form-row { grid-template-columns: 1fr; }
+  body.kaiko-myaccount-page .kaiko-form-card { padding: 22px; }
+}
+
+@media (max-width: 560px) {
+  body.kaiko-myaccount-page .kaiko-order-head__num { font-size: 22px; }
+  body.kaiko-myaccount-page .kaiko-order-head__actions { width: 100%; }
+  body.kaiko-myaccount-page .kaiko-order-item {
+    grid-template-columns: 48px 1fr;
+  }
+  body.kaiko-myaccount-page .kaiko-order-item__total {
+    grid-column: 1 / -1;
+    text-align: left;
+    padding-top: 4px;
+  }
+}

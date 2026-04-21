@@ -2,8 +2,12 @@
 /**
  * Kaiko — My Account helpers.
  *
- * Phase 1: sidebar nav icons.
- * Phase 2 will add kaiko_order_line_tier_meta() for the single-order view.
+ * - kaiko_account_nav_icon()       sidebar nav SVGs
+ * - kaiko_order_line_tier_meta()   tier data for a historic order line,
+ *                                  thin adapter over kaiko_cart_line_tier_data()
+ * - kaiko_handle_reorder()         admin-post handler: add every line of a
+ *                                  past order back to the cart, variation-aware,
+ *                                  with a customer-id assertion
  *
  * @package KaikoChild
  */
@@ -38,3 +42,151 @@ function kaiko_account_nav_icon( $key ) {
 		$body
 	);
 }
+
+
+/**
+ * Return tier data for a single historic-order line.
+ *
+ * Thin adapter over kaiko_cart_line_tier_data() (inc/cart-layout.php). Uses
+ * the line's per-unit total (pre-tax, post-discount) as $applied_unit so the
+ * returned shape matches what the cart page + drawer consume, and the shared
+ * template-parts/kaiko-cart-line-tier.php partial can render from it.
+ *
+ * @param WC_Order_Item_Product $order_item
+ * @return array|null Same shape as kaiko_cart_line_tier_data().
+ */
+function kaiko_order_line_tier_meta( $order_item ) {
+	if ( ! $order_item instanceof WC_Order_Item_Product ) {
+		return null;
+	}
+	if ( ! function_exists( 'kaiko_cart_line_tier_data' ) ) {
+		return null;
+	}
+	$product_id = (int) $order_item->get_product_id();
+	$qty        = (int) $order_item->get_quantity();
+	if ( ! $product_id || $qty <= 0 ) {
+		return null;
+	}
+	// get_total() is the line net, post-discount, pre-tax. Dividing by qty
+	// gives the per-unit price the customer actually paid — the same "applied
+	// unit" shape kaiko_cart_line_tier_data() expects.
+	$applied_unit = (float) $order_item->get_total() / $qty;
+	if ( $applied_unit <= 0 ) {
+		return null;
+	}
+	return kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit );
+}
+
+
+/**
+ * Reorder a past order — add every line back to the active cart.
+ *
+ * Hooked to `admin_post_kaiko_reorder`. Requires login (no nopriv variant).
+ * The View-Order page renders a POST form that hits this endpoint.
+ *
+ * Safety:
+ *  - Nonce check scoped to the order ID.
+ *  - Ownership assertion: $order->get_customer_id() MUST equal the current
+ *    user ID. Stops anyone with a valid session from dropping someone else's
+ *    order into their cart.
+ *  - Variation-aware: uses variation_id when present and forwards the
+ *    variation attribute array so WC's cart add treats it as a variant pick.
+ *  - Unavailable lines (missing product, out of stock, not purchasable) are
+ *    skipped silently; the summary notice reports how many succeeded / skipped.
+ */
+function kaiko_handle_reorder() {
+	if ( ! is_user_logged_in() ) {
+		wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
+		exit;
+	}
+
+	$order_id = isset( $_POST['order_id'] ) ? absint( $_POST['order_id'] ) : 0;
+	$nonce    = isset( $_POST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ) : '';
+
+	if ( ! $order_id || ! wp_verify_nonce( $nonce, 'kaiko_reorder_' . $order_id ) ) {
+		wp_die( esc_html__( 'Security check failed.', 'kaiko-child' ), '', array( 'response' => 403 ) );
+	}
+
+	$order = wc_get_order( $order_id );
+	if ( ! $order || (int) $order->get_customer_id() !== get_current_user_id() ) {
+		wp_die( esc_html__( 'Order not found.', 'kaiko-child' ), '', array( 'response' => 404 ) );
+	}
+
+	$added   = 0;
+	$skipped = 0;
+
+	foreach ( $order->get_items() as $item ) {
+		if ( ! $item instanceof WC_Order_Item_Product ) {
+			continue;
+		}
+
+		$variation_id = (int) $item->get_variation_id();
+		$product_id   = (int) $item->get_product_id();
+		$add_id       = $variation_id ?: $product_id;
+		$qty          = max( 1, (int) $item->get_quantity() );
+
+		$product = wc_get_product( $add_id );
+		if ( ! $product || ! $product->is_purchasable() || ! $product->is_in_stock() ) {
+			$skipped++;
+			continue;
+		}
+
+		// Pull variation attributes into the attribute-name shape WC expects
+		// (keys prefixed with "attribute_"). Falls back to an empty array for
+		// simple products, which WC handles fine.
+		$variation_attrs = array();
+		if ( $variation_id ) {
+			foreach ( $item->get_meta_data() as $meta ) {
+				$key = is_object( $meta ) ? (string) $meta->key : '';
+				if ( '' === $key || 0 === strpos( $key, '_' ) ) {
+					continue;
+				}
+				$attr_key = 'attribute_' . sanitize_title( $key );
+				$variation_attrs[ $attr_key ] = wc_clean( $meta->value );
+			}
+		}
+
+		$result = WC()->cart->add_to_cart(
+			$product_id,
+			$qty,
+			$variation_id,
+			$variation_attrs
+		);
+
+		if ( $result ) {
+			$added++;
+		} else {
+			$skipped++;
+			// add_to_cart can emit a wc_notice on failure; clear it so we can
+			// emit one coherent summary at the end.
+			wc_clear_notices();
+		}
+	}
+
+	if ( $added > 0 ) {
+		wc_add_notice(
+			sprintf(
+				/* translators: 1: lines added, 2: lines skipped */
+				_n(
+					'%1$d item added to your cart.',
+					'%1$d items added to your cart.',
+					$added,
+					'kaiko-child'
+				) . ( $skipped > 0 ? ' ' . sprintf( _n( '%2$d line was skipped (unavailable).', '%2$d lines were skipped (unavailable).', $skipped, 'kaiko-child' ), $added, $skipped ) : '' ),
+				$added,
+				$skipped
+			),
+			'success'
+		);
+		wp_safe_redirect( wc_get_cart_url() );
+		exit;
+	}
+
+	wc_add_notice(
+		__( 'None of the items from that order are available right now. Nothing was added to your cart.', 'kaiko-child' ),
+		'error'
+	);
+	wp_safe_redirect( $order->get_view_order_url() );
+	exit;
+}
+add_action( 'admin_post_kaiko_reorder', 'kaiko_handle_reorder' );
