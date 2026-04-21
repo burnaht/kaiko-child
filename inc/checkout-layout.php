@@ -138,6 +138,15 @@ function kaiko_checkout_strip_sidebars() {
 	// plain-text title bar even if a plugin re-reads the options elsewhere.
 	remove_action( 'woodmart_after_header', 'woodmart_page_title', 20 );
 	remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
+
+	// functions.php still hooks a legacy .kaiko-page-hero into the checkout
+	// form (add_action woocommerce_before_checkout_form / after_checkout_form).
+	// template-checkout.php already renders its own .kaiko-checkout-hero, so
+	// those legacy hooks only produce a duplicate hero inside the form. Drop
+	// them here; leave the functions and the shared .kaiko-page-hero partial
+	// alone — About / Products / Contact / login still use them.
+	remove_action( 'woocommerce_before_checkout_form', 'kaiko_checkout_page_hero', 5 );
+	remove_action( 'woocommerce_after_checkout_form', 'kaiko_checkout_page_close', 99 );
 }
 
 
