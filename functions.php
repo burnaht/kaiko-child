@@ -35,6 +35,7 @@ require_once KAIKO_DIR . '/inc/security.php';
 require_once KAIKO_DIR . '/inc/contact-form.php';
 require_once KAIKO_DIR . '/inc/mini-cart.php';
 require_once KAIKO_DIR . '/inc/cart-layout.php';
+require_once KAIKO_DIR . '/inc/account-layout.php';
 
 
 /* ============================================
@@ -81,6 +82,17 @@ function kaiko_enqueue_assets() {
         if ( function_exists( 'is_cart' ) && is_cart() ) {
             wp_enqueue_style( 'kaiko-cart', KAIKO_URI . '/assets/css/kaiko-cart.css', array( 'kaiko-woocommerce' ), KAIKO_VERSION );
             wp_enqueue_script( 'kaiko-cart', KAIKO_URI . '/assets/js/kaiko-cart.js', array( 'jquery', 'kaiko-mini-cart' ), KAIKO_VERSION, true );
+        }
+
+        // My Account — standalone template. is_page_template() catches the
+        // page-assignment path; is_account_page() catches any configuration
+        // where the shortcode / default WC page rule fires instead.
+        if (
+            ( function_exists( 'is_page_template' ) && is_page_template( 'template-myaccount.php' ) )
+            || ( function_exists( 'is_account_page' ) && is_account_page() )
+        ) {
+            wp_enqueue_style( 'kaiko-my-account', KAIKO_URI . '/assets/css/kaiko-my-account.css', array( 'kaiko-woocommerce' ), KAIKO_VERSION );
+            wp_enqueue_script( 'kaiko-my-account', KAIKO_URI . '/assets/js/kaiko-account.js', array(), KAIKO_VERSION, true );
         }
     }
 
