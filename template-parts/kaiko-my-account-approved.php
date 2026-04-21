@@ -397,9 +397,17 @@ if ( $is_dashboard ) {
 		<?php else :
 			// Sub-endpoint: dispatch the same action [woocommerce_my_account] uses
 			// internally so WC's own templates render — but inside our shell.
-			// Phase 2 will replace these WC-native views with concept-matching
+			// Phase 2 replaced these WC-native views with concept-matching
 			// overrides under woocommerce/myaccount/.
-			$value = WC()->query->get_endpoint_query_var_value( $endpoint );
+			//
+			// Pull the endpoint's query-var value the same way core WC does
+			// in WC_Shortcode_My_Account::output() — $wp->query_vars lookup.
+			// The previous call to WC()->query->get_endpoint_query_var_value()
+			// was a non-existent method and caused the critical error.
+			global $wp;
+			$value = ( $endpoint && isset( $wp->query_vars[ $endpoint ] ) )
+				? $wp->query_vars[ $endpoint ]
+				: '';
 			do_action( 'woocommerce_account_' . $endpoint . '_endpoint', $value );
 			?>
 		<?php endif; ?>
