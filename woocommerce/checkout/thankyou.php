@@ -181,6 +181,10 @@ do_action( 'woocommerce_before_thankyou', $order_id );
 				</dd>
 			</div>
 
+			<p class="kaiko-thankyou__payment__parent-note">
+				<?php esc_html_e( 'Payments are processed by our parent company, Silkworm Store Limited. Your bank may show this name when you pay — this is expected.', 'kaiko-child' ); ?>
+			</p>
+
 			<!-- Screen-reader announcement region for the copy action -->
 			<div class="kaiko-thankyou__payment__live" aria-live="polite" aria-atomic="true"></div>
 		</article>

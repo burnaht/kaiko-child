@@ -245,6 +245,14 @@
 	margin: 18px 0;
 }
 
+/* Parent-company disclosure — muted, sits below the reference */
+.kaiko-thankyou__payment__parent-note {
+	margin: 22px 0 0;
+	font-size: 13px;
+	line-height: 1.55;
+	color: rgba(255, 255, 255, 0.62);
+}
+
 /* --- Copy button --- */
 .kaiko-thankyou__payment__copy {
 	flex-shrink: 0;
