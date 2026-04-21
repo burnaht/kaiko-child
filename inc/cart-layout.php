@@ -426,9 +426,7 @@ function kaiko_render_cart_summary() {
 		</div>
 	</div>
 
-	<div class="kaiko-cart-summary__pay" aria-hidden="true">
-		<span>VISA</span><span>MC</span><span>KLARNA</span><span>PayBB</span>
-	</div>
+	<?php // Payment-method pills removed — Kaiko is trade-only / bank transfer only. ?>
 	<?php
 }
 

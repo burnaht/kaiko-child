@@ -805,23 +805,7 @@ body.kaiko-cart-page .kaiko-cart-summary__trust svg {
   flex: 0 0 auto;
 }
 
-body.kaiko-cart-page .kaiko-cart-summary__pay {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 18px;
-}
-
-body.kaiko-cart-page .kaiko-cart-summary__pay span {
-  padding: 7px 12px;
-  background: var(--kaiko-off-white);
-  border: 1px solid var(--kaiko-border);
-  border-radius: var(--k-r-sm);
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--kaiko-dark);
-  letter-spacing: 0.06em;
-}
+/* Payment pills removed — Kaiko is trade-only / bank transfer only. */
 
 
 /* ===========================
