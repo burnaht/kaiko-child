@@ -272,7 +272,11 @@ li {
    4. NAVIGATION
    =========================== */
 
-nav, .navbar, .kaiko-nav {
+/* Bare `nav` selector was matching every <nav> tag on the site — including
+   our .kaiko-account-sidebar__nav — pinning it fixed to (0,0) and producing
+   the phantom top-left nav on every my-account view. Scope tightened to the
+   Kaiko brand header classes only. */
+.navbar, .kaiko-nav {
   position: fixed;
   top: 0;
   left: 0;
@@ -285,7 +289,7 @@ nav, .navbar, .kaiko-nav {
               box-shadow var(--kaiko-transition-base);
 }
 
-nav.scrolled, .navbar.scrolled, .kaiko-nav.scrolled {
+.navbar.scrolled, .kaiko-nav.scrolled {
   background-color: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(10px);
   box-shadow: var(--kaiko-shadow-md);
@@ -353,7 +357,7 @@ nav.scrolled, .navbar.scrolled, .kaiko-nav.scrolled {
 }
 
 @media (max-width: 768px) {
-  nav, .navbar, .kaiko-nav {
+  .navbar, .kaiko-nav {
     padding: var(--kaiko-space-md) var(--kaiko-space-lg);
   }
 
@@ -1100,7 +1104,7 @@ footer, .kaiko-footer {
     padding: var(--kaiko-space-lg);
   }
 
-  nav, .navbar, .kaiko-nav {
+  .navbar, .kaiko-nav {
     padding: var(--kaiko-space-md) var(--kaiko-space-lg);
   }
 
@@ -1309,7 +1313,7 @@ footer, .kaiko-footer {
    =========================== */
 
 @media print {
-  nav, .navbar, .kaiko-nav,
+  .navbar, .kaiko-nav,
   footer, .kaiko-footer,
   .kaiko-nav-mobile-toggle {
     display: none;
