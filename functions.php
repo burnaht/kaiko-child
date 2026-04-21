@@ -94,6 +94,13 @@ function kaiko_enqueue_assets() {
             wp_enqueue_style( 'kaiko-my-account', KAIKO_URI . '/assets/css/kaiko-my-account.css', array( 'kaiko-woocommerce' ), KAIKO_VERSION );
             wp_enqueue_script( 'kaiko-my-account', KAIKO_URI . '/assets/js/kaiko-account.js', array(), KAIKO_VERSION, true );
         }
+
+        // Order-received / thank-you — branded BACS payment screen.
+        // CSS only; clipboard JS lives inline at the foot of the template
+        // (single-use, no reuse elsewhere on the site).
+        if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'order-received' ) ) {
+            wp_enqueue_style( 'kaiko-thankyou', KAIKO_URI . '/assets/css/kaiko-thankyou.css', array( 'kaiko-woocommerce' ), KAIKO_VERSION );
+        }
     }
 
     // Animation engine (scroll reveals, parallax, cursor, countup, marquee)
