@@ -36,6 +36,7 @@ require_once KAIKO_DIR . '/inc/contact-form.php';
 require_once KAIKO_DIR . '/inc/mini-cart.php';
 require_once KAIKO_DIR . '/inc/cart-layout.php';
 require_once KAIKO_DIR . '/inc/account-layout.php';
+require_once KAIKO_DIR . '/inc/checkout-layout.php';
 
 
 /* ============================================
