@@ -626,6 +626,39 @@ body.admin-bar .kaiko-main {
    7. CHECKOUT PAGE STYLES
    =========================== */
 
+/* Woodmart wrapper kill — mirrors the cart (kaiko-cart.css §26-47).
+   Our template-checkout.php doesn't emit Woodmart's .container /
+   .site-content / .content-area wrappers, but some builds still
+   inject them via filters. Neutralise their width constraints so
+   the hero + checkout section get the full canvas. */
+body.kaiko-checkout-page .main-page-wrapper,
+body.kaiko-checkout-page .site-content,
+body.kaiko-checkout-page .content-area,
+body.kaiko-checkout-page .site-main,
+body.kaiko-checkout-page .container,
+body.kaiko-checkout-page .row,
+body.kaiko-checkout-page .woocommerce-page-wrapper,
+body.kaiko-checkout-page .woocommerce {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  float: none !important;
+  flex: unset !important;
+  grid-template-columns: unset !important;
+}
+
+/* Kill any stray Woodmart page-title bar that slips through the
+   option filter (inc/checkout-layout.php — belt-and-braces). */
+body.kaiko-checkout-page .page-title,
+body.kaiko-checkout-page .woodmart-page-title,
+body.kaiko-checkout-page .wd-page-title,
+body.kaiko-checkout-page .wd-breadcrumbs,
+body.kaiko-checkout-page .woocommerce-breadcrumb {
+  display: none !important;
+}
+
 /* Hero — matches the cart hero (kaiko-cart.css) but scoped to
    the checkout page class set by inc/checkout-layout.php. */
 body.kaiko-checkout-page .kaiko-checkout-hero {
@@ -668,10 +701,13 @@ body.kaiko-checkout-page .kaiko-checkout-hero__subtitle {
   }
 }
 
+/* Outer wrap for the checkout form — mirrors body.kaiko-cart-page
+   .kaiko-cart-wrap (kaiko-cart.css §116-119: 1240px / 52px 40px 100px)
+   so the checkout and cart pages share the same canvas width. */
 .kaiko-checkout-section {
-  max-width: 1400px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: var(--kaiko-space-2xl) var(--kaiko-space-xl) var(--kaiko-space-4xl);
+  padding: 52px 40px 100px;
 }
 
 .kaiko-checkout-section .woocommerce-checkout {

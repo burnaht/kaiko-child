@@ -40,6 +40,9 @@ function kaiko_checkout_body_class( $classes ) {
  * Woodmart reads sidebar/layout preferences through woodmart_get_opt().
  * Force full-width + no sidebar on the checkout regardless of theme
  * settings. Don't apply on order-received — that page has its own shell.
+ *
+ * Also disables Woodmart's page-title + breadcrumbs module on checkout so
+ * it can't render a plain-text "Checkout" bar above our styled hero.
  */
 add_filter( 'woodmart_get_opt', 'kaiko_checkout_force_full_width', 10, 2 );
 
@@ -63,11 +66,25 @@ function kaiko_checkout_force_full_width( $value, $option_name = '' ) {
 		'shop-page-layout',
 		'site_width',
 	);
+	// page-title-design === 'disable' makes woodmart_page_title() bail early.
+	$page_title_disable_keys = array(
+		'page-title-design',
+		'page_title_design',
+	);
+	$breadcrumb_off_keys = array(
+		'breadcrumbs',
+	);
 	if ( in_array( $option_name, $full_width_keys, true ) ) {
 		return '0';
 	}
 	if ( in_array( $option_name, $layout_keys, true ) ) {
 		return 'full-width';
+	}
+	if ( in_array( $option_name, $page_title_disable_keys, true ) ) {
+		return 'disable';
+	}
+	if ( in_array( $option_name, $breadcrumb_off_keys, true ) ) {
+		return false;
 	}
 	return $value;
 }
@@ -92,6 +109,9 @@ function kaiko_checkout_force_full_width_meta( $value, $object_id, $meta_key, $s
 		'_woodmart_new_layout'       => '1',
 		'_woodmart_main_layout'      => 'full-width',
 		'_wd_full_width'             => '1',
+		// Kill Woodmart's page-title bar on the Checkout page specifically —
+		// woodmart_page_title() reads this meta via woodmart_get_post_meta_value().
+		'_woodmart_title_off'        => '1',
 	);
 	if ( array_key_exists( $meta_key, $force ) ) {
 		return $single ? $force[ $meta_key ] : array( $force[ $meta_key ] );
@@ -112,6 +132,12 @@ function kaiko_checkout_strip_sidebars() {
 		return;
 	}
 	remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
+
+	// Belt-and-braces: the woodmart_get_opt filter above already disables
+	// the page-title module, but drop the hooks too so nothing renders a
+	// plain-text title bar even if a plugin re-reads the options elsewhere.
+	remove_action( 'woodmart_after_header', 'woodmart_page_title', 20 );
+	remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
 }
 
 
