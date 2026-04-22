@@ -649,6 +649,31 @@ body.kaiko-checkout-page .woocommerce {
   grid-template-columns: unset !important;
 }
 
+/* Safety: restore auto side-margins on the wrappers above so the
+   1240px .kaiko-checkout-section inside them actually centers on
+   >1400px viewports. The `margin: 0 !important` line zeroes out
+   Woodmart's left/right margins; this pins them back to auto so
+   the inner wrap isn't left-anchored. */
+body.kaiko-checkout-page main.site-main,
+body.kaiko-checkout-page .site-content,
+body.kaiko-checkout-page .content-area,
+body.kaiko-checkout-page .woocommerce-page-wrapper,
+body.kaiko-checkout-page > .woocommerce {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Centering for the checkout section — mirrors the base rule
+   below (§"Outer wrap for the checkout form") but scoped to
+   body.kaiko-checkout-page so it wins over Woodmart defaults
+   when the section is rendered inside legacy wrappers. */
+body.kaiko-checkout-page .kaiko-checkout-section {
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
 /* Kill any stray Woodmart page-title bar that slips through the
    option filter (inc/checkout-layout.php — belt-and-braces). */
 body.kaiko-checkout-page .page-title,
