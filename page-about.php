@@ -455,7 +455,7 @@ body { margin: 0; padding: 0; }
 </style>
 </head>
 
-<body <?php body_class(); ?>>
+<body <?php body_class( 'kaiko-page kaiko-about-page' ); ?>>
 <?php wp_body_open(); ?>
 
 <div class="kaiko-about-wrap">

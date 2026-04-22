@@ -853,7 +853,7 @@ body.kaiko-contact .footer-bottom {
 }
 </style>
 </head>
-<body <?php body_class( 'kaiko-contact' ); ?>>
+<body <?php body_class( 'kaiko-page kaiko-contact' ); ?>>
 <?php wp_body_open(); ?>
 
 <?php get_template_part( 'template-parts/kaiko-header' ); ?>
