@@ -707,6 +707,7 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
       <?php endif; ?>
       <a href="<?php echo esc_url( home_url( '/about/' ) ); ?>">About</a>
       <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact</a>
+      <?php if ( function_exists( 'kaiko_render_nav_cart' ) ) echo kaiko_render_nav_cart(); ?>
       <a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" class="kaiko-nav-cta active">
         <?php echo $logged_in ? esc_html__( 'My Account', 'kaiko-child' ) : esc_html__( 'Trade Login', 'kaiko-child' ); ?>
       </a>

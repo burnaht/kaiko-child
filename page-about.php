@@ -471,6 +471,7 @@ body { margin: 0; padding: 0; }
     <?php if ( is_user_logged_in() ) : ?><a href="<?php echo esc_url( home_url( '/shop/' ) ); ?>">Shop</a><?php endif; ?>
     <a href="<?php echo esc_url( home_url( '/about/' ) ); ?>" class="active">About</a>
     <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact</a>
+    <?php if ( function_exists( 'kaiko_render_nav_cart' ) ) echo kaiko_render_nav_cart(); ?>
     <a href="<?php echo esc_url( home_url( '/my-account/' ) ); ?>" class="kaiko-nav-cta"><?php echo is_user_logged_in() ? 'My Account' : 'Trade Login'; ?></a>
   </div>
 </nav>
