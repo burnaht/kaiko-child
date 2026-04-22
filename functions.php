@@ -155,6 +155,19 @@ function kaiko_theme_activation() {
 
 /**
  * Check if current user is approved to see prices.
+ *
+ * Blocklist model, not allowlist: any logged-in user who is NOT on
+ * the `kaiko_pending` role is treated as approved. This mirrors the
+ * my-account dashboard's state machine (template-myaccount.php:26-31),
+ * which is the user-facing source of truth for trade status.
+ *
+ * Previously this was an explicit allowlist of
+ * [kaiko_approved, administrator, shop_manager, editor], which broke
+ * legacy accounts still on the plain `customer` role (created before
+ * the kaiko_pending → kaiko_approved flow existed, or demoted by a
+ * plugin). Those users could log in, see the approved dashboard, but
+ * got empty price HTML and a hidden Shop link everywhere else — a
+ * full shopping-path regression for trade customers.
  */
 function kaiko_user_can_see_prices() {
     if ( ! is_user_logged_in() ) {
@@ -162,15 +175,15 @@ function kaiko_user_can_see_prices() {
     }
 
     $user = wp_get_current_user();
-    $approved_roles = array( 'kaiko_approved', 'administrator', 'shop_manager', 'editor' );
+    $blocked_roles = array( 'kaiko_pending' );
 
-    foreach ( $approved_roles as $role ) {
+    foreach ( $blocked_roles as $role ) {
         if ( in_array( $role, (array) $user->roles, true ) ) {
-            return true;
+            return false;
         }
     }
 
-    return false;
+    return true;
 }
 
 /**
