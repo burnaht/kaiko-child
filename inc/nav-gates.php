@@ -3,10 +3,10 @@
  * Kaiko — Navigation permission helpers.
  *
  * Single source of truth for every user-state conditional in the site
- * header. Wraps kaiko_user_can_see_prices() (the underlying pricing
- * gate) with named, self-documenting helpers so templates never
- * re-check the user role directly — if the trade-approval rule ever
- * changes, it changes in exactly one place.
+ * header. Every helper delegates to kaiko_user_can_see_prices() so the
+ * nav gate can never drift apart from the pricing gate — one function
+ * determines "is this user trade-approved?" and these four helpers
+ * read from it.
  *
  * Three user states (logged_out / pending / approved) drive four
  * answers:
@@ -22,43 +22,42 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Show the Shop link for approved users only.
+ * Show the Shop link for trade-approved users only.
  *
- * Approved === logged in AND not kaiko_pending — matches the pricing
- * gate so link visibility never drifts from what the user can actually
- * do on the shop page.
+ * Delegates to kaiko_user_can_see_prices() — the single source of
+ * truth for trade approval. A user who can see prices on PDPs will
+ * always see the Shop link in the header; a user who can't, won't.
  */
 function kaiko_can_show_shop_link() {
-    return function_exists( 'kaiko_user_can_see_prices' ) && kaiko_user_can_see_prices();
+    return kaiko_user_can_see_prices();
 }
 
 /**
- * Show the header cart icon for approved users only.
+ * Show the header cart icon for trade-approved users only.
  *
- * Same semantic as kaiko_can_show_shop_link() today, kept as a distinct
+ * Same delegation as kaiko_can_show_shop_link(). Kept as a distinct
  * helper so a future product split (e.g. "cart visible while pending")
- * is a one-function change without hunting through templates.
+ * is a one-function change.
  */
 function kaiko_can_show_cart() {
-    return function_exists( 'kaiko_user_can_see_prices' ) && kaiko_user_can_see_prices();
+    return kaiko_user_can_see_prices();
 }
 
 /**
  * Header pill CTA label.
  *
- * - logged-out  → "Trade Login"         (sign in or apply)
- * - pending     → "Application Status"  (application-status page)
- * - approved    → "My Account"          (dashboard)
+ * - logged-out                          → "Trade Login"
+ * - logged-in but not trade-approved    → "Pending Approval"
+ * - trade-approved                      → "My Account"
+ *
+ * Uses kaiko_user_can_see_prices() rather than an inline role check so
+ * the pill label cannot disagree with what the user can actually do.
  */
 function kaiko_pill_label() {
     if ( ! is_user_logged_in() ) {
-        return __( 'Trade Login', 'kaiko-child' );
+        return 'Trade Login';
     }
-    $user = wp_get_current_user();
-    if ( $user && in_array( 'kaiko_pending', (array) $user->roles, true ) ) {
-        return __( 'Application Status', 'kaiko-child' );
-    }
-    return __( 'My Account', 'kaiko-child' );
+    return kaiko_user_can_see_prices() ? 'My Account' : 'Pending Approval';
 }
 
 /**
@@ -66,12 +65,8 @@ function kaiko_pill_label() {
  *
  * All three user states point at /my-account/ — the my-account page
  * itself renders per-state (login form / pending dashboard / approved
- * dashboard). Wrapping in a helper keeps the partial free of
- * WooCommerce-specific calls.
+ * dashboard).
  */
 function kaiko_pill_href() {
-    if ( class_exists( 'WooCommerce' ) ) {
-        return wc_get_page_permalink( 'myaccount' );
-    }
     return home_url( '/my-account/' );
 }
