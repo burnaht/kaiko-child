@@ -237,6 +237,13 @@ body.admin-bar .kaiko-toast {
   border-color: var(--kaiko-dark);
 }
 
+.kaiko-drawer__close svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  color: inherit;
+}
+
 .kaiko-drawer__body {
   flex: 1;
   overflow-y: auto;
