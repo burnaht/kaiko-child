@@ -25,28 +25,15 @@
   align-items: center;
 }
 
-.kaiko-nav .kaiko-nav-cart {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: var(--kaiko-dark);
-  color: var(--kaiko-white);
-  border: 0;
-  border-radius: var(--k-r-md);
-  font-family: var(--kaiko-font-body);
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 180ms ease, transform 180ms ease;
-}
-
-.kaiko-nav .kaiko-nav-cart:hover,
-.kaiko-nav .kaiko-nav-cart:focus-visible {
-  background: var(--kaiko-teal);
-  color: var(--kaiko-white);
-}
+/*
+ * Header cart BUTTON styling lives in kaiko-shell.css (§"Cart icon in nav").
+ * This stylesheet used to own `.kaiko-nav .kaiko-nav-cart` too, but the dark
+ * pill background here collided with shell's `color: var(--kaiko-dark)!important`
+ * on pages where both stylesheets loaded against the Kaiko header (e.g.
+ * /checkout/), producing a dark-icon-on-dark-pill "blob". The mini-cart
+ * drawer has no `.kaiko-nav-cart` element of its own, so this isn't the
+ * right file for it. Only the count badge + pulse animation stay here.
+ */
 
 .kaiko-nav-cart-count {
   background: var(--kaiko-lime);

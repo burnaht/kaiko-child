@@ -247,12 +247,14 @@
 
 			// Expand cursor on interactive elements
 			document.addEventListener('mouseenter', (e) => {
+				if (!(e.target instanceof Element)) return;
 				if (e.target.matches(this.config.cursorExpandElements)) {
 					this.state.cursorElement.classList.add('expanded');
 				}
 			}, true);
 
 			document.addEventListener('mouseleave', (e) => {
+				if (!(e.target instanceof Element)) return;
 				if (e.target.matches(this.config.cursorExpandElements)) {
 					this.state.cursorElement.classList.remove('expanded');
 				}
