@@ -27,6 +27,7 @@ $can_buy     = function_exists( 'kaiko_user_can_see_prices' ) ? kaiko_user_can_s
     <a href="<?php echo $home_url; ?>" class="kaiko-nav-logo">KAIKO</a>
 
     <div class="kaiko-nav-links" id="kaiko-nav-links">
+        <a href="<?php echo esc_url( home_url( '/products/' ) ); ?>"<?php if ( is_page( 'products' ) ) echo ' class="active"'; ?>>Products</a>
         <a href="<?php echo $shop_url; ?>"<?php if ( is_shop() || is_product_category() || is_product() ) echo ' class="active"'; ?>>Shop</a>
         <a href="<?php echo esc_url( home_url( '/about/' ) ); ?>"<?php if ( is_page( 'about' ) ) echo ' class="active"'; ?>>About</a>
         <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"<?php if ( is_page( 'contact' ) ) echo ' class="active"'; ?>>Contact</a>

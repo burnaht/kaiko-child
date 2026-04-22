@@ -130,18 +130,27 @@ function kaiko_mini_cart_flag_non_ajax_add() {
    ============================================================ */
 
 /**
- * Header cart wrapper. Stays in the DOM even when empty so the
- * fragments filter always has a target to replace.
+ * Header cart wrapper. Stays in the DOM even when the button is
+ * hidden so the fragments filter always has a target to replace.
+ *
+ * Trade model: the cart is only useful to logged-in buyers (guests
+ * can't see prices or purchase), so we hide the button entirely for
+ * logged-out visitors. For logged-in users the button is always
+ * present — the count badge is the part that's conditional on
+ * cart_count > 0.
  */
 function kaiko_render_nav_cart() {
 	$count = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
+	$show  = is_user_logged_in();
 	ob_start();
 	?>
 	<div class="kaiko-nav-cart-wrap">
-		<?php if ( $count > 0 ) : ?>
+		<?php if ( $show ) : ?>
 			<button type="button" class="kaiko-nav-cart" data-kaiko-open-cart aria-label="<?php esc_attr_e( 'Open cart', 'kaiko-child' ); ?>">
 				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-				<span class="kaiko-nav-cart-count"><?php echo esc_html( $count ); ?></span>
+				<?php if ( $count > 0 ) : ?>
+					<span class="kaiko-nav-cart-count"><?php echo esc_html( $count ); ?></span>
+				<?php endif; ?>
 			</button>
 		<?php endif; ?>
 	</div>
