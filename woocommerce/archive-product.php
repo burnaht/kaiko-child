@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-get_template_part( 'template-parts/kaiko-page-open' );
+get_header();
 
 do_action( 'woocommerce_before_main_content' );
 
@@ -237,4 +237,4 @@ $kaiko_species_options = array(
 <?php
 do_action( 'woocommerce_after_main_content' );
 
-get_template_part( 'template-parts/kaiko-page-close' );
+get_footer();

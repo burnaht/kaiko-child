@@ -2,408 +2,277 @@
 /**
  * Template Name: Kaiko About Page
  * Description: Full-width about page with Kaiko custom design system.
+ *
+ * Page-scoped styles land in <head> via a wp_head action — nav /
+ * hamburger / Woodmart-suppression rules are gone (kaiko-shell.css
+ * owns the nav; Woodmart's header is never rendered).
+ *
+ * @package KaikoChild
  */
 
-// Prevent direct access
-if ( ! defined( 'ABSPATH' ) ) exit;
+defined( 'ABSPATH' ) || exit;
+
+add_action( 'wp_head', function () {
+    ?>
+    <style>
+    /* --- Base Typography (scoped to the page wrap) --- */
+    .kaiko-about-wrap {
+      font-family: var(--kaiko-font-body);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--kaiko-black);
+      background: var(--kaiko-white);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+    .kaiko-about-wrap *, .kaiko-about-wrap *::before, .kaiko-about-wrap *::after {
+      box-sizing: border-box;
+    }
+    .kaiko-about-wrap img { display: block; max-width: 100%; }
+    .kaiko-about-wrap a { color: inherit; text-decoration: none; }
+    .kaiko-about-wrap h1, .kaiko-about-wrap h2, .kaiko-about-wrap h3,
+    .kaiko-about-wrap h4, .kaiko-about-wrap h5, .kaiko-about-wrap h6 {
+      font-family: var(--kaiko-font-display);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--kaiko-dark);
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+    .kaiko-about-wrap p { margin: 0; }
+
+    /* --- About Hero --- */
+    .about-hero {
+      padding: 160px var(--kaiko-space-xl) 80px;
+      background: var(--kaiko-off-white);
+      text-align: center;
+    }
+    .about-hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700; letter-spacing: -0.03em;
+      margin-bottom: 1rem; color: var(--kaiko-dark);
+    }
+    .about-hero p {
+      font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+      color: var(--kaiko-mid-gray); max-width: 650px;
+      margin: 0 auto; line-height: 1.7;
+    }
+    .about-hero .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.375rem 1rem; background: rgba(26,92,82,0.08);
+      color: var(--kaiko-teal); font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border-radius: 100px; margin-bottom: 1.5rem;
+    }
+
+    /* --- Story Section --- */
+    .about-story {
+      max-width: 1200px; margin: 0 auto;
+      padding: var(--kaiko-space-xl) var(--kaiko-space-xl) var(--kaiko-space-lg);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      align-items: center;
+    }
+    .about-story-text h2 {
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      margin-bottom: 1.5rem; color: var(--kaiko-dark);
+    }
+    .about-story-text p {
+      color: var(--kaiko-mid-gray); font-size: 1.05rem;
+      line-height: 1.8; margin-bottom: 1.25rem;
+    }
+    .about-story-text p:last-child { margin-bottom: 0; }
+    .about-story-image {
+      position: relative; border-radius: var(--kaiko-radius-lg);
+      overflow: hidden; aspect-ratio: 16/9;
+      background: var(--kaiko-off-white);
+    }
+    .about-story-image img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* --- Values Section --- */
+    .about-values {
+      background: var(--kaiko-off-white);
+      padding: var(--kaiko-space-xl) var(--kaiko-space-xl);
+    }
+    .about-values-inner { max-width: 1200px; margin: 0 auto; }
+    .about-values-header { text-align: center; margin-bottom: var(--kaiko-space-lg); }
+    .about-values-header h2 {
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      margin-bottom: 1rem; color: var(--kaiko-dark);
+    }
+    .about-values-header p {
+      color: var(--kaiko-mid-gray); max-width: 550px;
+      margin: 0 auto; font-size: 1.05rem; line-height: 1.7;
+    }
+    .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+    .value-card {
+      background: var(--kaiko-white);
+      border-radius: var(--kaiko-radius-md);
+      padding: 2.5rem 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .value-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+    .value-icon {
+      width: 56px; height: 56px;
+      background: rgba(26,92,82,0.08);
+      border-radius: var(--kaiko-radius-md);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .value-icon svg { width: 28px; height: 28px; color: var(--kaiko-teal); }
+    .value-card h3 { font-size: 1.25rem; margin-bottom: 0.75rem; color: var(--kaiko-dark); }
+    .value-card p { color: var(--kaiko-mid-gray); font-size: 0.95rem; line-height: 1.7; }
+
+    /* --- Origin Story Section --- */
+    .about-origin {
+      max-width: 1200px; margin: 0 auto;
+      padding: var(--kaiko-space-xl) var(--kaiko-space-xl);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      align-items: center;
+    }
+    .about-origin-image {
+      border-radius: var(--kaiko-radius-lg); overflow: hidden;
+      aspect-ratio: 16/9;
+    }
+    .about-origin-image img { width: 100%; height: 100%; object-fit: cover; }
+    .about-origin-text h2 {
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      margin-bottom: 1.5rem; color: var(--kaiko-dark);
+    }
+    .about-origin-text p {
+      color: var(--kaiko-mid-gray); font-size: 1.05rem;
+      line-height: 1.8; margin-bottom: 1.25rem;
+    }
+    .about-origin-text p:last-child { margin-bottom: 0; }
+    .origin-highlight {
+      background: var(--kaiko-off-white);
+      border-radius: var(--kaiko-radius-md);
+      padding: 2rem 2.5rem;
+      border-left: 4px solid var(--kaiko-teal);
+    }
+    .origin-highlight p {
+      color: var(--kaiko-dark) !important;
+      font-size: 1.1rem !important;
+      font-weight: 500;
+      font-style: italic;
+      line-height: 1.7 !important;
+      margin-bottom: 0 !important;
+    }
+
+    /* --- Stats Section --- */
+    .about-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+      padding: var(--kaiko-space-lg) var(--kaiko-space-xl);
+      max-width: 1200px; margin: 0 auto;
+      border-top: 1px solid var(--kaiko-border);
+      border-bottom: 1px solid var(--kaiko-border);
+    }
+    .stat-item { text-align: center; padding: 1.5rem 0; }
+    .stat-number {
+      font-family: var(--kaiko-font-display); font-size: 2.5rem;
+      font-weight: 700; color: var(--kaiko-teal); margin-bottom: 0.25rem;
+    }
+    .stat-label {
+      font-size: 0.85rem; color: var(--kaiko-mid-gray);
+      text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500;
+    }
+
+    /* --- Team Section --- */
+    .about-team {
+      padding: var(--kaiko-space-xl) var(--kaiko-space-xl);
+      max-width: 1200px; margin: 0 auto;
+    }
+    .about-team-header { text-align: center; margin-bottom: var(--kaiko-space-lg); }
+    .about-team-header h2 {
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      margin-bottom: 1rem; color: var(--kaiko-dark);
+    }
+    .about-team-header p {
+      color: var(--kaiko-mid-gray); max-width: 550px;
+      margin: 0 auto; font-size: 1.05rem; line-height: 1.7;
+    }
+    .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+    .team-card { text-align: center; }
+    .team-avatar {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(26,92,82,0.15), rgba(26,92,82,0.05));
+      margin: 0 auto 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .team-avatar svg { width: 48px; height: 48px; color: var(--kaiko-teal); opacity: 0.5; }
+    .team-card h3 { font-size: 1.15rem; margin-bottom: 0.25rem; color: var(--kaiko-dark); }
+    .team-card .team-role {
+      font-size: 0.85rem; color: var(--kaiko-teal);
+      font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 0.75rem;
+    }
+    .team-card p {
+      color: var(--kaiko-mid-gray); font-size: 0.9rem;
+      line-height: 1.6; max-width: 280px; margin: 0 auto;
+    }
+
+    /* --- CTA Section --- */
+    .about-cta {
+      text-align: center; padding: var(--kaiko-space-xl) var(--kaiko-space-xl);
+      background: var(--kaiko-off-white);
+    }
+    .about-cta h2 {
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      margin-bottom: 1rem; color: var(--kaiko-dark);
+    }
+    .about-cta p {
+      color: var(--kaiko-mid-gray); max-width: 500px;
+      margin: 0 auto 2rem; font-size: 1.05rem;
+    }
+    .cta-btn {
+      display: inline-block; padding: 0.875rem 2.5rem;
+      background: var(--kaiko-teal); color: var(--kaiko-white);
+      border-radius: 100px; font-weight: 600; font-size: 0.95rem;
+      transition: background 0.2s; text-decoration: none;
+    }
+    .cta-btn:hover { background: var(--kaiko-deep-teal); }
+    .cta-btn-outline {
+      display: inline-block; padding: 0.875rem 2.5rem;
+      border: 1.5px solid var(--kaiko-teal); color: var(--kaiko-teal);
+      border-radius: 100px; font-weight: 600; font-size: 0.95rem;
+      transition: all 0.2s; text-decoration: none; margin-left: 1rem;
+    }
+    .cta-btn-outline:hover { background: var(--kaiko-teal); color: var(--kaiko-white); }
+
+    /* --- Responsive --- */
+    @media (max-width: 1024px) {
+      .about-story { grid-template-columns: 1fr; gap: 40px; }
+      .about-origin { grid-template-columns: 1fr; gap: 40px; }
+      .values-grid { grid-template-columns: repeat(2, 1fr); }
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .about-hero { padding: 100px 1.5rem 50px; }
+      .about-hero h1 { font-size: 2rem; }
+      .about-story { padding: 3rem 1.5rem; gap: 2rem; }
+      .about-origin { padding: 3rem 1.5rem; gap: 2rem; }
+      .about-values { padding: 3rem 1.5rem; }
+      .values-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: repeat(2, 1fr); padding: 2rem 1.5rem; }
+      .about-team { padding: 3rem 1.5rem; }
+      .about-cta { padding: 3rem 1.5rem; }
+    }
+    </style>
+    <?php
+}, 100 );
+
+get_header();
 ?>
-<!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-<head>
-<meta charset="<?php bloginfo( 'charset' ); ?>">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap">
-<?php wp_head(); ?>
-
-<style>
-/* Hide WoodMart theme wrapper elements */
-.whb-header, .woodmart-prefooter, .footer-container, .website-wrapper > footer,
-.wd-footer,
-.page-title, .breadcrumbs, .woodmart-breadcrumbs, .title-size-default,
-.woodmart-main-container,
-.wd-toolbar, .wd-sticky-btn, .woodmart-sticky-toolbar,
-.wd-toolbar-shop, .whb-sticky-toolbar,
-div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
-#wp-admin-bar-root-default { display: none !important; }
-.wd-content-layout.container { display: block !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
-.wd-content-area { width: 100% !important; max-width: 100% !important; }
-.website-wrapper { padding-top: 0 !important; }
-body { margin: 0; padding: 0; }
-
-/* --- Kaiko Design System --- */
-:root {
-  --kaiko-white: #fff;
-  --kaiko-off-white: #f7f7f5;
-  --kaiko-black: #0a0a0a;
-  --kaiko-dark: #1a1a1a;
-  --kaiko-teal: #1a5c52;
-  --kaiko-deep-teal: #0d3d35;
-  --kaiko-lime: #7ab800;
-  --kaiko-gold: #c4a962;
-  --kaiko-border: #e4e2de;
-  --kaiko-mid-gray: #6b6b6b;
-  --kaiko-font-display: 'Gotham', 'Gotham Bold', -apple-system, sans-serif;
-  --kaiko-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --kaiko-radius-sm: 6px;
-  --kaiko-radius-md: 12px;
-  --kaiko-radius-lg: 20px;
-  --kaiko-transition-fast: 150ms ease;
-  --kaiko-transition-base: 300ms ease;
-  --kaiko-container-max: 1320px;
-  --kaiko-space-xs: 0.5rem;
-  --kaiko-space-sm: 1rem;
-  --kaiko-space-md: 2rem;
-  --kaiko-space-lg: 4rem;
-  --kaiko-space-xl: 6rem;
-}
-
-/* --- Base Typography --- */
-.kaiko-about-wrap {
-  font-family: var(--kaiko-font-body);
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--kaiko-black);
-  background: var(--kaiko-white);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-}
-.kaiko-about-wrap *, .kaiko-about-wrap *::before, .kaiko-about-wrap *::after {
-  box-sizing: border-box; margin: 0; padding: 0;
-}
-.kaiko-about-wrap img { display: block; max-width: 100%; }
-.kaiko-about-wrap a { color: inherit; text-decoration: none; }
-.kaiko-about-wrap h1, .kaiko-about-wrap h2, .kaiko-about-wrap h3,
-.kaiko-about-wrap h4, .kaiko-about-wrap h5, .kaiko-about-wrap h6 {
-  font-family: var(--kaiko-font-display);
-  font-weight: 700;
-  line-height: 1.15;
-  color: var(--kaiko-dark);
-  letter-spacing: -0.02em;
-}
-
-/* Navigation is styled globally by kaiko-shell.css. */
-
-/* --- About Hero --- */
-.about-hero {
-  padding: 160px var(--kaiko-space-xl) 80px;
-  background: var(--kaiko-off-white);
-  text-align: center;
-}
-.about-hero h1 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700; letter-spacing: -0.03em;
-  margin-bottom: 1rem; color: var(--kaiko-dark);
-}
-.about-hero p {
-  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
-  color: var(--kaiko-mid-gray); max-width: 650px;
-  margin: 0 auto; line-height: 1.7;
-}
-.about-hero .hero-badge {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.375rem 1rem; background: rgba(26,92,82,0.08);
-  color: var(--kaiko-teal); font-size: 0.75rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.08em;
-  border-radius: 100px; margin-bottom: 1.5rem;
-}
-
-/* --- Story Section --- */
-.about-story {
-  max-width: 1200px; margin: 0 auto;
-  padding: var(--kaiko-space-xl) var(--kaiko-space-xl) var(--kaiko-space-lg);
-  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
-  align-items: center;
-}
-.about-story-text h2 {
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  margin-bottom: 1.5rem; color: var(--kaiko-dark);
-}
-.about-story-text p {
-  color: var(--kaiko-mid-gray); font-size: 1.05rem;
-  line-height: 1.8; margin-bottom: 1.25rem;
-}
-.about-story-text p:last-child { margin-bottom: 0; }
-.about-story-image {
-  position: relative; border-radius: var(--kaiko-radius-lg);
-  overflow: hidden; aspect-ratio: 16/9;
-  background: var(--kaiko-off-white);
-}
-.about-story-image img {
-  width: 100%; height: 100%; object-fit: cover;
-}
-
-/* --- Values Section --- */
-.about-values {
-  background: var(--kaiko-off-white);
-  padding: var(--kaiko-space-xl) var(--kaiko-space-xl);
-}
-.about-values-inner {
-  max-width: 1200px; margin: 0 auto;
-}
-.about-values-header {
-  text-align: center; margin-bottom: var(--kaiko-space-lg);
-}
-.about-values-header h2 {
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  margin-bottom: 1rem; color: var(--kaiko-dark);
-}
-.about-values-header p {
-  color: var(--kaiko-mid-gray); max-width: 550px;
-  margin: 0 auto; font-size: 1.05rem; line-height: 1.7;
-}
-.values-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 2.5rem;
-}
-.value-card {
-  background: var(--kaiko-white);
-  border-radius: var(--kaiko-radius-md);
-  padding: 2.5rem 2rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.value-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-}
-.value-icon {
-  width: 56px; height: 56px;
-  background: rgba(26,92,82,0.08);
-  border-radius: var(--kaiko-radius-md);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 1.5rem;
-}
-.value-icon svg {
-  width: 28px; height: 28px; color: var(--kaiko-teal);
-}
-.value-card h3 {
-  font-size: 1.25rem; margin-bottom: 0.75rem;
-  color: var(--kaiko-dark);
-}
-.value-card p {
-  color: var(--kaiko-mid-gray); font-size: 0.95rem;
-  line-height: 1.7;
-}
-
-/* --- Origin Story Section --- */
-.about-origin {
-  max-width: 1200px; margin: 0 auto;
-  padding: var(--kaiko-space-xl) var(--kaiko-space-xl);
-  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
-  align-items: center;
-}
-.about-origin-image {
-  border-radius: var(--kaiko-radius-lg); overflow: hidden;
-  aspect-ratio: 16/9;
-}
-.about-origin-image img {
-  width: 100%; height: 100%; object-fit: cover;
-}
-.about-origin-text h2 {
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  margin-bottom: 1.5rem; color: var(--kaiko-dark);
-}
-.about-origin-text p {
-  color: var(--kaiko-mid-gray); font-size: 1.05rem;
-  line-height: 1.8; margin-bottom: 1.25rem;
-}
-.about-origin-text p:last-child { margin-bottom: 0; }
-.origin-highlight {
-  background: var(--kaiko-off-white);
-  border-radius: var(--kaiko-radius-md);
-  padding: 2rem 2.5rem;
-  border-left: 4px solid var(--kaiko-teal);
-}
-.origin-highlight p {
-  color: var(--kaiko-dark) !important;
-  font-size: 1.1rem !important;
-  font-weight: 500;
-  font-style: italic;
-  line-height: 1.7 !important;
-  margin-bottom: 0 !important;
-}
-
-/* --- Stats Section --- */
-.about-stats {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
-  padding: var(--kaiko-space-lg) var(--kaiko-space-xl);
-  max-width: 1200px; margin: 0 auto;
-  border-top: 1px solid var(--kaiko-border);
-  border-bottom: 1px solid var(--kaiko-border);
-}
-.stat-item { text-align: center; padding: 1.5rem 0; }
-.stat-number {
-  font-family: var(--kaiko-font-display); font-size: 2.5rem;
-  font-weight: 700; color: var(--kaiko-teal); margin-bottom: 0.25rem;
-}
-.stat-label {
-  font-size: 0.85rem; color: var(--kaiko-mid-gray);
-  text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500;
-}
-
-/* --- Team Section --- */
-.about-team {
-  padding: var(--kaiko-space-xl) var(--kaiko-space-xl);
-  max-width: 1200px; margin: 0 auto;
-}
-.about-team-header {
-  text-align: center; margin-bottom: var(--kaiko-space-lg);
-}
-.about-team-header h2 {
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  margin-bottom: 1rem; color: var(--kaiko-dark);
-}
-.about-team-header p {
-  color: var(--kaiko-mid-gray); max-width: 550px;
-  margin: 0 auto; font-size: 1.05rem; line-height: 1.7;
-}
-.team-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 2.5rem;
-}
-.team-card {
-  text-align: center;
-}
-.team-avatar {
-  width: 160px; height: 160px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(26,92,82,0.15), rgba(26,92,82,0.05));
-  margin: 0 auto 1.5rem;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-}
-.team-avatar svg {
-  width: 48px; height: 48px; color: var(--kaiko-teal); opacity: 0.5;
-}
-.team-card h3 {
-  font-size: 1.15rem; margin-bottom: 0.25rem;
-  color: var(--kaiko-dark);
-}
-.team-card .team-role {
-  font-size: 0.85rem; color: var(--kaiko-teal);
-  font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.06em; margin-bottom: 0.75rem;
-}
-.team-card p {
-  color: var(--kaiko-mid-gray); font-size: 0.9rem;
-  line-height: 1.6; max-width: 280px; margin: 0 auto;
-}
-
-/* --- CTA Section --- */
-.about-cta {
-  text-align: center; padding: var(--kaiko-space-xl) var(--kaiko-space-xl);
-  background: var(--kaiko-off-white);
-}
-.about-cta h2 {
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  margin-bottom: 1rem; color: var(--kaiko-dark);
-}
-.about-cta p {
-  color: var(--kaiko-mid-gray); max-width: 500px;
-  margin: 0 auto 2rem; font-size: 1.05rem;
-}
-.cta-btn {
-  display: inline-block; padding: 0.875rem 2.5rem;
-  background: var(--kaiko-teal); color: var(--kaiko-white);
-  border-radius: 100px; font-weight: 600; font-size: 0.95rem;
-  transition: background 0.2s; text-decoration: none;
-}
-.cta-btn:hover { background: var(--kaiko-deep-teal); }
-.cta-btn-outline {
-  display: inline-block; padding: 0.875rem 2.5rem;
-  border: 1.5px solid var(--kaiko-teal); color: var(--kaiko-teal);
-  border-radius: 100px; font-weight: 600; font-size: 0.95rem;
-  transition: all 0.2s; text-decoration: none; margin-left: 1rem;
-}
-.cta-btn-outline:hover { background: var(--kaiko-teal); color: var(--kaiko-white); }
-
-/* --- Footer --- */
-.kaiko-about-wrap .kaiko-footer {
-  background: var(--kaiko-dark); color: rgba(255,255,255,0.6);
-  padding: 80px var(--kaiko-space-xl) 40px;
-}
-.kaiko-about-wrap .footer-inner {
-  max-width: 1400px; margin: 0 auto;
-  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 60px; margin-bottom: 60px;
-}
-.kaiko-about-wrap .footer-brand h3 {
-  font-family: var(--kaiko-font-display); font-size: 1.5rem;
-  font-weight: 700; color: var(--kaiko-white); margin: 0 0 16px;
-}
-.kaiko-about-wrap .footer-brand p {
-  font-size: 0.9rem; line-height: 1.7; max-width: 300px; margin: 0;
-}
-.kaiko-about-wrap .footer-col h4 {
-  font-family: var(--kaiko-font-display); font-size: 0.8rem;
-  font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--kaiko-white); margin: 0 0 24px;
-}
-.kaiko-about-wrap .footer-col ul { list-style: none; padding: 0; margin: 0; }
-.kaiko-about-wrap .footer-col li { margin-bottom: 10px; }
-.kaiko-about-wrap .footer-col a {
-  color: rgba(255,255,255,0.5); text-decoration: none;
-  font-size: 0.9rem; transition: color 0.2s;
-}
-.kaiko-about-wrap .footer-col a:hover { color: var(--kaiko-white); }
-.kaiko-about-wrap .footer-bottom {
-  max-width: 1400px; margin: 0 auto;
-  padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);
-  display: flex; justify-content: space-between;
-  font-size: 0.8rem; color: rgba(255,255,255,0.35);
-}
-
-/* --- Responsive --- */
-@media (max-width: 1024px) {
-  .about-story { grid-template-columns: 1fr; gap: 40px; }
-  .about-origin { grid-template-columns: 1fr; gap: 40px; }
-  .values-grid { grid-template-columns: repeat(2, 1fr); }
-  .team-grid { grid-template-columns: repeat(2, 1fr); }
-  .about-stats { grid-template-columns: repeat(2, 1fr); }
-}
-/* --- Mobile Nav Hamburger --- */
-.kaiko-hamburger {
-  display: none; background: none; border: none; cursor: pointer;
-  padding: 8px; z-index: 1001; position: relative;
-}
-.kaiko-hamburger span {
-  display: block; width: 24px; height: 2px; background: var(--kaiko-dark);
-  margin: 6px 0; transition: all 0.3s ease; border-radius: 2px;
-}
-.kaiko-hamburger.active span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 6px);
-}
-.kaiko-hamburger.active span:nth-child(2) { opacity: 0; }
-.kaiko-hamburger.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -6px);
-}
-
-@media (max-width: 768px) {
-  .kaiko-hamburger { display: block !important; }
-  .about-hero { padding: 100px 1.5rem 50px; }
-  .about-hero h1 { font-size: 2rem; }
-  .about-story { padding: 3rem 1.5rem; gap: 2rem; }
-  .about-origin { padding: 3rem 1.5rem; gap: 2rem; }
-  .about-values { padding: 3rem 1.5rem; }
-  .values-grid { grid-template-columns: 1fr; }
-  .team-grid { grid-template-columns: 1fr; }
-  .about-stats { grid-template-columns: repeat(2, 1fr); padding: 2rem 1.5rem; }
-  .about-team { padding: 3rem 1.5rem; }
-  .kaiko-about-wrap .footer-inner { grid-template-columns: 1fr; gap: 40px; }
-  .kaiko-about-wrap .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
-  .about-cta { padding: 3rem 1.5rem; }
-}
-</style>
-</head>
-
-<body <?php body_class( 'kaiko-page kaiko-about-page' ); ?>>
-<?php wp_body_open(); ?>
 
 <div class="kaiko-about-wrap">
-
-<?php get_template_part( 'template-parts/kaiko-header' ); ?>
 
 <!-- Hero Section -->
 <section class="about-hero">
@@ -484,7 +353,7 @@ body { margin: 0; padding: 0; }
 <div class="about-stats">
   <div class="stat-item">
     <div class="stat-number">UK</div>
-    <div class="stat-label">Designed & Made</div>
+    <div class="stat-label">Designed &amp; Made</div>
   </div>
   <div class="stat-item">
     <div class="stat-number">6</div>
@@ -514,7 +383,7 @@ body { margin: 0; padding: 0; }
         </svg>
       </div>
       <h3>Founder</h3>
-      <div class="team-role">CEO & Product Designer</div>
+      <div class="team-role">CEO &amp; Product Designer</div>
       <p>Reptile keeper and entrepreneur, driven by the belief that exotic pets deserve premium, purpose-built products.</p>
     </div>
     <div class="team-card">
@@ -524,7 +393,7 @@ body { margin: 0; padding: 0; }
         </svg>
       </div>
       <h3>Manufacturing</h3>
-      <div class="team-role">Production & Quality</div>
+      <div class="team-role">Production &amp; Quality</div>
       <p>Ensuring every product that leaves our workshop meets the exacting standards KAIKO is known for.</p>
     </div>
     <div class="team-card">
@@ -534,7 +403,7 @@ body { margin: 0; padding: 0; }
         </svg>
       </div>
       <h3>Sustainability</h3>
-      <div class="team-role">Materials & Environment</div>
+      <div class="team-role">Materials &amp; Environment</div>
       <p>Researching greener materials and processes to ensure KAIKO leads on environmental responsibility in the industry.</p>
     </div>
   </div>
@@ -548,52 +417,7 @@ body { margin: 0; padding: 0; }
   <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="cta-btn-outline">Get in Touch</a>
 </section>
 
-<!-- Footer -->
-<footer class="kaiko-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <h3>KAIKO</h3>
-      <p>Premium reptile and exotic pet supplies, designed by keepers for keepers. Handcrafted in the UK with species-specific precision.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Shop</h4>
-      <ul>
-        <li><a href="<?php echo esc_url( home_url( '/shop/' ) ); ?>">All Products</a></li>
-        <li><a href="#">Feeding Bowls</a></li>
-        <li><a href="#">Water Bowls</a></li>
-        <li><a href="#">Humidity Hides</a></li>
-        <li><a href="#">Accessories</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Species</h4>
-      <ul>
-        <li><a href="#">Bearded Dragons</a></li>
-        <li><a href="#">Snakes</a></li>
-        <li><a href="#">Leopard Geckos</a></li>
-        <li><a href="#">Tortoises</a></li>
-        <li><a href="#">Chameleons</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Company</h4>
-      <ul>
-        <li><a href="<?php echo esc_url( home_url( '/about/' ) ); ?>">About Us</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/care-guides/' ) ); ?>">Care Guides</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/my-account/' ) ); ?>">Trade Account</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact</a></li>
-        <li><a href="">Privacy Policy</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>&copy; <?php echo date('Y'); ?> Kaiko. All rights reserved.</span>
-    <span>Designed for reptile enthusiasts</span>
-  </div>
-</footer>
+</div><!-- /.kaiko-about-wrap -->
 
-</div>
-
-<?php wp_footer(); ?>
-</body>
-</html>
+<?php
+get_footer();

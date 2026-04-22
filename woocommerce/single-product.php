@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-get_template_part( 'template-parts/kaiko-page-open' );
+get_header();
 
 while ( have_posts() ) : the_post();
 
@@ -1949,4 +1949,4 @@ body.kaiko-product-page .kaiko-pp-tile__value {
 </script>
 
 <?php
-get_template_part( 'template-parts/kaiko-page-close' );
+get_footer();
