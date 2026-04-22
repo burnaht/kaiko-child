@@ -110,48 +110,7 @@ body.kaiko-contact *, body.kaiko-contact *::before, body.kaiko-contact *::after 
   box-sizing: border-box;
 }
 
-/* ---- Nav (exact homepage pattern) ---- */
-body.kaiko-contact .kaiko-nav {
-  position: fixed; top: 0; left: 0; right: 0;
-  z-index: var(--kaiko-z-navbar);
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--kaiko-border);
-  padding: 0 var(--kaiko-space-xl);
-  height: 72px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-body.kaiko-contact .kaiko-nav-logo {
-  font-family: var(--kaiko-font-display);
-  font-size: 1.75rem; font-weight: var(--kaiko-weight-bold);
-  letter-spacing: var(--kaiko-letter-spacing-tight);
-  color: var(--kaiko-dark); text-decoration: none;
-}
-body.kaiko-contact .kaiko-nav-links {
-  display: flex; gap: var(--kaiko-space-xl); align-items: center;
-}
-body.kaiko-contact .kaiko-nav-links a {
-  font-family: var(--kaiko-font-body);
-  font-size: 0.9rem; font-weight: var(--kaiko-weight-medium);
-  color: var(--kaiko-mid-gray); text-decoration: none;
-  transition: color var(--kaiko-transition-base);
-  letter-spacing: var(--kaiko-letter-spacing-wide);
-}
-body.kaiko-contact .kaiko-nav-links a:hover,
-body.kaiko-contact .kaiko-nav-links a.active { color: var(--kaiko-teal); }
-body.kaiko-contact .kaiko-nav-cta {
-  background: var(--kaiko-teal) !important;
-  color: var(--kaiko-white) !important;
-  padding: 8px 20px !important;
-  border-radius: var(--kaiko-radius-md) !important;
-  font-size: 0.85rem !important;
-  text-transform: uppercase;
-  letter-spacing: var(--kaiko-letter-spacing-wider);
-}
-body.kaiko-contact .kaiko-nav-cta:hover {
-  background: var(--kaiko-deep-teal) !important;
-}
+/* Navigation is styled globally by kaiko-shell.css. */
 
 /* ---- Shared layout helpers ---- */
 body.kaiko-contact .section {
@@ -827,7 +786,6 @@ body.kaiko-contact .footer-bottom {
   body.kaiko-contact {
     --kaiko-section-pad: 64px;
   }
-  body.kaiko-contact .kaiko-nav-links { display: none; }
   body.kaiko-contact .section {
     padding-left: 20px; padding-right: 20px;
   }
