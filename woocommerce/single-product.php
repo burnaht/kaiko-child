@@ -603,23 +603,7 @@ body.kaiko-product-page #kaiko-main {
 	padding: 72px 0 0 !important;
 	float: none !important;
 }
-/* WP admin bar: 32px desktop, 46px mobile — push the Kaiko nav below it
-   and add matching extra top padding on .kaiko-main so content still clears.
-   Extra-specific selectors (html body.*) to beat any enqueued override. */
-html body.kaiko-product-page.admin-bar .kaiko-nav,
-html body.kaiko-product-page.admin-bar #kaiko-nav { top: 32px !important; }
-html body.kaiko-product-page.admin-bar .kaiko-main,
-html body.kaiko-product-page.admin-bar #kaiko-main {
-	padding-top: calc(72px + 32px) !important;
-}
-@media screen and (max-width: 782px) {
-	html body.kaiko-product-page.admin-bar .kaiko-nav,
-	html body.kaiko-product-page.admin-bar #kaiko-nav { top: 46px !important; }
-	html body.kaiko-product-page.admin-bar .kaiko-main,
-	html body.kaiko-product-page.admin-bar #kaiko-main {
-		padding-top: calc(72px + 46px) !important;
-	}
-}
+/* Admin-bar offset for .kaiko-nav and .kaiko-main lives in kaiko-shell.css. */
 /* Belt-and-braces: absolutely force breadcrumb to sit below the fixed nav,
    never clipping into it. Flex/grid parents can collapse the main's
    padding — this gives the breadcrumb its own guaranteed clearance. */
