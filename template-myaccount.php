@@ -29,18 +29,10 @@ $is_pending = $logged_in
 	&& ! $is_shop_manager;
 
 $is_approved = $logged_in && ! $is_pending;
-?>
-<!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-<head>
-<meta charset="<?php bloginfo( 'charset' ); ?>">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap">
-<?php wp_head(); ?>
 
-<style>
+add_action( 'wp_head', function () {
+    ?>
+    <style>
 /* ============================================
    KAIKO DESIGN TOKENS — Liquid Glass
    ============================================ */
@@ -130,117 +122,7 @@ body.kaiko-myaccount-page {
   pointer-events: none; z-index: 0;
 }
 
-/* Navigation is styled globally by kaiko-shell.css. */
-
-/* HAMBURGER */
-.kaiko-myaccount-wrap .kaiko-hamburger {
-  display: none; background: none; border: none; cursor: pointer;
-  padding: 8px; z-index: 1001; position: relative;
-  flex-direction: column; justify-content: center; gap: 5px;
-  width: 40px; height: 40px;
-}
-.kaiko-myaccount-wrap .kaiko-hamburger span {
-  display: block; width: 22px; height: 1.5px; background: var(--k-dark);
-  border-radius: 2px;
-  transition: all 0.35s var(--k-ease);
-  transform-origin: center;
-}
-.kaiko-myaccount-wrap .kaiko-hamburger.active span:nth-child(1) {
-  transform: translateY(6.5px) rotate(45deg);
-}
-.kaiko-myaccount-wrap .kaiko-hamburger.active span:nth-child(2) {
-  opacity: 0; transform: scaleX(0);
-}
-.kaiko-myaccount-wrap .kaiko-hamburger.active span:nth-child(3) {
-  transform: translateY(-6.5px) rotate(-45deg);
-}
-.kaiko-myaccount-wrap .kaiko-hamburger:focus-visible {
-  outline: 2px solid var(--k-teal);
-  outline-offset: 4px;
-  border-radius: 4px;
-}
-
-/* MOBILE MENU */
-.kaiko-mobile-overlay {
-  position: fixed; inset: 0;
-  background: rgba(28,25,23,0.35);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  z-index: 998; opacity: 0; visibility: hidden;
-  transition: opacity 0.35s var(--k-ease), visibility 0.35s var(--k-ease);
-}
-.kaiko-mobile-overlay.active { opacity: 1; visibility: visible; }
-
-.kaiko-mobile-menu {
-  position: fixed; top: 0; right: -340px; width: 340px; max-width: 88vw;
-  height: 100vh;
-  background: var(--k-glass-bg-strong);
-  backdrop-filter: var(--k-glass-blur-lg);
-  -webkit-backdrop-filter: var(--k-glass-blur-lg);
-  z-index: 999;
-  transition: right 0.4s var(--k-ease);
-  display: flex; flex-direction: column;
-  box-shadow: -12px 0 48px rgba(28,25,23,0.1);
-  overflow-y: auto;
-}
-.kaiko-mobile-menu.open { right: 0; }
-.kaiko-mobile-menu__header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 24px 28px;
-  border-bottom: 1px solid var(--k-stone-200);
-}
-.kaiko-mobile-menu__logo {
-  font-family: var(--k-font-display);
-  font-size: 1.5rem; font-weight: 700;
-  color: var(--k-dark); letter-spacing: 0.08em;
-}
-.kaiko-mobile-menu__close {
-  background: none; border: none; cursor: pointer; padding: 6px;
-  color: var(--k-stone-400);
-  transition: color var(--k-duration) var(--k-ease);
-  border-radius: 6px;
-}
-.kaiko-mobile-menu__close:hover { color: var(--k-dark); }
-
-.kaiko-mobile-menu__links {
-  flex: 1; display: flex; flex-direction: column; padding: 12px 0;
-}
-.kaiko-mobile-menu__links a {
-  display: block; padding: 16px 28px;
-  font-family: var(--k-font-body);
-  font-size: 0.95rem; font-weight: 500; color: var(--k-stone-700);
-  text-decoration: none;
-  letter-spacing: 0.03em;
-  transition: background var(--k-duration) var(--k-ease), color var(--k-duration) var(--k-ease);
-  border-bottom: 1px solid rgba(0,0,0,0.03);
-}
-.kaiko-mobile-menu__links a:hover {
-  background: rgba(26,92,82,0.04); color: var(--k-teal);
-}
-.kaiko-mobile-menu__footer {
-  padding: 24px 28px;
-  border-top: 1px solid var(--k-stone-200);
-  display: flex; flex-direction: column; gap: 12px;
-}
-.kaiko-mobile-menu__footer .btn-primary {
-  display: block; text-align: center;
-  background: var(--k-teal); color: var(--k-white);
-  padding: 14px 24px; border-radius: var(--k-radius-sm);
-  font-weight: 600; text-decoration: none; font-size: 0.9rem;
-  letter-spacing: 0.04em;
-  transition: all var(--k-duration) var(--k-ease);
-}
-.kaiko-mobile-menu__footer .btn-primary:hover { background: var(--k-deep-teal); }
-.kaiko-mobile-menu__footer .btn-secondary {
-  display: block; text-align: center;
-  background: transparent; color: var(--k-stone-700);
-  padding: 14px 24px; border-radius: var(--k-radius-sm);
-  border: 1px solid var(--k-stone-200);
-  font-weight: 500; text-decoration: none; font-size: 0.9rem;
-  transition: all var(--k-duration) var(--k-ease);
-}
-.kaiko-mobile-menu__footer .btn-secondary:hover {
-  border-color: var(--k-stone-300); background: var(--k-stone-50);
-}
+/* Navigation + mobile menu styled globally by kaiko-shell.css. */
 
 /* ============================================
    PAGE CONTENT AREA
@@ -568,16 +450,6 @@ body.admin-bar .kaiko-myaccount-wrap .kaiko-myaccount-content {
   color: var(--k-stone-500);
 }
 
-/* HIDE WOODMART ELEMENTS (keep the WP admin bar for logged-in admins) */
-.whb-header, .woodmart-prefooter, .footer-container,
-.website-wrapper > footer, .page-title, .breadcrumbs,
-.woodmart-breadcrumbs, .title-size-default, .woodmart-main-container,
-.wd-toolbar, .wd-sticky-btn, .woodmart-sticky-toolbar,
-.wd-toolbar-shop, .whb-sticky-toolbar,
-div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
-.wd-footer { display: none !important; }
-.website-wrapper { padding-top: 0 !important; }
-
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -595,8 +467,6 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
 }
 
 @media (max-width: 768px) {
-  .kaiko-myaccount-wrap .kaiko-hamburger { display: flex !important; }
-
   .kaiko-myaccount-content { padding: calc(64px + 32px) 1.25rem 60px; }
   body.admin-bar .kaiko-myaccount-wrap .kaiko-myaccount-content {
     padding-top: calc(64px + 32px + 46px);
@@ -620,14 +490,13 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
   .kaiko-myaccount-content { padding: 88px 1rem 48px; }
 }
 </style>
-</head>
+    <?php
+}, 100 );
 
-<body <?php body_class( 'kaiko-page kaiko-myaccount-page' ); ?>>
-<?php wp_body_open(); ?>
+get_header();
+?>
 
 <div class="kaiko-myaccount-wrap">
-
-  <?php get_template_part( 'template-parts/kaiko-header' ); ?>
 
   <!-- MAIN CONTENT -->
   <div class="kaiko-myaccount-content">
@@ -662,47 +531,7 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
 
   </div>
 
-  <!-- FOOTER -->
-  <footer class="kaiko-myaccount-footer" role="contentinfo">
-    <div class="kaiko-footer-inner">
-      <div class="kaiko-footer-brand">
-        <h3>KAIKO</h3>
-        <p>Premium reptile and exotic pet supplies, designed by keepers for keepers. Handcrafted in the UK.</p>
-      </div>
-      <div class="kaiko-footer-col">
-        <h4>Shop</h4>
-        <ul>
-          <li><a href="<?php echo esc_url( home_url( '/products/' ) ); ?>">All Products</a></li>
-          <li><a href="#">Feeding Bowls</a></li>
-          <li><a href="#">Humidity Hides</a></li>
-          <li><a href="#">Accessories</a></li>
-        </ul>
-      </div>
-      <div class="kaiko-footer-col">
-        <h4>Company</h4>
-        <ul>
-          <li><a href="<?php echo esc_url( home_url( '/about/' ) ); ?>">About Us</a></li>
-          <li><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact</a></li>
-          <li><a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>">Trade Account</a></li>
-        </ul>
-      </div>
-      <div class="kaiko-footer-col">
-        <h4>Support</h4>
-        <ul>
-          <li><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Help Centre</a></li>
-          <li><a href="#">Shipping Info</a></li>
-          <li><a href="#">Returns Policy</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="kaiko-footer-bottom">
-      <span>&copy; <?php echo esc_html( date( 'Y' ) ); ?> KAIKO. All rights reserved.</span>
-      <span>Designed for reptile enthusiasts</span>
-    </div>
-  </footer>
-
 </div><!-- .kaiko-myaccount-wrap -->
 
-<?php wp_footer(); ?>
-</body>
-</html>
+<?php
+get_footer();

@@ -15,16 +15,10 @@
 defined( 'ABSPATH' ) || exit;
 
 $cf7_id = (int) get_option( 'kaiko_cf7_contact_id', 0 );
-?>
-<!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-<head>
-<meta charset="<?php bloginfo( 'charset' ); ?>">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact Us &mdash; Kaiko</title>
-<meta name="description" content="Get in touch with the Kaiko team. Trade enquiries, product questions, and wholesale applications.">
-<?php wp_head(); ?>
-<style>
+
+add_action( 'wp_head', function () {
+    ?>
+    <style>
 /* ============================================================
    KAIKO — CONTACT PAGE
    All CSS scoped to body.kaiko-contact
@@ -87,15 +81,6 @@ body.kaiko-contact {
   --kaiko-space-2xl: 3rem;
   --kaiko-space-3xl: 4rem;
 }
-
-/* Hide WoodMart chrome */
-.whb-header,
-.woodmart-prefooter,
-.footer-container,
-.wd-footer,
-.website-wrapper > footer,
-#wp-admin-bar-root-default { display: none !important; }
-.website-wrapper { padding-top: 0 !important; }
 
 /* ---- Base ---- */
 body.kaiko-contact {
@@ -810,11 +795,11 @@ body.kaiko-contact .footer-bottom {
   body.kaiko-contact .method-card { padding: var(--kaiko-space-xl); }
 }
 </style>
-</head>
-<body <?php body_class( 'kaiko-page kaiko-contact' ); ?>>
-<?php wp_body_open(); ?>
+    <?php
+}, 100 );
 
-<?php get_template_part( 'template-parts/kaiko-header' ); ?>
+get_header();
+?>
 
 <!-- ========================================================
      SECTION 1 — HERO
@@ -1165,51 +1150,6 @@ body.kaiko-contact .footer-bottom {
   </div>
 </section>
 
-<!-- FOOTER (exact homepage pattern, dark) -->
-<footer class="kaiko-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <h3>KAIKO</h3>
-      <p>Premium reptile and exotic pet supplies, designed by keepers for keepers. Handcrafted in the UK with species-specific precision.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Shop</h4>
-      <ul>
-        <li><a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>">All Products</a></li>
-        <li><a href="#">Feeding Bowls</a></li>
-        <li><a href="#">Water Bowls</a></li>
-        <li><a href="#">Humidity Hides</a></li>
-        <li><a href="#">Accessories</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Species</h4>
-      <ul>
-        <li><a href="#">Bearded Dragons</a></li>
-        <li><a href="#">Snakes</a></li>
-        <li><a href="#">Leopard Geckos</a></li>
-        <li><a href="#">Tortoises</a></li>
-        <li><a href="#">Chameleons</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Company</h4>
-      <ul>
-        <li><a href="<?php echo esc_url( home_url( '/about/' ) ); ?>">About Us</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/care-guides/' ) ); ?>">Care Guides</a></li>
-        <li><a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'myaccount' ) ) ); ?>">Trade Account</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact</a></li>
-        <li><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>">Privacy Policy</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>&copy; <?php echo esc_html( date( 'Y' ) ); ?> Kaiko. All rights reserved.</span>
-    <span>Designed for reptile enthusiasts</span>
-  </div>
-</footer>
-
-<?php wp_footer(); ?>
 <script>
 (function () {
   'use strict';
@@ -1313,5 +1253,6 @@ body.kaiko-contact .footer-bottom {
 
 })();
 </script>
-</body>
-</html>
+
+<?php
+get_footer();
