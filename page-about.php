@@ -84,39 +84,7 @@ body { margin: 0; padding: 0; }
   letter-spacing: -0.02em;
 }
 
-/* --- Navigation --- */
-.kaiko-about-wrap .kaiko-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--kaiko-border);
-  padding: 0 var(--kaiko-space-xl); height: 72px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.kaiko-about-wrap .kaiko-nav-logo {
-  font-family: var(--kaiko-font-display); font-size: 1.75rem;
-  font-weight: 700; letter-spacing: -0.03em;
-  color: var(--kaiko-dark); text-decoration: none;
-}
-.kaiko-about-wrap .kaiko-nav-links {
-  display: flex; gap: var(--kaiko-space-xl); align-items: center;
-}
-.kaiko-about-wrap .kaiko-nav-links a {
-  font-family: var(--kaiko-font-body); font-size: 0.9rem; font-weight: 500;
-  color: var(--kaiko-mid-gray); text-decoration: none;
-  transition: color 0.2s; letter-spacing: 0.025em;
-}
-.kaiko-about-wrap .kaiko-nav-links a:hover { color: var(--kaiko-teal); }
-.kaiko-about-wrap .kaiko-nav-links a.active { color: var(--kaiko-teal); font-weight: 600; }
-.kaiko-about-wrap .kaiko-nav-cta {
-  background: var(--kaiko-teal) !important; color: var(--kaiko-white) !important;
-  padding: 0.5rem 1.25rem !important; border-radius: 100px !important;
-  font-weight: 600 !important; font-size: 0.85rem !important;
-  transition: background 0.2s !important;
-}
-.kaiko-about-wrap .kaiko-nav-cta:hover {
-  background: var(--kaiko-deep-teal) !important;
-}
+/* Navigation is styled globally by kaiko-shell.css. */
 
 /* --- About Hero --- */
 .about-hero {
@@ -413,32 +381,7 @@ body { margin: 0; padding: 0; }
 }
 
 @media (max-width: 768px) {
-  .kaiko-about-wrap .kaiko-nav { padding: 0 1.5rem !important; height: 64px !important; }
   .kaiko-hamburger { display: block !important; }
-  .kaiko-about-wrap .kaiko-nav-links {
-    display: none !important; flex-direction: column !important;
-    position: fixed !important; top: 64px !important; left: 0 !important; right: 0 !important;
-    background: rgba(255,255,255,0.98) !important;
-    backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important;
-    padding: 1.5rem !important; gap: 0 !important;
-    border-bottom: 1px solid var(--kaiko-border) !important;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08) !important;
-  }
-  .kaiko-about-wrap .kaiko-nav-links.mobile-open {
-    display: flex !important;
-  }
-  .kaiko-about-wrap .kaiko-nav-links a {
-    padding: 0.875rem 0 !important; font-size: 1rem !important;
-    border-bottom: 1px solid var(--kaiko-border) !important;
-    width: 100% !important; display: block !important;
-  }
-  .kaiko-about-wrap .kaiko-nav-links a:last-child {
-    border-bottom: none !important;
-  }
-  .kaiko-about-wrap .kaiko-nav-links .kaiko-nav-cta {
-    margin-top: 0.75rem !important; text-align: center !important;
-    display: inline-block !important; width: auto !important;
-  }
   .about-hero { padding: 100px 1.5rem 50px; }
   .about-hero h1 { font-size: 2rem; }
   .about-story { padding: 3rem 1.5rem; gap: 2rem; }

@@ -130,73 +130,7 @@ body.kaiko-myaccount-page {
   pointer-events: none; z-index: 0;
 }
 
-/* ============================================
-   NAVIGATION — Frosted glass bar
-   ============================================ */
-.kaiko-myaccount-wrap .kaiko-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  background: var(--k-glass-bg-strong);
-  backdrop-filter: var(--k-glass-blur);
-  -webkit-backdrop-filter: var(--k-glass-blur);
-  border-bottom: 1px solid var(--k-glass-border);
-  padding: 0 4rem;
-  height: 72px;
-  display: flex; align-items: center; justify-content: space-between;
-  transition: box-shadow var(--k-duration) var(--k-ease);
-}
-.kaiko-myaccount-wrap .kaiko-nav.scrolled {
-  box-shadow: 0 4px 24px rgba(28,25,23,0.06);
-}
-
-/* WP admin bar offset — push Kaiko nav below the black admin bar (32px desktop / 46px ≤782px). */
-body.admin-bar .kaiko-myaccount-wrap .kaiko-nav { top: 32px !important; }
-@media screen and (max-width: 782px) {
-  body.admin-bar .kaiko-myaccount-wrap .kaiko-nav { top: 46px !important; }
-}
-
-.kaiko-myaccount-wrap .kaiko-nav-logo {
-  font-family: var(--k-font-display);
-  font-size: 1.85rem; font-weight: 700;
-  letter-spacing: 0.08em; color: var(--k-dark);
-  text-decoration: none;
-}
-
-.kaiko-myaccount-wrap .kaiko-nav-links {
-  display: flex; gap: 3rem; align-items: center;
-}
-.kaiko-myaccount-wrap .kaiko-nav-links a {
-  font-family: var(--k-font-body);
-  font-size: 0.82rem; font-weight: 500;
-  color: var(--k-stone-500); text-decoration: none;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  transition: color var(--k-duration) var(--k-ease);
-  position: relative;
-}
-.kaiko-myaccount-wrap .kaiko-nav-links a::after {
-  content: '';
-  position: absolute; bottom: -4px; left: 0; right: 0;
-  height: 1.5px; background: var(--k-teal);
-  transform: scaleX(0); transform-origin: center;
-  transition: transform var(--k-duration) var(--k-ease);
-}
-.kaiko-myaccount-wrap .kaiko-nav-links a:hover { color: var(--k-dark); }
-.kaiko-myaccount-wrap .kaiko-nav-links a:hover::after { transform: scaleX(1); }
-.kaiko-myaccount-wrap .kaiko-nav-links a.active { color: var(--k-teal); }
-.kaiko-myaccount-wrap .kaiko-nav-links a.active::after { transform: scaleX(1); }
-
-.kaiko-myaccount-wrap .kaiko-nav-cta {
-  background: var(--k-teal) !important; color: var(--k-white) !important;
-  padding: 10px 24px !important; border-radius: var(--k-radius-sm) !important;
-  font-size: 0.78rem !important; text-transform: uppercase !important;
-  letter-spacing: 0.08em !important; font-weight: 600 !important;
-  transition: all var(--k-duration) var(--k-ease) !important;
-}
-.kaiko-myaccount-wrap .kaiko-nav-cta::after { display: none !important; }
-.kaiko-myaccount-wrap .kaiko-nav-cta:hover {
-  background: var(--k-deep-teal) !important;
-  box-shadow: 0 4px 16px rgba(26,92,82,0.25) !important;
-  transform: translateY(-1px) !important;
-}
+/* Navigation is styled globally by kaiko-shell.css. */
 
 /* HAMBURGER */
 .kaiko-myaccount-wrap .kaiko-hamburger {
@@ -661,10 +595,6 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
 }
 
 @media (max-width: 768px) {
-  .kaiko-myaccount-wrap .kaiko-nav {
-    padding: 0 1.25rem !important; height: 64px !important;
-  }
-  .kaiko-myaccount-wrap .kaiko-nav-links { display: none !important; }
   .kaiko-myaccount-wrap .kaiko-hamburger { display: flex !important; }
 
   .kaiko-myaccount-content { padding: calc(64px + 32px) 1.25rem 60px; }

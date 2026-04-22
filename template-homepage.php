@@ -20,18 +20,7 @@ defined( 'ABSPATH' ) || exit;
 <style>
 /* Homepage-specific overrides to ensure Kaiko design takes priority */
 body.kaiko-homepage { margin: 0; padding: 0; background: var(--kaiko-white, #ffffff); font-family: var(--kaiko-font-body); color: var(--kaiko-black); -webkit-font-smoothing: antialiased; }
-body.kaiko-homepage .kaiko-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--kaiko-border); padding: 0 var(--kaiko-space-xl); height: 72px; display: flex; align-items: center; justify-content: space-between; }
-/* WP admin bar offset — push Kaiko nav below the black admin bar (32px desktop / 46px ≤782px). */
-body.kaiko-homepage.admin-bar .kaiko-nav { top: 32px !important; }
-@media screen and (max-width: 782px) {
-  body.kaiko-homepage.admin-bar .kaiko-nav { top: 46px !important; }
-}
-body.kaiko-homepage .kaiko-nav-logo { font-family: var(--kaiko-font-display); font-size: 1.75rem; font-weight: var(--kaiko-weight-bold); letter-spacing: var(--kaiko-letter-spacing-tight); color: var(--kaiko-dark); text-decoration: none; }
-body.kaiko-homepage .kaiko-nav-links { display: flex; gap: var(--kaiko-space-xl); align-items: center; }
-body.kaiko-homepage .kaiko-nav-links a { font-family: var(--kaiko-font-body); font-size: 0.9rem; font-weight: var(--kaiko-weight-medium); color: var(--kaiko-mid-gray); text-decoration: none; transition: color 0.2s; letter-spacing: 0.025em; }
-body.kaiko-homepage .kaiko-nav-links a:hover { color: var(--kaiko-teal); }
-body.kaiko-homepage .kaiko-nav-cta { background: var(--kaiko-teal) !important; color: var(--kaiko-white) !important; padding: 8px 20px !important; border-radius: 6px !important; font-size: 0.85rem !important; text-transform: uppercase; letter-spacing: 0.05em; }
-body.kaiko-homepage .kaiko-nav-cta:hover { background: var(--kaiko-deep-teal) !important; }
+/* Navigation is styled globally by kaiko-shell.css. */
 body.kaiko-homepage .kaiko-hero { min-height: 90vh; display: flex; align-items: center; padding: 120px var(--kaiko-space-xl) 80px; background: linear-gradient(135deg, var(--kaiko-off-white) 0%, var(--kaiko-warm-gray) 100%); position: relative; overflow: hidden; }
 body.kaiko-homepage .kaiko-hero::after { content: ''; position: absolute; top: -20%; right: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(26,92,82,0.06) 0%, transparent 70%); border-radius: 50%; }
 body.kaiko-homepage .kaiko-hero-inner { max-width: 1400px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; position: relative; z-index: 2; }
@@ -168,8 +157,6 @@ body.kaiko-homepage .kaiko-mobile-menu__footer {
 }
 
 @media (max-width: 768px) {
-  body.kaiko-homepage .kaiko-nav { padding: 0 1.5rem !important; height: 64px !important; }
-  body.kaiko-homepage .kaiko-nav-links { display: none !important; }
   body.kaiko-homepage .kaiko-hamburger { display: flex !important; }
   body.kaiko-homepage .kaiko-hero { padding: 100px 20px 60px; min-height: 70vh; }
   body.kaiko-homepage .kaiko-hero h1 { font-size: clamp(2rem, 8vw, 2.75rem); }
