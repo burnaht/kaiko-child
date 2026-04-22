@@ -856,18 +856,7 @@ body.kaiko-contact .footer-bottom {
 <body <?php body_class( 'kaiko-contact' ); ?>>
 <?php wp_body_open(); ?>
 
-<!-- NAVIGATION -->
-<nav class="kaiko-nav">
-  <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="kaiko-nav-logo">KAIKO</a>
-  <div class="kaiko-nav-links">
-    <a href="<?php echo esc_url( home_url( '/products/' ) ); ?>">Products</a>
-    <?php if ( is_user_logged_in() ) : ?><a href="<?php echo esc_url( home_url( '/shop/' ) ); ?>">Shop</a><?php endif; ?>
-    <a href="<?php echo esc_url( home_url( '/about/' ) ); ?>">About</a>
-    <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="active">Contact</a>
-    <?php if ( function_exists( 'kaiko_render_nav_cart' ) ) echo kaiko_render_nav_cart(); ?>
-    <a href="<?php echo esc_url( home_url( '/my-account/' ) ); ?>" class="kaiko-nav-cta"><?php echo is_user_logged_in() ? 'My Account' : 'Trade Login'; ?></a>
-  </div>
-</nav>
+<?php get_template_part( 'template-parts/kaiko-header' ); ?>
 
 <!-- ========================================================
      SECTION 1 — HERO
@@ -1364,39 +1353,6 @@ body.kaiko-contact .footer-bottom {
     e.target.reset();
   };
 
-})();
-
-// Logged-in nav updates (bypasses page cache)
-(function() {
-  function applyLoggedInNav() {
-    var isLoggedIn = document.body.classList.contains('logged-in')
-                     || document.getElementById('wpadminbar') !== null;
-    if (!isLoggedIn) return;
-
-    document.querySelectorAll('.kaiko-nav .kaiko-nav-cta').forEach(function(el) {
-      if (el.textContent.trim() === 'Trade Login') el.textContent = 'My Account';
-    });
-
-    document.querySelectorAll('.kaiko-nav').forEach(function(nav) {
-      if (nav.querySelector('[data-kaiko-shop-link]')) return;
-      var aboutLink = Array.from(nav.querySelectorAll('a')).find(function(a) {
-        return a.textContent.trim() === 'About';
-      });
-      if (!aboutLink || !aboutLink.parentNode) return;
-      var shopLink = document.createElement('a');
-      shopLink.href = '/shop/';
-      shopLink.textContent = 'Shop';
-      shopLink.setAttribute('data-kaiko-shop-link', '1');
-      shopLink.className = aboutLink.className;
-      aboutLink.parentNode.insertBefore(shopLink, aboutLink);
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', applyLoggedInNav);
-  } else {
-    applyLoggedInNav();
-  }
-  window.addEventListener('load', applyLoggedInNav);
 })();
 </script>
 </body>

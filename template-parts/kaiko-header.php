@@ -13,13 +13,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$home_url    = esc_url( home_url( '/' ) );
-$shop_url    = class_exists( 'WooCommerce' ) ? esc_url( wc_get_page_permalink( 'shop' ) ) : '#';
-$account_url = class_exists( 'WooCommerce' ) ? esc_url( wc_get_page_permalink( 'myaccount' ) ) : '#';
-$cart_url    = class_exists( 'WooCommerce' ) ? esc_url( wc_get_cart_url() ) : '#';
-$cart_count  = class_exists( 'WooCommerce' ) ? WC()->cart->get_cart_contents_count() : 0;
-$is_logged   = is_user_logged_in();
-$can_buy     = function_exists( 'kaiko_user_can_see_prices' ) ? kaiko_user_can_see_prices() : false;
+$home_url     = esc_url( home_url( '/' ) );
+$products_url = esc_url( home_url( '/products/' ) );
+$about_url    = esc_url( home_url( '/about/' ) );
+$contact_url  = esc_url( home_url( '/contact/' ) );
+$shop_url     = class_exists( 'WooCommerce' ) ? esc_url( wc_get_page_permalink( 'shop' ) ) : '#';
+$account_url  = class_exists( 'WooCommerce' ) ? esc_url( wc_get_page_permalink( 'myaccount' ) ) : '#';
+$cart_url     = class_exists( 'WooCommerce' ) ? esc_url( wc_get_cart_url() ) : '#';
+$cart_count   = class_exists( 'WooCommerce' ) ? WC()->cart->get_cart_contents_count() : 0;
+$is_logged    = is_user_logged_in();
+$can_buy      = function_exists( 'kaiko_user_can_see_prices' ) ? kaiko_user_can_see_prices() : $is_logged;
 ?>
 
 <!-- KAIKO NAVIGATION -->
@@ -27,15 +30,14 @@ $can_buy     = function_exists( 'kaiko_user_can_see_prices' ) ? kaiko_user_can_s
     <a href="<?php echo $home_url; ?>" class="kaiko-nav-logo">KAIKO</a>
 
     <div class="kaiko-nav-links" id="kaiko-nav-links">
-        <a href="<?php echo esc_url( home_url( '/products/' ) ); ?>"<?php if ( is_page( 'products' ) ) echo ' class="active"'; ?>>Products</a>
-        <a href="<?php echo $shop_url; ?>"<?php if ( is_shop() || is_product_category() || is_product() ) echo ' class="active"'; ?>>Shop</a>
-        <a href="<?php echo esc_url( home_url( '/about/' ) ); ?>"<?php if ( is_page( 'about' ) ) echo ' class="active"'; ?>>About</a>
-        <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"<?php if ( is_page( 'contact' ) ) echo ' class="active"'; ?>>Contact</a>
+        <a href="<?php echo $products_url; ?>"<?php if ( is_page( 'products' ) ) echo ' class="active"'; ?>>Products</a>
+        <?php if ( $can_buy ) : ?>
+            <a href="<?php echo $shop_url; ?>"<?php if ( is_shop() || is_product_category() || is_product() ) echo ' class="active"'; ?>>Shop</a>
+        <?php endif; ?>
+        <a href="<?php echo $about_url; ?>"<?php if ( is_page( 'about' ) ) echo ' class="active"'; ?>>About</a>
+        <a href="<?php echo $contact_url; ?>"<?php if ( is_page( 'contact' ) ) echo ' class="active"'; ?>>Contact</a>
 
         <?php
-        // Header cart — always emit the wrapper so WC fragments can swap its
-        // contents on cart changes. The button itself only renders when the
-        // cart has items; an empty cart shows no icon at all.
         if ( function_exists( 'kaiko_render_nav_cart' ) ) {
             echo kaiko_render_nav_cart();
         }
@@ -64,11 +66,14 @@ $can_buy     = function_exists( 'kaiko_user_can_see_prices' ) ? kaiko_user_can_s
         </button>
     </div>
     <div class="kaiko-mobile-menu__links">
-        <a href="<?php echo $shop_url; ?>">Shop</a>
-        <a href="<?php echo esc_url( home_url( '/about/' ) ); ?>">About</a>
-        <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact</a>
+        <a href="<?php echo $products_url; ?>">Products</a>
         <?php if ( $can_buy ) : ?>
-            <a href="<?php echo $cart_url; ?>">Cart<?php if ( $cart_count > 0 ) echo ' (' . $cart_count . ')'; ?></a>
+            <a href="<?php echo $shop_url; ?>">Shop</a>
+        <?php endif; ?>
+        <a href="<?php echo $about_url; ?>">About</a>
+        <a href="<?php echo $contact_url; ?>">Contact</a>
+        <?php if ( $can_buy && $cart_count > 0 ) : ?>
+            <a href="<?php echo $cart_url; ?>">Cart (<?php echo (int) $cart_count; ?>)</a>
         <?php endif; ?>
     </div>
     <div class="kaiko-mobile-menu__footer">

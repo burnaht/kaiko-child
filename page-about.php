@@ -460,21 +460,7 @@ body { margin: 0; padding: 0; }
 
 <div class="kaiko-about-wrap">
 
-<!-- Navigation -->
-<nav class="kaiko-nav">
-  <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="kaiko-nav-logo">KAIKO</a>
-  <button class="kaiko-hamburger" aria-label="Menu" onclick="this.classList.toggle('active');document.querySelector('.kaiko-nav-links').classList.toggle('mobile-open');">
-    <span></span><span></span><span></span>
-  </button>
-  <div class="kaiko-nav-links">
-    <a href="<?php echo esc_url( home_url( '/products/' ) ); ?>">Products</a>
-    <?php if ( is_user_logged_in() ) : ?><a href="<?php echo esc_url( home_url( '/shop/' ) ); ?>">Shop</a><?php endif; ?>
-    <a href="<?php echo esc_url( home_url( '/about/' ) ); ?>" class="active">About</a>
-    <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact</a>
-    <?php if ( function_exists( 'kaiko_render_nav_cart' ) ) echo kaiko_render_nav_cart(); ?>
-    <a href="<?php echo esc_url( home_url( '/my-account/' ) ); ?>" class="kaiko-nav-cta"><?php echo is_user_logged_in() ? 'My Account' : 'Trade Login'; ?></a>
-  </div>
-</nav>
+<?php get_template_part( 'template-parts/kaiko-header' ); ?>
 
 <!-- Hero Section -->
 <section class="about-hero">
@@ -664,69 +650,6 @@ body { margin: 0; padding: 0; }
 </footer>
 
 </div>
-
-<script>
-(function() {
-  var isMobile = window.innerWidth <= 768;
-  // Fix nav styling (WoodMart theme overrides stylesheet rules, so apply inline)
-  var nav = document.querySelector('.kaiko-nav');
-  if (nav) {
-    var navPad = isMobile ? '0 1.5rem' : '0 6rem';
-    var navH = isMobile ? '64px' : '72px';
-    nav.style.cssText = 'position:fixed!important;top:0!important;left:0!important;right:0!important;z-index:1000!important;background:rgba(255,255,255,0.97)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;border-bottom:1px solid #e4e2de!important;padding:'+navPad+'!important;height:'+navH+'!important;display:flex!important;align-items:center!important;justify-content:space-between!important;';
-  }
-  var navLogo = document.querySelector('.kaiko-nav-logo');
-  if (navLogo) {
-    navLogo.style.cssText = "font-family:'Gotham','Gotham Bold',-apple-system,sans-serif!important;font-size:1.75rem!important;font-weight:700!important;letter-spacing:-0.03em!important;color:#1a1a1a!important;text-decoration:none!important;";
-  }
-  var navLinks = document.querySelector('.kaiko-nav-links');
-  if (navLinks && !isMobile) {
-    navLinks.style.cssText = 'display:flex!important;gap:6rem!important;align-items:center!important;';
-    var links = navLinks.querySelectorAll('a');
-    links.forEach(function(a) {
-      if (!a.classList.contains('kaiko-nav-cta')) {
-        a.style.cssText = "font-family:'Inter',-apple-system,sans-serif!important;font-size:0.9rem!important;font-weight:500!important;color:#6b6b6b!important;text-decoration:none!important;letter-spacing:0.025em!important;";
-      } else {
-        a.style.cssText = "background:#1a5c52!important;color:#fff!important;padding:0.5rem 1.25rem!important;border-radius:100px!important;font-weight:600!important;font-size:0.85rem!important;text-decoration:none!important;font-family:'Inter',-apple-system,sans-serif!important;";
-      }
-    });
-  }
-
-})();
-
-// Logged-in nav updates (bypasses page cache)
-(function() {
-  function applyLoggedInNav() {
-    var isLoggedIn = document.body.classList.contains('logged-in')
-                     || document.getElementById('wpadminbar') !== null;
-    if (!isLoggedIn) return;
-
-    document.querySelectorAll('.kaiko-nav .kaiko-nav-cta').forEach(function(el) {
-      if (el.textContent.trim() === 'Trade Login') el.textContent = 'My Account';
-    });
-
-    document.querySelectorAll('.kaiko-nav').forEach(function(nav) {
-      if (nav.querySelector('[data-kaiko-shop-link]')) return;
-      var aboutLink = Array.from(nav.querySelectorAll('a')).find(function(a) {
-        return a.textContent.trim() === 'About';
-      });
-      if (!aboutLink || !aboutLink.parentNode) return;
-      var shopLink = document.createElement('a');
-      shopLink.href = '/shop/';
-      shopLink.textContent = 'Shop';
-      shopLink.setAttribute('data-kaiko-shop-link', '1');
-      shopLink.className = aboutLink.className;
-      aboutLink.parentNode.insertBefore(shopLink, aboutLink);
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', applyLoggedInNav);
-  } else {
-    applyLoggedInNav();
-  }
-  window.addEventListener('load', applyLoggedInNav);
-})();
-</script>
 
 <?php wp_footer(); ?>
 </body>
