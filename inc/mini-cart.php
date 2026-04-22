@@ -134,16 +134,13 @@ function kaiko_mini_cart_flag_non_ajax_add() {
  * hidden so the fragments filter always has a target to replace.
  *
  * Trade model: the cart is only useful to users who can actually
- * purchase (i.e. have been approved past the kaiko_pending gate),
- * so we hide the button for logged-out AND pending visitors.
- * Gating matches the header Shop link and the pill label in
- * template-parts/kaiko-header.php so every kaiko-buying-ability
- * signal shares one source of truth: kaiko_user_can_see_prices().
- * The count badge is still conditional on cart_count > 0.
+ * purchase. Gating is delegated to kaiko_can_show_cart() (see
+ * inc/nav-gates.php) so every kaiko-buying-ability signal shares one
+ * source of truth. The count badge is still conditional on cart_count > 0.
  */
 function kaiko_render_nav_cart() {
 	$count = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
-	$show  = function_exists( 'kaiko_user_can_see_prices' ) && kaiko_user_can_see_prices();
+	$show  = function_exists( 'kaiko_can_show_cart' ) && kaiko_can_show_cart();
 	ob_start();
 	?>
 	<div class="kaiko-nav-cart-wrap">
