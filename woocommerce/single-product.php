@@ -287,6 +287,14 @@ while ( have_posts() ) : the_post();
 								<?php endforeach; ?>
 							</div>
 						</div>
+
+						<?php
+						// Mix-and-match reassurance — only renders for variable products
+						// with configured tiers. See inc/mix-and-match-pricing.php.
+						if ( function_exists( 'kaiko_render_pdp_mix_and_match_note' ) ) {
+							kaiko_render_pdp_mix_and_match_note( $product );
+						}
+						?>
 					<?php endif; ?>
 
 					<!-- Add-to-cart form -->
@@ -1094,6 +1102,17 @@ body.kaiko-product-page .kaiko-pp-tier.is-active {
 	box-shadow: 0 2px 12px rgba(26,92,82,0.08);
 }
 body.kaiko-product-page .kaiko-pp-tier.is-active .kaiko-pp-tier__price { color: var(--k-teal); }
+
+/* Mix-and-match reassurance — sits under the tier card on variable products. */
+body.kaiko-product-page .kaiko-pdp__mix-and-match-note {
+	margin: -12px 0 28px;
+	padding: 10px 14px;
+	border-radius: var(--k-r-md);
+	background: rgba(26,92,82,0.06);
+	color: var(--k-teal);
+	font-size: 0.82rem;
+	line-height: 1.5;
+}
 
 /* Native WC add-to-cart form styling */
 body.kaiko-product-page .kaiko-pp-form { margin-bottom: 20px; }

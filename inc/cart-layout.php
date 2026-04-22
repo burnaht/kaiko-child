@@ -190,14 +190,23 @@ function kaiko_cart_template_include( $template ) {
  *   [ base_unit, applied_unit, saved_total, active_tier_index (1-based),
  *     active_tier, next_tier, next_tier_index, next_tier_unit ]
  * or null when the product has no usable tier schedule.
+ *
+ * $qty        = the line's own quantity — drives per-line saved_total.
+ * $lookup_qty = the quantity used to pick the active/next tier. Defaults
+ *               to $qty. Callers pass the parent-product total here to
+ *               support mix-and-match pricing (see inc/mix-and-match-pricing.php);
+ *               the chip then shows the tier that was actually applied
+ *               to this line, not what its line-qty alone would earn.
  */
-function kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit ) {
+function kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit, $lookup_qty = null ) {
 	$tiers = kaiko_get_product_tier_rules( $product_id );
 	if ( empty( $tiers ) ) {
 		return null;
 	}
 
-	$active       = function_exists( 'kaiko_find_tier_for_qty' ) ? kaiko_find_tier_for_qty( $tiers, $qty ) : null;
+	$lookup_qty = ( null === $lookup_qty ) ? (int) $qty : (int) $lookup_qty;
+
+	$active       = function_exists( 'kaiko_find_tier_for_qty' ) ? kaiko_find_tier_for_qty( $tiers, $lookup_qty ) : null;
 	$active_index = 0;
 	foreach ( $tiers as $i => $t ) {
 		if ( $t === $active ) { $active_index = $i + 1; break; }
@@ -224,11 +233,11 @@ function kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit ) {
 	$saved_per_unit = max( 0, $base_unit - (float) $applied_unit );
 	$saved_total    = $saved_per_unit * (int) $qty;
 
-	// Next tier — the smallest min_qty > current qty.
+	// Next tier — the smallest min_qty > lookup_qty.
 	$next = null;
 	$next_index = 0;
 	foreach ( $tiers as $i => $t ) {
-		if ( $t['min_qty'] > $qty ) {
+		if ( $t['min_qty'] > $lookup_qty ) {
 			if ( ! $next || $t['min_qty'] < $next['min_qty'] ) {
 				$next       = $t;
 				$next_index = $i + 1;
@@ -324,7 +333,11 @@ function kaiko_cart_total_savings() {
 	foreach ( WC()->cart->get_cart() as $cart_item ) {
 		$product = $cart_item['data'];
 		if ( ! $product ) continue;
-		$tier = kaiko_cart_line_tier_data( $cart_item['product_id'], (int) $cart_item['quantity'], (float) $product->get_price() );
+		$pid        = (int) $cart_item['product_id'];
+		$lookup_qty = function_exists( 'kaiko_cart_parent_total_qty' )
+			? (int) kaiko_cart_parent_total_qty( $pid )
+			: (int) $cart_item['quantity'];
+		$tier = kaiko_cart_line_tier_data( $pid, (int) $cart_item['quantity'], (float) $product->get_price(), $lookup_qty );
 		if ( $tier && $tier['saved_total'] > 0 ) {
 			$total += $tier['saved_total'];
 		}
@@ -530,7 +543,13 @@ function kaiko_render_cart_line_row( $cart_item_key, $cart_item ) {
 		}
 	}
 
-	$tier = kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit );
+	// Mix-and-match: the tier that's actually applied to this line is picked
+	// from the parent product's total qty across all variations, not this
+	// line's own qty (see inc/mix-and-match-pricing.php).
+	$lookup_qty = function_exists( 'kaiko_cart_parent_total_qty' )
+		? (int) kaiko_cart_parent_total_qty( (int) $product_id )
+		: $qty;
+	$tier = kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit, $lookup_qty );
 
 	$sold_individually = $product->is_sold_individually();
 	$max_qty           = $product->get_max_purchase_quantity();

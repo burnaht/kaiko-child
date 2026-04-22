@@ -37,6 +37,7 @@ require_once KAIKO_DIR . '/inc/mini-cart.php';
 require_once KAIKO_DIR . '/inc/cart-layout.php';
 require_once KAIKO_DIR . '/inc/account-layout.php';
 require_once KAIKO_DIR . '/inc/checkout-layout.php';
+require_once KAIKO_DIR . '/inc/mix-and-match-pricing.php';
 
 
 /* ============================================
@@ -817,61 +818,6 @@ function kaiko_find_tier_for_qty( $tiers, $qty ) {
         if ( $in_band ) return $tier;
     }
     return null;
-}
-
-/**
- * Return the unit price for a given qty based on configured tiers,
- * falling back to the product's base price.
- *
- * For per-product ACF tiers, returns the tier's absolute unit_price.
- * For default-schedule tiers, applies the tier's discount_pct to $override_base
- * (if provided) — this is how variations inherit per-variation tier pricing.
- */
-function kaiko_get_tier_price( $product_id, $qty, $override_base = null ) {
-    $tiers   = kaiko_get_product_tiers( $product_id );
-    $product = wc_get_product( $product_id );
-    $base    = ( $override_base !== null )
-        ? (float) $override_base
-        : ( $product ? (float) $product->get_price() : 0 );
-    if ( empty( $tiers ) ) return $base;
-
-    $tier = kaiko_find_tier_for_qty( $tiers, $qty );
-    if ( ! $tier ) return $base;
-
-    // Default schedule → apply discount_pct to the (possibly overridden) base
-    if ( ! empty( $tier['is_default'] ) ) {
-        $pct = (float) $tier['discount_pct'];
-        return round( $base * ( 1 - $pct / 100 ), 2 );
-    }
-    // ACF absolute unit_price
-    return (float) $tier['unit_price'];
-}
-
-/**
- * Apply tier pricing to cart items based on quantity.
- * Runs on every cart recalculation. For variable products, uses the
- * selected variation's base price so each variation gets its own tier.
- */
-add_action( 'woocommerce_before_calculate_totals', 'kaiko_apply_tier_pricing_to_cart', 20, 1 );
-
-function kaiko_apply_tier_pricing_to_cart( $cart ) {
-    if ( is_admin() && ! defined( 'DOING_AJAX' ) ) return;
-    if ( ! function_exists( 'kaiko_user_can_see_prices' ) || ! kaiko_user_can_see_prices() ) return;
-    if ( did_action( 'woocommerce_before_calculate_totals' ) >= 2 ) return;
-
-    foreach ( $cart->get_cart() as $cart_item ) {
-        $product_id = $cart_item['product_id'];
-        $qty        = $cart_item['quantity'];
-        // Use the variation/product's own current price as the base so each
-        // variation gets per-variation tier pricing under the default schedule.
-        $item_base  = isset( $cart_item['data'] ) && is_object( $cart_item['data'] )
-            ? (float) $cart_item['data']->get_price()
-            : null;
-        $tier_price = kaiko_get_tier_price( $product_id, $qty, $item_base );
-        if ( $tier_price > 0 ) {
-            $cart_item['data']->set_price( $tier_price );
-        }
-    }
 }
 
 /**
