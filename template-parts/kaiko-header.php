@@ -43,7 +43,7 @@ $can_buy      = function_exists( 'kaiko_user_can_see_prices' ) ? kaiko_user_can_
         }
         ?>
 
-        <?php if ( $is_logged ) : ?>
+        <?php if ( $can_buy ) : ?>
             <a href="<?php echo $account_url; ?>" class="kaiko-nav-cta">My Account</a>
         <?php else : ?>
             <a href="<?php echo $account_url; ?>" class="kaiko-nav-cta">Trade Login</a>
@@ -77,7 +77,7 @@ $can_buy      = function_exists( 'kaiko_user_can_see_prices' ) ? kaiko_user_can_
         <?php endif; ?>
     </div>
     <div class="kaiko-mobile-menu__footer">
-        <?php if ( $is_logged ) : ?>
+        <?php if ( $can_buy ) : ?>
             <a href="<?php echo $account_url; ?>" class="btn-primary">My Account</a>
             <a href="<?php echo esc_url( wp_logout_url( home_url() ) ); ?>" class="btn-secondary">Log Out</a>
         <?php else : ?>
