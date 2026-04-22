@@ -427,7 +427,7 @@ function kaiko_render_cart_summary() {
 	<div class="kaiko-cart-summary__trust">
 		<div>
 			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-			<?php esc_html_e( 'Secure checkout via Mollie', 'kaiko-child' ); ?>
+			<?php esc_html_e( 'Secure trade checkout — invoiced via bank transfer (BACS)', 'kaiko-child' ); ?>
 		</div>
 		<div>
 			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
