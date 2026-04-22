@@ -204,6 +204,7 @@ div[class*="wd-toolbar"], div[class*="sticky-toolbar"],
       <?php if ( is_user_logged_in() ) : ?><a href="/shop/">Shop</a><?php endif; ?>
       <a href="/about/">About</a>
       <a href="/contact/">Contact</a>
+      <?php if ( function_exists( 'kaiko_render_nav_cart' ) ) echo kaiko_render_nav_cart(); ?>
       <a href="/my-account/" class="kaiko-nav-cta"><?php echo is_user_logged_in() ? 'My Account' : 'Trade Login'; ?></a>
     </div>
     <button class="kaiko-hamburger" id="kaiko-hamburger" aria-label="Menu">
