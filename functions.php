@@ -39,6 +39,8 @@ require_once KAIKO_DIR . '/inc/cart-layout.php';
 require_once KAIKO_DIR . '/inc/account-layout.php';
 require_once KAIKO_DIR . '/inc/checkout-layout.php';
 require_once KAIKO_DIR . '/inc/mix-and-match-pricing.php';
+require_once KAIKO_DIR . '/inc/trade-approval.php';
+require_once KAIKO_DIR . '/inc/redirects.php';
 
 
 /* ============================================
@@ -103,6 +105,19 @@ function kaiko_enqueue_assets() {
         // (single-use, no reuse elsewhere on the site).
         if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'order-received' ) ) {
             wp_enqueue_style( 'kaiko-thankyou', KAIKO_URI . '/assets/css/kaiko-thankyou.css', array( 'kaiko-woocommerce' ), KAIKO_VERSION );
+        }
+
+        // Single-product — variation swap fix (force-inits WC variations_form,
+        // manual variation matcher, qty → tier pill → ATC label sync).
+        // Ported from Code Snippet #29; only loaded on PDPs.
+        if ( function_exists( 'is_product' ) && is_product() ) {
+            wp_enqueue_script(
+                'kaiko-variation-swap',
+                KAIKO_URI . '/assets/js/kaiko-variation-swap.js',
+                array( 'jquery', 'wc-add-to-cart-variation' ),
+                KAIKO_VERSION,
+                true
+            );
         }
     }
 
@@ -279,6 +294,19 @@ add_filter( 'woocommerce_cart_item_price', 'kaiko_hide_cart_price', 9999, 3 );
 
 function kaiko_hide_cart_price( $price, $cart_item, $cart_item_key ) {
     return kaiko_user_can_see_prices() ? $price : '';
+}
+
+/**
+ * Suppress the "Sale!" flash badge for users who can't see prices. Without
+ * this, pending/guest users saw an orange SALE ribbon floating over products
+ * whose price itself was hidden — visual noise with no information.
+ * (Ported from Code Snippet #11, keyed off our role helper rather than
+ * is_user_logged_in so kaiko_pending is treated the same as guests.)
+ */
+add_filter( 'woocommerce_sale_flash', 'kaiko_hide_sale_flash', 9999, 1 );
+
+function kaiko_hide_sale_flash( $html ) {
+    return kaiko_user_can_see_prices() ? $html : '';
 }
 
 
