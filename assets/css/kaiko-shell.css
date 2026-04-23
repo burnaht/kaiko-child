@@ -1509,3 +1509,42 @@ body.kaiko-checkout-page .kaiko-checkout-hero__subtitle {
 .kaiko-page .lost_password a:hover {
   text-decoration: underline;
 }
+
+
+/* ===========================
+   15. BRAND TYPOGRAPHY — GOTHAM
+   Ported from Code Snippet #7 (Kaiko Gotham Bold Headings).
+   Gotham is the logo's font; mirror it on every heading and site
+   logo mark. Kept as a font-family stack so if the user/device
+   has Gotham installed it renders; otherwise the browser falls
+   through to system sans-serif (same behaviour the snippet had).
+   =========================== */
+
+h1, h2, h3, h4, h5, h6,
+.elementor-heading-title,
+.elementor-widget-heading .elementor-heading-title,
+.woodmart-title-container .title,
+.section-title .title,
+.kaiko-nav-logo,
+a.kaiko-nav-logo,
+.site-logo,
+.woodmart-logo-wrap a {
+  font-family: "Gotham", "Gotham Bold", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-weight: 700 !important;
+}
+
+
+/* ===========================
+   16. HIDE GALLERY BADGES
+   Ported from Code Snippet #17 (KAIKO Hide Gallery Badges).
+   Kills the number pills / "select" badges that some product
+   gallery add-ons render on image corners — they clash with
+   the clean Kaiko product photography.
+   =========================== */
+
+.select-badge,
+.sel-badge,
+.img-number,
+.img-num {
+  display: none !important;
+}
