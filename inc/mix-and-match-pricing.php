@@ -263,7 +263,66 @@ function kaiko_apply_mix_and_match_tiers( $cart ) {
 
 
 /* ============================================================
-   3. PDP — "mix and match across variations" note
+   3. CART DISPLAY — group lines by (parent, size)
+   ============================================================ */
+
+add_filter( 'woocommerce_get_cart_contents', 'kaiko_sort_cart_by_parent_and_size', 20 );
+
+/**
+ * Reorder cart contents so every line of a given (parent, size) group
+ * sits together. The cart-side pricing in kaiko_apply_mix_and_match_tiers()
+ * qualifies tiers per (parent, size); displaying lines in insertion
+ * order scrambles that grouping and makes it hard for a trade customer
+ * to see at a glance which variations pool together.
+ *
+ * Read-only on the array it's handed — this does NOT mutate the session
+ * storage order. If WC reloads from session mid-request, the original
+ * insertion order is still what sits on disk.
+ *
+ * @param array $contents Cart contents.
+ * @return array
+ */
+function kaiko_sort_cart_by_parent_and_size( $contents ) {
+	if ( ! is_array( $contents ) || count( $contents ) < 2 ) {
+		return $contents;
+	}
+
+	// Snapshot insertion order as a stable tiebreaker so that, inside a
+	// given (parent, size) bucket, rows stay in the order the customer
+	// added them.
+	$order = array();
+	$i = 0;
+	foreach ( $contents as $key => $item ) {
+		$order[ $key ] = $i++;
+	}
+
+	uasort( $contents, function ( $a, $b ) use ( $order ) {
+		$pa = isset( $a['product_id'] ) ? (int) $a['product_id'] : 0;
+		$pb = isset( $b['product_id'] ) ? (int) $b['product_id'] : 0;
+		if ( $pa !== $pb ) {
+			return $pa - $pb;
+		}
+
+		$sa = function_exists( 'kaiko_cart_size_attr_value' ) ? kaiko_cart_size_attr_value( $a ) : '';
+		$sb = function_exists( 'kaiko_cart_size_attr_value' ) ? kaiko_cart_size_attr_value( $b ) : '';
+		if ( $sa !== $sb ) {
+			return strcmp( $sa, $sb );
+		}
+
+		$ka = isset( $a['key'] ) ? (string) $a['key'] : '';
+		$kb = isset( $b['key'] ) ? (string) $b['key'] : '';
+		if ( isset( $order[ $ka ], $order[ $kb ] ) ) {
+			return $order[ $ka ] - $order[ $kb ];
+		}
+		return 0;
+	} );
+
+	return $contents;
+}
+
+
+/* ============================================================
+   4. PDP — "mix and match across variations" note
    ============================================================ */
 
 /**
@@ -293,7 +352,7 @@ function kaiko_render_pdp_mix_and_match_note( $product = null ) {
 
 
 /* ============================================================
-   4. REGRESSION NOTES (manual verification log)
+   5. REGRESSION NOTES (manual verification log)
    ============================================================
 
    After changing the grouping from (parent) to (parent, size) the
