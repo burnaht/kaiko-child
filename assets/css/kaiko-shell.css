@@ -778,14 +778,6 @@ body.kaiko-checkout-page .kaiko-checkout-hero__subtitle {
   box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
 }
 
-.kaiko-checkout-section #order_review {
-  background: var(--kaiko-off-white);
-  border-radius: var(--kaiko-radius-xl);
-  padding: var(--kaiko-space-2xl);
-  position: sticky;
-  top: 100px;
-}
-
 .kaiko-checkout-section #place_order {
   width: 100%;
   background: var(--kaiko-teal);
