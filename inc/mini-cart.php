@@ -212,10 +212,11 @@ function kaiko_render_drawer_item( $cart_item_key, $cart_item ) {
 
 	// Tier data — single source of truth. Same call the cart page uses so
 	// the chip + nudge + strikethrough render identically on both surfaces.
-	// Mix-and-match: tier is picked from the parent's cart-wide total qty,
+	// Mix-and-match: tier is picked from the per-(parent, size) total qty,
 	// not this line's qty, so the chip mirrors what's actually applied.
-	$lookup_qty = function_exists( 'kaiko_cart_parent_total_qty' )
-		? (int) kaiko_cart_parent_total_qty( (int) $product_id )
+	$size_value = function_exists( 'kaiko_cart_size_attr_value' ) ? kaiko_cart_size_attr_value( $cart_item ) : '';
+	$lookup_qty = function_exists( 'kaiko_cart_group_total_qty' )
+		? (int) kaiko_cart_group_total_qty( (int) $product_id, $size_value )
 		: $qty;
 	$tier = function_exists( 'kaiko_cart_line_tier_data' )
 		? kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit, $lookup_qty )
