@@ -1140,11 +1140,24 @@ body.kaiko-checkout-page .kaiko-checkout-hero__subtitle {
    10. CHECKOUT COLUMNS LAYOUT
    =========================== */
 
-.kaiko-checkout-columns {
+/* Scoped under body.kaiko-checkout-page so the grid wins over any
+   unscoped Woodmart .woocommerce-checkout { display: flex|block }
+   rule that might load after shell.css. Defensive — the grid was
+   confirmed applying in DevTools, but the extra specificity costs
+   nothing. */
+body.kaiko-checkout-page .kaiko-checkout-columns {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
   gap: var(--kaiko-space-3xl);
   align-items: start;
+}
+
+.kaiko-checkout-fields {
+  background: var(--kaiko-off-white);
+  border-radius: var(--kaiko-radius-2xl);
+  padding: var(--kaiko-space-2xl);
+  /* No position: sticky here — the fields column must scroll with
+     the page. Only .kaiko-checkout-review is sticky. */
 }
 
 .kaiko-checkout-review {
@@ -1381,6 +1394,19 @@ body.kaiko-checkout-page .kaiko-checkout-hero__subtitle {
   background: rgba(26, 92, 82, 0.06);
   border-left-color: var(--kaiko-teal);
   color: var(--kaiko-teal);
+}
+
+/* Checkout-only: the "Have a coupon? Click here to enter your code"
+   info bar sits in .woocommerce-form-coupon-toggle which is (a sibling
+   of) the flex-styled Woodmart .woocommerce-form-coupon container.
+   Flex ancestry was collapsing the info box to just its rounded-left
+   cap — a crescent painted by the border-left + border-radius combo
+   on .kaiko-page .woocommerce-info. Forcing block + full width stops
+   the flex parent squeezing it. Scoped to checkout so notices on
+   other pages keep their current layout. */
+body.kaiko-checkout-page .kaiko-page .woocommerce-info {
+  display: block;
+  width: 100%;
 }
 
 .kaiko-page .woocommerce-message a,
