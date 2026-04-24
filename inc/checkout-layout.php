@@ -208,3 +208,113 @@ function kaiko_checkout_template_include( $template ) {
 	$ours = locate_template( 'template-checkout.php' );
 	return $ours ? $ours : $template;
 }
+
+
+/* ============================================================
+   4. KAIKO CHECKOUT REDESIGN — hooks + helpers
+   ============================================================ */
+
+/**
+ * Remove WC's default "Have a coupon? Click here to enter your code"
+ * toggle + hidden coupon <form> that it injects via
+ * woocommerce_before_checkout_form. We render a single always-visible
+ * Coupon card at the top of the left column instead (see
+ * woocommerce/checkout/form-checkout.php).
+ *
+ * Safe to call at file-load: WC adds its coupon-form action during
+ * plugin init, which runs BEFORE the theme's functions.php require_once
+ * chain, so remove_action reliably matches.
+ */
+remove_action( 'woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form', 10 );
+
+/**
+ * Place Order button label — set centrally so a future WC upgrade that
+ * re-ships review-order.php doesn't silently revert us to "Place order".
+ */
+add_filter( 'woocommerce_order_button_text', 'kaiko_checkout_place_order_label' );
+
+function kaiko_checkout_place_order_label( $label ) {
+	return __( 'Place order &amp; receive bank details', 'kaiko-child' );
+}
+
+/**
+ * Branded bank-transfer notice — rendered in the left-column Payment
+ * card in place of a gateway list (Kaiko is BACS-only).
+ *
+ * Returned HTML is passed through wp_kses_post at the render site. The
+ * SVG attribute surface is small, so wp_kses_post retains it.
+ *
+ * @return string
+ */
+function kaiko_render_bank_transfer_notice() {
+	ob_start();
+	?>
+	<div class="kaiko-co-bank">
+		<div class="kaiko-co-bank__icon" aria-hidden="true">
+			<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M3 10l9-6 9 6"/>
+				<path d="M5 10v9"/><path d="M19 10v9"/><path d="M9 10v9"/><path d="M15 10v9"/>
+				<path d="M3 19h18"/>
+			</svg>
+		</div>
+		<div class="kaiko-co-bank__body">
+			<div class="kaiko-co-bank__title"><?php esc_html_e( 'Pay by bank transfer', 'kaiko-child' ); ?></div>
+			<p><?php esc_html_e( "Once you place your order, we'll email you our bank details along with a reference number. Your order is held until payment arrives, then dispatched from our UK warehouse.", 'kaiko-child' ); ?></p>
+		</div>
+	</div>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * Trust-strap copy, rendered under the Place Order button in
+ * woocommerce/checkout/review-order.php. Kept as a filterable helper
+ * so marketing can tweak the copy without editing the template.
+ *
+ * @return string
+ */
+function kaiko_checkout_trust_line() {
+	return (string) apply_filters(
+		'kaiko_checkout_trust_line',
+		__( 'Secure SSL checkout — bank details sent after order', 'kaiko-child' )
+	);
+}
+
+
+/* ============================================================
+   5. CONDITIONAL ASSET ENQUEUE — only on /checkout/
+   ============================================================ */
+
+add_action( 'wp_enqueue_scripts', 'kaiko_checkout_enqueue_assets', 30 );
+
+/**
+ * Load the redesigned checkout CSS + coupon-apply JS only on the
+ * checkout page (not on the order-received / thank-you endpoint, which
+ * has its own stylesheet).
+ */
+function kaiko_checkout_enqueue_assets() {
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+		return;
+	}
+	if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'order-received' ) ) {
+		return;
+	}
+
+	$version = defined( 'KAIKO_VERSION' ) ? KAIKO_VERSION : null;
+	$uri     = defined( 'KAIKO_URI' )     ? KAIKO_URI     : get_stylesheet_directory_uri();
+
+	wp_enqueue_style(
+		'kaiko-checkout',
+		$uri . '/assets/css/kaiko-checkout.css',
+		array( 'kaiko-woocommerce' ),
+		$version
+	);
+
+	wp_enqueue_script(
+		'kaiko-checkout',
+		$uri . '/assets/js/kaiko-checkout.js',
+		array( 'jquery', 'wc-checkout' ),
+		$version,
+		true
+	);
+}
