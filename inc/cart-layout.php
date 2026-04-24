@@ -334,8 +334,9 @@ function kaiko_cart_total_savings() {
 		$product = $cart_item['data'];
 		if ( ! $product ) continue;
 		$pid        = (int) $cart_item['product_id'];
-		$lookup_qty = function_exists( 'kaiko_cart_parent_total_qty' )
-			? (int) kaiko_cart_parent_total_qty( $pid )
+		$size_value = function_exists( 'kaiko_cart_size_attr_value' ) ? kaiko_cart_size_attr_value( $cart_item ) : '';
+		$lookup_qty = function_exists( 'kaiko_cart_group_total_qty' )
+			? (int) kaiko_cart_group_total_qty( $pid, $size_value )
 			: (int) $cart_item['quantity'];
 		$tier = kaiko_cart_line_tier_data( $pid, (int) $cart_item['quantity'], (float) $product->get_price(), $lookup_qty );
 		if ( $tier && $tier['saved_total'] > 0 ) {
@@ -543,11 +544,13 @@ function kaiko_render_cart_line_row( $cart_item_key, $cart_item ) {
 		}
 	}
 
-	// Mix-and-match: the tier that's actually applied to this line is picked
-	// from the parent product's total qty across all variations, not this
-	// line's own qty (see inc/mix-and-match-pricing.php).
-	$lookup_qty = function_exists( 'kaiko_cart_parent_total_qty' )
-		? (int) kaiko_cart_parent_total_qty( (int) $product_id )
+	// Mix-and-match: tiers pool per (parent, size) group — this line's
+	// chip reflects the tier actually applied, which is picked from the
+	// total qty for that size across all colour variations. Sizes do NOT
+	// pool together (see inc/mix-and-match-pricing.php).
+	$size_value = function_exists( 'kaiko_cart_size_attr_value' ) ? kaiko_cart_size_attr_value( $cart_item ) : '';
+	$lookup_qty = function_exists( 'kaiko_cart_group_total_qty' )
+		? (int) kaiko_cart_group_total_qty( (int) $product_id, $size_value )
 		: $qty;
 	$tier = kaiko_cart_line_tier_data( $product_id, $qty, $applied_unit, $lookup_qty );
 

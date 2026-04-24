@@ -1,0 +1,515 @@
+/**
+ * Kaiko — PDP Mix-and-Match Accumulator
+ *
+ * Scoped under .kaiko-mm. Lifted from the approved preview HTML at
+ * /Users/thomasmay/Desktop/Larry/kaiko-pdp-mix-match-preview.html with
+ * the preview-banner / gallery / wrap styling dropped — the PDP
+ * template already provides the outer wrap and gallery.
+ *
+ * Colour tokens are shared with kaiko-design-system.css via CSS vars,
+ * but fall back to hardcoded values so this file renders correctly
+ * even if the design-system sheet hasn't loaded yet.
+ */
+
+.kaiko-mm {
+	--kmm-cream: #F6F1E8;
+	--kmm-bone: #FBF7EF;
+	--kmm-ink: #1B1B1B;
+	--kmm-teal: #1A5C52;
+	--kmm-deep-teal: #0F3F38;
+	--kmm-coral: #D96C52;
+	--kmm-sage: #B9C3A6;
+	--kmm-stone-50:  #FAFAF7;
+	--kmm-stone-100: #F1EEE6;
+	--kmm-stone-200: #E2DCCF;
+	--kmm-stone-300: #CEC6B3;
+	--kmm-stone-400: #A89F89;
+	--kmm-stone-500: #78715F;
+	--kmm-stone-700: #4D4739;
+	--kmm-r-sm: 8px;
+	--kmm-r-md: 12px;
+	--kmm-r-lg: 16px;
+	--kmm-shadow-md: 0 4px 12px -2px rgba(15, 23, 42, .08);
+
+	display: block;
+	color: var(--kmm-ink);
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	font-size: 15px;
+	line-height: 1.45;
+}
+
+/* Hidden native variations_form — kept in DOM for WC JS compatibility. */
+.kaiko-mm__native {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	overflow: hidden !important;
+	clip: rect(0 0 0 0) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
+	padding: 0 !important;
+	margin: -1px !important;
+}
+
+/* ------------------------------------------------------------------
+   Field group shell
+------------------------------------------------------------------ */
+.kaiko-mm__field { margin: 18px 0; }
+
+.kaiko-mm__field-label {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 12.5px;
+	font-weight: 600;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	color: var(--kmm-stone-500);
+	margin-bottom: 8px;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+.kaiko-mm__field-hint {
+	font-weight: 400;
+	text-transform: none;
+	letter-spacing: 0;
+	color: var(--kmm-stone-400);
+	font-size: 11px;
+}
+
+/* ------------------------------------------------------------------
+   Size tab pill group
+------------------------------------------------------------------ */
+.kaiko-mm__size-tabs {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	padding: 6px;
+	background: var(--kmm-stone-100);
+	border-radius: 999px;
+	width: fit-content;
+}
+.kaiko-mm__size-tab {
+	padding: 8px 18px;
+	border: none;
+	background: transparent;
+	border-radius: 999px;
+	cursor: pointer;
+	font: inherit;
+	font-size: 13.5px;
+	font-weight: 600;
+	color: var(--kmm-stone-500);
+	transition: all .15s ease;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+.kaiko-mm__size-tab:hover { color: var(--kmm-ink); }
+.kaiko-mm__size-tab.is-active {
+	background: var(--kmm-ink);
+	color: #fff;
+	box-shadow: 0 4px 10px -4px rgba(0, 0, 0, .3);
+}
+.kaiko-mm__size-tab-count {
+	display: inline-flex;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 6px;
+	align-items: center;
+	justify-content: center;
+	background: var(--kmm-teal);
+	color: #fff;
+	border-radius: 999px;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+}
+.kaiko-mm__size-tab.is-active .kaiko-mm__size-tab-count {
+	background: #fff;
+	color: var(--kmm-ink);
+}
+.kaiko-mm__size-tab-count[hidden] { display: none; }
+
+.kaiko-mm__size-context {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 10px;
+	padding: 10px 14px;
+	background: rgba(26, 92, 82, .05);
+	border-radius: var(--kmm-r-md);
+	font-size: 12.5px;
+	color: var(--kmm-teal);
+}
+.kaiko-mm__size-context strong { font-weight: 700; }
+
+/* ------------------------------------------------------------------
+   Colour swatches
+------------------------------------------------------------------ */
+.kaiko-mm__colour-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 10px;
+}
+@media (max-width: 520px) {
+	.kaiko-mm__colour-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.kaiko-mm__swatch {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	border: 1px solid var(--kmm-stone-200);
+	border-radius: var(--kmm-r-md);
+	background: #fff;
+	cursor: pointer;
+	font: inherit;
+	font-size: 13.5px;
+	color: var(--kmm-ink);
+	transition: all .15s ease;
+	text-align: left;
+	position: relative;
+	overflow: hidden;
+}
+.kaiko-mm__swatch:hover {
+	border-color: var(--kmm-stone-400);
+	transform: translateY(-1px);
+}
+.kaiko-mm__swatch.is-active {
+	border-color: var(--kmm-teal);
+	background: rgba(26, 92, 82, .04);
+	box-shadow: 0 0 0 1px var(--kmm-teal);
+}
+.kaiko-mm__swatch.is-oos {
+	opacity: .45;
+	cursor: not-allowed;
+	text-decoration: line-through;
+}
+.kaiko-mm__swatch.is-oos:hover { transform: none; }
+
+.kaiko-mm__swatch-dot {
+	width: 22px;
+	height: 22px;
+	border-radius: 999px;
+	flex-shrink: 0;
+	border: 1px solid rgba(0, 0, 0, .08);
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .4);
+}
+.kaiko-mm__swatch-name { flex: 1; }
+.kaiko-mm__swatch-tick {
+	display: none;
+	width: 18px;
+	height: 18px;
+	border-radius: 999px;
+	background: var(--kmm-teal);
+	color: #fff;
+	align-items: center;
+	justify-content: center;
+	font-size: 11px;
+	flex-shrink: 0;
+	line-height: 1;
+}
+.kaiko-mm__swatch.is-active .kaiko-mm__swatch-tick { display: inline-flex; }
+
+/* ------------------------------------------------------------------
+   Selection panel (grouped by size)
+------------------------------------------------------------------ */
+.kaiko-mm__selection {
+	margin-top: 24px;
+	border: 1px dashed var(--kmm-stone-300);
+	border-radius: var(--kmm-r-lg);
+	padding: 18px;
+	background: linear-gradient(180deg, #fff, var(--kmm-stone-50));
+	transition: border .2s ease, background .2s ease;
+}
+.kaiko-mm__selection.is-populated {
+	border-style: solid;
+	border-color: var(--kmm-stone-200);
+	background: #fff;
+}
+.kaiko-mm__selection-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	margin-bottom: 12px;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+.kaiko-mm__selection-title {
+	font-family: 'DM Serif Display', Georgia, serif;
+	font-size: 17px;
+	color: var(--kmm-ink);
+}
+.kaiko-mm__selection-meta {
+	font-size: 12px;
+	color: var(--kmm-stone-500);
+}
+.kaiko-mm__selection-empty {
+	text-align: center;
+	padding: 20px 10px 6px;
+	color: var(--kmm-stone-500);
+	font-size: 13.5px;
+}
+.kaiko-mm__selection-empty strong {
+	display: block;
+	color: var(--kmm-stone-700);
+	margin-bottom: 4px;
+	font-size: 14px;
+}
+
+.kaiko-mm__group {
+	padding: 12px;
+	border: 1px solid var(--kmm-stone-200);
+	border-radius: var(--kmm-r-md);
+	background: var(--kmm-stone-50);
+	margin-bottom: 10px;
+}
+.kaiko-mm__group:last-child { margin-bottom: 0; }
+
+.kaiko-mm__group-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 8px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--kmm-stone-200);
+	flex-wrap: wrap;
+}
+.kaiko-mm__group-size {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+.kaiko-mm__group-size-label {
+	font-size: 11.5px;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+	color: var(--kmm-stone-500);
+	font-weight: 600;
+}
+.kaiko-mm__group-size-value {
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--kmm-ink);
+}
+.kaiko-mm__group-tier-chip {
+	font-size: 11px;
+	font-weight: 600;
+	padding: 3px 9px;
+	border-radius: 999px;
+	background: rgba(26, 92, 82, .08);
+	color: var(--kmm-teal);
+}
+.kaiko-mm__group-tier-chip--base {
+	background: var(--kmm-stone-100);
+	color: var(--kmm-stone-500);
+}
+.kaiko-mm__group-subtotal {
+	font-family: 'DM Serif Display', Georgia, serif;
+	font-size: 15px;
+	color: var(--kmm-ink);
+}
+.kaiko-mm__group-subtotal-note {
+	font-size: 11px;
+	color: var(--kmm-stone-500);
+	font-family: 'Inter', sans-serif;
+	font-weight: 400;
+}
+
+.kaiko-mm__group-list {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+/* ------------------------------------------------------------------
+   Row
+------------------------------------------------------------------ */
+.kaiko-mm__row {
+	display: grid;
+	grid-template-columns: auto 1fr auto auto;
+	gap: 10px;
+	align-items: center;
+	padding: 8px 10px;
+	background: #fff;
+	border: 1px solid var(--kmm-stone-200);
+	border-radius: var(--kmm-r-sm);
+	animation: kaiko-mm-slide-in .22s ease;
+}
+.kaiko-mm__row-dot {
+	width: 18px;
+	height: 18px;
+	border-radius: 999px;
+	border: 1px solid rgba(0, 0, 0, .08);
+}
+.kaiko-mm__row-label {
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--kmm-ink);
+}
+.kaiko-mm__row-stepper {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	background: var(--kmm-stone-50);
+	border: 1px solid var(--kmm-stone-200);
+	border-radius: 999px;
+	padding: 2px;
+}
+.kaiko-mm__row-stepper button {
+	width: 24px;
+	height: 24px;
+	border: none;
+	background: transparent;
+	border-radius: 999px;
+	cursor: pointer;
+	font-size: 14px;
+	color: var(--kmm-ink);
+	font-family: inherit;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+.kaiko-mm__row-stepper button:hover { background: #fff; }
+.kaiko-mm__row-stepper input {
+	width: 32px;
+	border: none;
+	background: transparent;
+	text-align: center;
+	font: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	-moz-appearance: textfield;
+	padding: 0;
+}
+.kaiko-mm__row-stepper input::-webkit-outer-spin-button,
+.kaiko-mm__row-stepper input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+.kaiko-mm__row-remove {
+	width: 24px;
+	height: 24px;
+	border: none;
+	background: transparent;
+	color: var(--kmm-stone-400);
+	cursor: pointer;
+	border-radius: 999px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	font-family: inherit;
+}
+.kaiko-mm__row-remove:hover {
+	background: var(--kmm-stone-100);
+	color: var(--kmm-coral);
+}
+
+@keyframes kaiko-mm-slide-in {
+	from { opacity: 0; transform: translateY(-4px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------------------------------------------
+   ATC zone
+------------------------------------------------------------------ */
+.kaiko-mm__atc-zone {
+	margin-top: 24px;
+	display: grid;
+	gap: 10px;
+}
+.kaiko-mm__total {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	padding: 14px 16px;
+	background: var(--kmm-ink);
+	color: #fff;
+	border-radius: var(--kmm-r-md);
+	gap: 12px;
+}
+.kaiko-mm__total-label {
+	font-size: 13px;
+	opacity: .75;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+.kaiko-mm__total-label strong {
+	font-size: 11px;
+	opacity: .75;
+	font-weight: 400;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+}
+.kaiko-mm__total-value {
+	font-family: 'DM Serif Display', Georgia, serif;
+	font-size: 28px;
+	color: #fff;
+}
+.kaiko-mm__total-value .woocommerce-Price-amount,
+.kaiko-mm__total-value bdi {
+	font: inherit;
+	color: inherit;
+}
+
+.kaiko-mm__atc {
+	width: 100%;
+	padding: 18px 24px;
+	border: none;
+	border-radius: var(--kmm-r-md);
+	background: var(--kmm-teal);
+	color: #fff;
+	font: inherit;
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: all .15s ease;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
+.kaiko-mm__atc:hover:not(:disabled) {
+	background: var(--kmm-deep-teal);
+	transform: translateY(-1px);
+	box-shadow: 0 8px 20px -6px rgba(26, 92, 82, .4);
+}
+.kaiko-mm__atc:disabled {
+	background: var(--kmm-stone-200);
+	color: var(--kmm-stone-500);
+	cursor: not-allowed;
+}
+.kaiko-mm__atc-count {
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: .04em;
+	padding: 4px 10px;
+	background: rgba(255, 255, 255, .18);
+	border-radius: 999px;
+}
+.kaiko-mm__atc:disabled .kaiko-mm__atc-count { display: none; }
+
+.kaiko-mm__hint {
+	text-align: center;
+	font-size: 12.5px;
+	color: var(--kmm-stone-500);
+	margin-top: 4px;
+	min-height: 1.3em;
+}
+.kaiko-mm__error {
+	margin-top: 6px;
+	padding: 10px 14px;
+	border-radius: var(--kmm-r-sm);
+	background: rgba(217, 108, 82, .08);
+	color: var(--kmm-coral);
+	font-size: 13px;
+	text-align: center;
+}
