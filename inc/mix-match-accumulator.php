@@ -340,11 +340,15 @@ function kaiko_ajax_batch_add_to_cart() {
 		}
 		$attempts++;
 
-		$variation_obj   = wc_get_product( $variation_id );
-		$variation_attrs = array();
-		if ( $variation_obj instanceof WC_Product_Variation ) {
-			$variation_attrs = $variation_obj->get_variation_attributes();
+		$variation_obj = wc_get_product( $variation_id );
+		// Reject rows where the variation doesn't belong to the claimed
+		// parent — without this guard a crafted request could add a
+		// variation of any product while spoofing a different product_id
+		// (e.g. to bypass tier-grouping or evade a product-level filter).
+		if ( ! $variation_obj instanceof WC_Product_Variation || (int) $variation_obj->get_parent_id() !== $product_id ) {
+			continue;
 		}
+		$variation_attrs = $variation_obj->get_variation_attributes();
 
 		$key = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variation_attrs );
 		if ( $key ) {
