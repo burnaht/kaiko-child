@@ -1,0 +1,712 @@
+/**
+ * Kaiko — Checkout redesign
+ *
+ * Loaded conditionally on is_checkout() by inc/checkout-layout.php. All
+ * rules are scoped under body.kaiko-checkout-page so nothing here
+ * leaks to other pages. Matches the approved preview at
+ * /Users/thomasmay/Desktop/Larry/kaiko-checkout-preview.html.
+ *
+ * Tokens
+ * - Inter is already loaded globally via functions.php (kaiko-fonts);
+ *   --kaiko-font-body resolves to Inter. We use --kaiko-font-body here
+ *   rather than repeating the family list.
+ * - Teal / ink / border colour values are hardcoded to match the
+ *   preview exactly (the preview used bare hex values, not design-
+ *   system tokens). These aren't new brand values — they're the same
+ *   colours the design system exposes via --kaiko-teal / --kaiko-deep-
+ *   teal / --kaiko-dark / --kaiko-border, just pinned here so the
+ *   checkout is visually identical to the preview file Tom signed off.
+ */
+
+body.kaiko-checkout-page {
+	background: #fafafa;
+}
+
+/* ============================================================
+   Grid — 2fr / 1fr columns, 1200px cap, 2rem gap
+   ============================================================ */
+body.kaiko-checkout-page .kaiko-checkout-columns {
+	max-width: 1200px;
+	margin: 2rem auto;
+	padding: 0 2rem;
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: 2rem;
+	align-items: start;
+}
+body.kaiko-checkout-page .kaiko-checkout-fields {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	min-width: 0;
+}
+
+@media (max-width: 1024px) {
+	body.kaiko-checkout-page .kaiko-checkout-columns {
+		grid-template-columns: 1fr;
+	}
+}
+
+
+/* ============================================================
+   Generic card + card head
+   ============================================================ */
+body.kaiko-checkout-page .kaiko-co-card {
+	background: #ffffff;
+	border-radius: 8px;
+	padding: 1.75rem;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	margin: 0;
+}
+body.kaiko-checkout-page .kaiko-co-card__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 1.25rem;
+	padding-bottom: 0.9rem;
+	border-bottom: 1px solid #f0f0f0;
+	flex-wrap: wrap;
+}
+body.kaiko-checkout-page .kaiko-co-card__head h3 {
+	font-family: var(--kaiko-font-body, 'Inter', sans-serif);
+	font-size: 15px;
+	font-weight: 600;
+	color: #1a1a1a;
+	letter-spacing: 0.3px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	line-height: 1.3;
+}
+body.kaiko-checkout-page .kaiko-co-step {
+	font-size: 11px;
+	font-weight: 700;
+	color: #1a5c52;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+
+/* ============================================================
+   Card 1 — Coupon
+   ============================================================ */
+body.kaiko-checkout-page .kaiko-co-card--coupon {
+	padding: 1.25rem 1.75rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+body.kaiko-checkout-page .kaiko-co-coupon__prompt {
+	font-size: 14px;
+	color: #666;
+}
+body.kaiko-checkout-page .kaiko-co-coupon__prompt strong {
+	color: #1a1a1a;
+	font-weight: 600;
+	margin-right: 0.35rem;
+}
+body.kaiko-checkout-page .kaiko-co-coupon__group {
+	display: flex;
+	gap: 0.5rem;
+	flex: 1 1 auto;
+	justify-content: flex-end;
+}
+body.kaiko-checkout-page .kaiko-co-coupon__input {
+	min-width: 220px;
+	padding: 10px 12px;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	font-size: 14px;
+	font-family: var(--kaiko-font-body, 'Inter', sans-serif);
+	color: #1a1a1a;
+	background: #ffffff;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+body.kaiko-checkout-page .kaiko-co-coupon__input:focus {
+	outline: none;
+	border-color: #1a5c52;
+	box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.08);
+}
+body.kaiko-checkout-page .kaiko-co-coupon__btn {
+	background: transparent;
+	border: 1px solid #1a5c52;
+	color: #1a5c52;
+	padding: 10px 20px;
+	border-radius: 4px;
+	font-size: 14px;
+	font-weight: 600;
+	font-family: var(--kaiko-font-body, 'Inter', sans-serif);
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+body.kaiko-checkout-page .kaiko-co-coupon__btn:hover,
+body.kaiko-checkout-page .kaiko-co-coupon__btn:focus {
+	background: #1a5c52;
+	color: #ffffff;
+	outline: none;
+}
+body.kaiko-checkout-page .kaiko-co-coupon__btn[disabled] {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+
+/* ============================================================
+   Fields — WC .form-row grid for billing/shipping/notes
+   ============================================================ */
+body.kaiko-checkout-page .kaiko-co-card .woocommerce-billing-fields__field-wrapper,
+body.kaiko-checkout-page .kaiko-co-card .woocommerce-shipping-fields__field-wrapper,
+body.kaiko-checkout-page .kaiko-co-card .woocommerce-additional-fields__field-wrapper {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
+
+@media (max-width: 600px) {
+	body.kaiko-checkout-page .kaiko-co-card .woocommerce-billing-fields__field-wrapper,
+	body.kaiko-checkout-page .kaiko-co-card .woocommerce-shipping-fields__field-wrapper,
+	body.kaiko-checkout-page .kaiko-co-card .woocommerce-additional-fields__field-wrapper {
+		grid-template-columns: 1fr;
+	}
+}
+
+body.kaiko-checkout-page .kaiko-co-card .form-row {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	margin: 0;
+	padding: 0;
+	float: none;
+	width: auto;
+}
+body.kaiko-checkout-page .kaiko-co-card .form-row-first,
+body.kaiko-checkout-page .kaiko-co-card .form-row-last {
+	/* WC ships these with float/width — reset so the parent grid controls layout. */
+	width: auto;
+	float: none;
+}
+body.kaiko-checkout-page .kaiko-co-card .form-row-wide,
+body.kaiko-checkout-page .kaiko-co-card #order_comments_field {
+	grid-column: 1 / -1;
+}
+
+body.kaiko-checkout-page .kaiko-co-card .form-row label {
+	font-size: 12px;
+	font-weight: 600;
+	color: #666;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin: 0;
+	padding: 0;
+	line-height: 1.4;
+}
+body.kaiko-checkout-page .kaiko-co-card .form-row label .required,
+body.kaiko-checkout-page .kaiko-co-card .form-row .required {
+	color: #d32f2f;
+	margin-left: 2px;
+	border-bottom: 0;
+	text-decoration: none;
+}
+body.kaiko-checkout-page .kaiko-co-card .form-row label .optional {
+	color: #999;
+	font-weight: 500;
+	text-transform: none;
+	letter-spacing: 0;
+	font-size: 11px;
+	margin-left: 4px;
+}
+
+body.kaiko-checkout-page .kaiko-co-card .form-row input[type="text"],
+body.kaiko-checkout-page .kaiko-co-card .form-row input[type="email"],
+body.kaiko-checkout-page .kaiko-co-card .form-row input[type="tel"],
+body.kaiko-checkout-page .kaiko-co-card .form-row input[type="password"],
+body.kaiko-checkout-page .kaiko-co-card .form-row input[type="number"],
+body.kaiko-checkout-page .kaiko-co-card .form-row textarea,
+body.kaiko-checkout-page .kaiko-co-card .form-row select,
+body.kaiko-checkout-page .kaiko-co-card .select2-container .select2-selection--single,
+body.kaiko-checkout-page .kaiko-co-card .select2-container .select2-selection {
+	font-family: var(--kaiko-font-body, 'Inter', sans-serif);
+	font-size: 14px;
+	padding: 11px 14px;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	background: #ffffff;
+	color: #1a1a1a;
+	width: 100%;
+	box-sizing: border-box;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+body.kaiko-checkout-page .kaiko-co-card .form-row textarea {
+	min-height: 90px;
+	resize: vertical;
+}
+body.kaiko-checkout-page .kaiko-co-card .form-row input:focus,
+body.kaiko-checkout-page .kaiko-co-card .form-row textarea:focus,
+body.kaiko-checkout-page .kaiko-co-card .form-row select:focus,
+body.kaiko-checkout-page .kaiko-co-card .select2-container .select2-selection--single:focus {
+	outline: none;
+	border-color: #1a5c52;
+	box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.08);
+}
+body.kaiko-checkout-page .kaiko-co-card .form-row .woocommerce-input-wrapper {
+	display: block;
+}
+
+/* Select2 parity — Woodmart / WC use select2 for country/state */
+body.kaiko-checkout-page .kaiko-co-card .select2-container--default .select2-selection--single {
+	height: auto;
+	padding: 11px 14px;
+}
+body.kaiko-checkout-page .kaiko-co-card .select2-container--default .select2-selection--single .select2-selection__rendered {
+	padding: 0;
+	line-height: 1.4;
+	color: #1a1a1a;
+}
+body.kaiko-checkout-page .kaiko-co-card .select2-container--default .select2-selection--single .select2-selection__arrow {
+	height: 100%;
+	top: 0;
+	right: 10px;
+}
+
+body.kaiko-checkout-page .kaiko-co-card .woocommerce-invalid input,
+body.kaiko-checkout-page .kaiko-co-card .woocommerce-invalid textarea,
+body.kaiko-checkout-page .kaiko-co-card .woocommerce-invalid select {
+	border-color: #d32f2f;
+}
+
+/* "Ship to a different address?" checkbox row */
+body.kaiko-checkout-page .kaiko-co-card #ship-to-different-address {
+	grid-column: 1 / -1;
+	margin: 0.5rem 0 0;
+	padding: 0;
+	border: 0;
+	font-weight: 500;
+}
+body.kaiko-checkout-page .kaiko-co-card #ship-to-different-address label {
+	display: flex;
+	align-items: center;
+	gap: 0.65rem;
+	text-transform: none;
+	letter-spacing: 0;
+	font-size: 14px;
+	color: #1a1a1a;
+	font-weight: 500;
+	cursor: pointer;
+	margin: 0;
+}
+body.kaiko-checkout-page .kaiko-co-card #ship-to-different-address-checkbox {
+	width: 18px;
+	height: 18px;
+	accent-color: #1a5c52;
+	margin: 0;
+	cursor: pointer;
+}
+body.kaiko-checkout-page .kaiko-co-card .shipping_address {
+	grid-column: 1 / -1;
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 1px dashed #f0f0f0;
+}
+
+/* #customer_details is the billing/shipping wrapper — make it grid-friendly */
+body.kaiko-checkout-page .kaiko-co-card #customer_details {
+	display: contents;
+}
+
+
+/* ============================================================
+   Card 4 — Payment: bank-transfer notice + terms
+   ============================================================ */
+body.kaiko-checkout-page .kaiko-co-bank {
+	display: flex;
+	gap: 0.9rem;
+	align-items: flex-start;
+	padding: 1.1rem 1.2rem;
+	background: #f4f9f6;
+	border: 1px solid #d6e8df;
+	border-radius: 6px;
+}
+body.kaiko-checkout-page .kaiko-co-bank__icon {
+	flex-shrink: 0;
+	width: 38px;
+	height: 38px;
+	border-radius: 8px;
+	background: #ffffff;
+	color: #1a5c52;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+body.kaiko-checkout-page .kaiko-co-bank__body {
+	flex: 1;
+}
+body.kaiko-checkout-page .kaiko-co-bank__title {
+	font-size: 14px;
+	font-weight: 700;
+	color: #1a5c52;
+	margin-bottom: 0.35rem;
+	letter-spacing: 0.2px;
+}
+body.kaiko-checkout-page .kaiko-co-bank__body p {
+	font-size: 13px;
+	color: #555;
+	line-height: 1.55;
+	margin: 0;
+}
+
+/* Terms checkbox (WC emits .woocommerce-terms-and-conditions-wrapper) */
+body.kaiko-checkout-page .kaiko-co-card--payment .woocommerce-terms-and-conditions-wrapper {
+	margin-top: 1.25rem;
+	padding-top: 0.25rem;
+}
+body.kaiko-checkout-page .kaiko-co-card--payment .form-row.validate-required {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.65rem;
+	margin: 0;
+	padding: 0;
+}
+body.kaiko-checkout-page .kaiko-co-card--payment .woocommerce-form__label-checkbox {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.65rem;
+	font-size: 14px;
+	color: #1a1a1a;
+	font-weight: 500;
+	cursor: pointer;
+	line-height: 1.5;
+	text-transform: none;
+	letter-spacing: 0;
+}
+body.kaiko-checkout-page .kaiko-co-card--payment .woocommerce-form__input-checkbox {
+	width: 18px;
+	height: 18px;
+	accent-color: #1a5c52;
+	margin-top: 2px;
+	flex-shrink: 0;
+	cursor: pointer;
+}
+
+
+/* ============================================================
+   Right column — sticky order summary
+   ============================================================ */
+body.kaiko-checkout-page .kaiko-checkout-review {
+	background: #ffffff;
+	border-radius: 8px;
+	padding: 1.75rem;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	position: sticky;
+	top: 90px;
+	min-width: 0;
+}
+body.kaiko-checkout-page .kaiko-checkout-review h3#order_review_heading {
+	font-family: var(--kaiko-font-body, 'Inter', sans-serif);
+	font-size: 18px;
+	font-weight: 600;
+	color: #1a1a1a;
+	margin: 0 0 1.25rem;
+	padding: 0 0 0.9rem;
+	border-bottom: 1px solid #f0f0f0;
+	text-transform: none;
+	letter-spacing: 0;
+}
+
+@media (max-width: 1024px) {
+	body.kaiko-checkout-page .kaiko-checkout-review {
+		position: static;
+	}
+}
+
+/* Size heading + order lines */
+body.kaiko-checkout-page .kaiko-co-lines {
+	display: flex;
+	flex-direction: column;
+	gap: 0.9rem;
+	margin-bottom: 1.25rem;
+}
+body.kaiko-checkout-page .kaiko-co-size-heading {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #999;
+	padding-top: 0.75rem;
+	margin-top: 0.25rem;
+	border-top: 1px dashed #eee;
+}
+body.kaiko-checkout-page .kaiko-co-size-heading:first-child {
+	border-top: none;
+	padding-top: 0;
+	margin-top: 0;
+}
+body.kaiko-checkout-page .kaiko-co-line {
+	display: grid;
+	grid-template-columns: 56px 1fr auto;
+	gap: 0.8rem;
+	align-items: center;
+}
+body.kaiko-checkout-page .kaiko-co-line__image {
+	position: relative;
+	width: 56px;
+	height: 56px;
+	background: #e8e8e8;
+	border-radius: 6px;
+	overflow: visible;
+}
+body.kaiko-checkout-page .kaiko-co-line__image img {
+	width: 56px;
+	height: 56px;
+	border-radius: 6px;
+	object-fit: cover;
+	display: block;
+}
+body.kaiko-checkout-page .kaiko-co-line__qty {
+	position: absolute;
+	top: -6px;
+	right: -6px;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 6px;
+	border-radius: 999px;
+	background: #0f3f38;
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+}
+body.kaiko-checkout-page .kaiko-co-line__meta {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	min-width: 0;
+}
+body.kaiko-checkout-page .kaiko-co-line__name {
+	font-size: 13px;
+	font-weight: 600;
+	color: #1a1a1a;
+	line-height: 1.35;
+}
+body.kaiko-checkout-page .kaiko-co-line__variant {
+	font-size: 12px;
+	color: #666;
+}
+body.kaiko-checkout-page .kaiko-co-chip {
+	display: inline-block;
+	font-size: 10px;
+	font-weight: 700;
+	color: #1a5c52;
+	background: #e6f0ec;
+	padding: 2px 7px;
+	border-radius: 999px;
+	margin-left: 6px;
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+	line-height: 1.4;
+}
+body.kaiko-checkout-page .kaiko-co-line__total {
+	font-size: 13px;
+	font-weight: 600;
+	color: #1a1a1a;
+	white-space: nowrap;
+}
+body.kaiko-checkout-page .kaiko-co-line__total .woocommerce-Price-amount,
+body.kaiko-checkout-page .kaiko-co-line__total bdi {
+	font: inherit;
+	color: inherit;
+}
+
+/* Totals */
+body.kaiko-checkout-page .kaiko-co-totals {
+	display: flex;
+	flex-direction: column;
+	gap: 0.7rem;
+	padding: 1rem 0;
+	border-top: 1px solid #f0f0f0;
+	border-bottom: 1px solid #f0f0f0;
+	font-size: 14px;
+}
+body.kaiko-checkout-page .kaiko-co-totals .row {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+}
+body.kaiko-checkout-page .kaiko-co-totals .row label {
+	color: #666;
+	font-weight: 500;
+	font-size: 14px;
+	text-transform: none;
+	letter-spacing: 0;
+	margin: 0;
+}
+body.kaiko-checkout-page .kaiko-co-totals .row .value {
+	font-weight: 600;
+	color: #1a1a1a;
+	white-space: nowrap;
+}
+body.kaiko-checkout-page .kaiko-co-totals .row.savings .value {
+	color: #1a5c52;
+}
+body.kaiko-checkout-page .kaiko-co-totals .row .value .woocommerce-Price-amount,
+body.kaiko-checkout-page .kaiko-co-totals .row .value bdi {
+	font: inherit;
+	color: inherit;
+}
+
+/* Grand total */
+body.kaiko-checkout-page .kaiko-co-grand {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	padding: 1.1rem 0;
+	border-bottom: 2px solid #f0f0f0;
+	margin-bottom: 1.25rem;
+	gap: 1rem;
+}
+body.kaiko-checkout-page .kaiko-co-grand label {
+	font-size: 15px;
+	font-weight: 700;
+	color: #1a1a1a;
+	margin: 0;
+	padding: 0;
+	text-transform: none;
+	letter-spacing: 0;
+}
+body.kaiko-checkout-page .kaiko-co-grand__amount {
+	text-align: right;
+}
+body.kaiko-checkout-page .kaiko-co-grand .value {
+	font-size: 22px;
+	font-weight: 700;
+	color: #1a1a1a;
+	letter-spacing: -0.5px;
+	display: block;
+}
+body.kaiko-checkout-page .kaiko-co-grand .value .woocommerce-Price-amount,
+body.kaiko-checkout-page .kaiko-co-grand .value bdi {
+	font: inherit;
+	color: inherit;
+}
+body.kaiko-checkout-page .kaiko-co-grand .inc-tax {
+	display: block;
+	font-size: 11px;
+	color: #999;
+	font-weight: 500;
+	margin-top: 2px;
+}
+
+/* Hidden payment radio list (so WC has payment_method on submit) */
+body.kaiko-checkout-page #payment {
+	background: transparent;
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+body.kaiko-checkout-page #payment .kaiko-co-payment-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+	padding: 0;
+	margin: -1px;
+}
+body.kaiko-checkout-page #payment .form-row.place-order {
+	padding: 0;
+	margin: 0;
+	display: block;
+}
+body.kaiko-checkout-page #payment .woocommerce-terms-and-conditions-wrapper {
+	/* Terms render in the left Payment card; WC doesn't emit them here
+	   again (we omit the wc_get_template call in review-order.php). This
+	   rule hides any stray wrapper a plugin might inject. */
+	display: none;
+}
+
+body.kaiko-checkout-page #place_order,
+body.kaiko-checkout-page .kaiko-co-place {
+	width: 100%;
+	background: #1a5c52;
+	color: #ffffff;
+	border: none;
+	padding: 15px;
+	border-radius: 4px;
+	font-family: var(--kaiko-font-body, 'Inter', sans-serif);
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0.3px;
+	cursor: pointer;
+	transition: background 0.2s ease;
+	margin: 0 0 1rem;
+	display: block;
+}
+body.kaiko-checkout-page #place_order:hover,
+body.kaiko-checkout-page .kaiko-co-place:hover {
+	background: #134840;
+}
+body.kaiko-checkout-page #place_order:disabled,
+body.kaiko-checkout-page .kaiko-co-place:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Trust strap + payment chip */
+body.kaiko-checkout-page .kaiko-co-trust {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	font-size: 12px;
+	color: #666;
+	margin-bottom: 0.9rem;
+}
+body.kaiko-checkout-page .kaiko-co-trust svg {
+	flex-shrink: 0;
+	color: #1a5c52;
+}
+body.kaiko-checkout-page .kaiko-co-paychips {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem;
+	padding-top: 0.9rem;
+	border-top: 1px solid #f0f0f0;
+}
+body.kaiko-checkout-page .kaiko-co-paychip {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+	color: #999;
+	background: #f5f5f5;
+	border: 1px solid #eaeaea;
+	border-radius: 4px;
+	padding: 4px 9px;
+	text-transform: uppercase;
+}
+
+
+/* ============================================================
+   Stray WC notices on checkout — keep full-width + tidy
+   (any notice that slips through gets the same visual treatment
+   as on the cart, but within checkout's tighter card layout).
+   ============================================================ */
+body.kaiko-checkout-page .woocommerce-notices-wrapper {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 2rem;
+}
+body.kaiko-checkout-page .kaiko-page .woocommerce-message,
+body.kaiko-checkout-page .kaiko-page .woocommerce-error,
+body.kaiko-checkout-page .kaiko-page .woocommerce-info {
+	display: block;
+	width: 100%;
+	margin: 0.75rem 0;
+}

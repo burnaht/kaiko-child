@@ -735,83 +735,11 @@ body.kaiko-checkout-page .kaiko-checkout-hero__subtitle {
   padding: 52px 40px 100px;
 }
 
-.kaiko-checkout-section .woocommerce-checkout {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: var(--kaiko-space-3xl);
-  align-items: start;
-}
-
-.kaiko-checkout-section .woocommerce-billing-fields h3,
-.kaiko-checkout-section .woocommerce-shipping-fields h3,
-.kaiko-checkout-section .woocommerce-additional-fields h3,
-.kaiko-checkout-section #order_review_heading {
-  font-family: var(--kaiko-font-display);
-  font-size: 1.25rem;
-  font-weight: var(--kaiko-weight-bold);
-  color: var(--kaiko-dark);
-  margin-bottom: var(--kaiko-space-xl);
-  padding-bottom: var(--kaiko-space-md);
-  border-bottom: 1px solid var(--kaiko-border);
-}
-
-.kaiko-checkout-section .form-row label {
-  font-family: var(--kaiko-font-body);
-  font-size: 0.85rem;
-  font-weight: var(--kaiko-weight-medium);
-  color: var(--kaiko-dark);
-  margin-bottom: var(--kaiko-space-xs);
-}
-
-.kaiko-checkout-section .form-row input,
-.kaiko-checkout-section .form-row textarea,
-.kaiko-checkout-section .form-row select,
-.kaiko-checkout-section .select2-container .select2-selection--single {
-  padding: 12px 16px;
-  border: 1px solid var(--kaiko-border);
-  border-radius: var(--kaiko-radius-lg);
-  font-family: var(--kaiko-font-body);
-  font-size: 0.95rem;
-  color: var(--kaiko-dark);
-  background: var(--kaiko-white);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.kaiko-checkout-section .form-row input:focus,
-.kaiko-checkout-section .form-row textarea:focus,
-.kaiko-checkout-section .form-row select:focus {
-  outline: none;
-  border-color: var(--kaiko-teal);
-  box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
-}
-
-.kaiko-checkout-section #order_review {
-  background: var(--kaiko-off-white);
-  border-radius: var(--kaiko-radius-xl);
-  padding: var(--kaiko-space-2xl);
-  position: sticky;
-  top: 100px;
-}
-
-.kaiko-checkout-section #place_order {
-  width: 100%;
-  background: var(--kaiko-teal);
-  color: var(--kaiko-white);
-  border: none;
-  border-radius: var(--kaiko-radius-lg);
-  padding: 16px;
-  font-family: var(--kaiko-font-body);
-  font-size: 1rem;
-  font-weight: var(--kaiko-weight-semibold);
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-  margin-top: var(--kaiko-space-xl);
-}
-
-.kaiko-checkout-section #place_order:hover {
-  background: var(--kaiko-deep-teal);
-  transform: translateY(-2px);
-}
+/* Checkout form / review styling moved to assets/css/kaiko-checkout.css
+   (enqueued conditionally by inc/checkout-layout.php). The old rules
+   here assumed a flat single-column WC form; the redesigned checkout
+   renders four card sections + a grouped review and drives all of its
+   styling from the dedicated stylesheet. */
 
 
 /* ===========================
@@ -1059,10 +987,6 @@ body.kaiko-checkout-page .kaiko-checkout-hero__subtitle {
     grid-template-columns: 1fr 1fr;
   }
 
-  .kaiko-checkout-section .woocommerce-checkout {
-    grid-template-columns: 1fr;
-  }
-
   .kaiko-cart-layout {
     grid-template-columns: 1fr;
   }
@@ -1136,84 +1060,8 @@ body.kaiko-checkout-page .kaiko-checkout-hero__subtitle {
 }
 
 
-/* ===========================
-   10. CHECKOUT COLUMNS LAYOUT
-   =========================== */
-
-/* Scoped under body.kaiko-checkout-page so the grid wins over any
-   unscoped Woodmart .woocommerce-checkout { display: flex|block }
-   rule that might load after shell.css. Defensive — the grid was
-   confirmed applying in DevTools, but the extra specificity costs
-   nothing. */
-body.kaiko-checkout-page .kaiko-checkout-columns {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: var(--kaiko-space-3xl);
-  align-items: start;
-}
-
-.kaiko-checkout-fields {
-  background: var(--kaiko-off-white);
-  border-radius: var(--kaiko-radius-2xl);
-  padding: var(--kaiko-space-2xl);
-  /* No position: sticky here — the fields column must scroll with
-     the page. Only .kaiko-checkout-review is sticky. */
-}
-
-.kaiko-checkout-review {
-  background: var(--kaiko-off-white);
-  border-radius: var(--kaiko-radius-2xl);
-  padding: var(--kaiko-space-2xl);
-  position: sticky;
-  top: 100px;
-}
-
-.kaiko-checkout-review h3 {
-  font-family: var(--kaiko-font-display);
-  font-size: 1.25rem;
-  font-weight: var(--kaiko-weight-bold);
-  color: var(--kaiko-dark);
-  margin-bottom: var(--kaiko-space-xl);
-  padding-bottom: var(--kaiko-space-md);
-  border-bottom: 1px solid var(--kaiko-border);
-}
-
-.kaiko-checkout-fields .form-row label {
-  font-family: var(--kaiko-font-body);
-  font-size: 0.85rem;
-  font-weight: var(--kaiko-weight-medium);
-  color: var(--kaiko-dark);
-}
-
-.kaiko-checkout-fields .form-row input,
-.kaiko-checkout-fields .form-row textarea,
-.kaiko-checkout-fields .form-row select {
-  padding: 12px 16px;
-  border: 1px solid var(--kaiko-border);
-  border-radius: var(--kaiko-radius-lg);
-  font-family: var(--kaiko-font-body);
-  font-size: 0.95rem;
-  color: var(--kaiko-dark);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.kaiko-checkout-fields .form-row input:focus,
-.kaiko-checkout-fields .form-row textarea:focus,
-.kaiko-checkout-fields .form-row select:focus {
-  outline: none;
-  border-color: var(--kaiko-teal);
-  box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
-}
-
-@media (max-width: 1024px) {
-  .kaiko-checkout-columns {
-    grid-template-columns: 1fr;
-  }
-
-  .kaiko-checkout-review {
-    position: static;
-  }
-}
+/* §10 removed — all checkout columns / field / review card styling is
+   owned by assets/css/kaiko-checkout.css now. */
 
 
 /* ===========================
@@ -1396,18 +1244,12 @@ body.kaiko-checkout-page .kaiko-checkout-columns {
   color: var(--kaiko-teal);
 }
 
-/* Checkout-only: the "Have a coupon? Click here to enter your code"
-   info bar sits in .woocommerce-form-coupon-toggle which is (a sibling
-   of) the flex-styled Woodmart .woocommerce-form-coupon container.
-   Flex ancestry was collapsing the info box to just its rounded-left
-   cap — a crescent painted by the border-left + border-radius combo
-   on .kaiko-page .woocommerce-info. Forcing block + full width stops
-   the flex parent squeezing it. Scoped to checkout so notices on
-   other pages keep their current layout. */
-body.kaiko-checkout-page .kaiko-page .woocommerce-info {
-  display: block;
-  width: 100%;
-}
+/* PR #16's checkout-only .woocommerce-info override was removed with
+   the redesign — the default coupon toggle that the override targeted
+   is no longer injected on checkout (see the remove_action in
+   inc/checkout-layout.php). The full-width rule is kept in
+   kaiko-checkout.css only for any stray WC notice that does appear on
+   /checkout/. */
 
 .kaiko-page .woocommerce-message a,
 .kaiko-page .woocommerce-info a {
@@ -1415,56 +1257,9 @@ body.kaiko-checkout-page .kaiko-page .woocommerce-info {
   font-weight: var(--kaiko-weight-semibold);
 }
 
-/* Order review table in checkout */
-.kaiko-checkout-review .woocommerce-checkout-review-order-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.kaiko-checkout-review .woocommerce-checkout-review-order-table th,
-.kaiko-checkout-review .woocommerce-checkout-review-order-table td {
-  padding: var(--kaiko-space-sm) 0;
-  font-family: var(--kaiko-font-body);
-  font-size: 0.9rem;
-  border-bottom: 1px solid var(--kaiko-border);
-}
-
-.kaiko-checkout-review .woocommerce-checkout-review-order-table th {
-  color: var(--kaiko-mid-gray);
-  font-weight: var(--kaiko-weight-medium);
-  text-align: left;
-}
-
-.kaiko-checkout-review .woocommerce-checkout-review-order-table tfoot .order-total th,
-.kaiko-checkout-review .woocommerce-checkout-review-order-table tfoot .order-total td {
-  font-size: 1.1rem;
-  font-weight: var(--kaiko-weight-bold);
-  color: var(--kaiko-dark);
-  border-top: 2px solid var(--kaiko-border);
-  border-bottom: none;
-  padding-top: var(--kaiko-space-md);
-}
-
-/* Place order button in checkout review */
-.kaiko-checkout-review #place_order {
-  width: 100%;
-  background: var(--kaiko-teal);
-  color: var(--kaiko-white);
-  border: none;
-  border-radius: var(--kaiko-radius-lg);
-  padding: 16px;
-  font-family: var(--kaiko-font-body);
-  font-size: 1rem;
-  font-weight: var(--kaiko-weight-semibold);
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-  margin-top: var(--kaiko-space-lg);
-}
-
-.kaiko-checkout-review #place_order:hover {
-  background: var(--kaiko-deep-teal);
-  transform: translateY(-2px);
-}
+/* Legacy review-order table + place-order rules removed — the new
+   review-order.php override emits .kaiko-co-* markup (no <table>)
+   styled from assets/css/kaiko-checkout.css. */
 
 
 /* ===========================
