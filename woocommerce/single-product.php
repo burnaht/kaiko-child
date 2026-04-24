@@ -247,12 +247,16 @@ while ( have_posts() ) : the_post();
 
 				<?php if ( $can_purchase ) : ?>
 
-					<?php if ( ! empty( $tiers ) ) : ?>
+					<?php if ( ! empty( $tiers ) ) :
+						$kaiko_tier_note = ( function_exists( 'kaiko_pdp_should_use_accumulator' ) && kaiko_pdp_should_use_accumulator( $product ) )
+							? __( 'Each size qualifies for tiers independently', 'kaiko-child' )
+							: __( 'Live price updates as you change quantity', 'kaiko-child' );
+						?>
 						<!-- Wholesale tier pricing -->
 						<div class="kaiko-pp-tiers">
 							<div class="kaiko-pp-tiers__header">
 								<span class="kaiko-pp-tiers__title"><?php esc_html_e( 'Wholesale Tier Pricing', 'kaiko-child' ); ?></span>
-								<span class="kaiko-pp-tiers__note"><?php esc_html_e( 'Live price updates as you change quantity', 'kaiko-child' ); ?></span>
+								<span class="kaiko-pp-tiers__note"><?php echo esc_html( $kaiko_tier_note ); ?></span>
 							</div>
 							<div class="kaiko-pp-tiers__table">
 								<?php
@@ -300,11 +304,15 @@ while ( have_posts() ) : the_post();
 					<!-- Add-to-cart form -->
 					<div class="kaiko-pp-form">
 						<?php
-						// Render WC's native add-to-cart form (handles simple + variable products).
-						// kaiko_hide_add_to_cart_button() on wp hook removes the template for non-
-						// approved users, but we only land here when the user IS approved so it's
-						// safe to call the template function directly.
-						if ( $product->is_purchasable() && $product->is_in_stock() ) {
+						// Variable products with tiers + a colour attribute render the
+						// mix-and-match accumulator instead of the native variations
+						// form. Everything else falls through to WC's default template.
+						// kaiko_hide_add_to_cart_button() on wp hook removes the native
+						// form for non-approved users; we only land in $can_purchase
+						// here so it's safe to call directly.
+						if ( function_exists( 'kaiko_pdp_should_use_accumulator' ) && kaiko_pdp_should_use_accumulator( $product ) ) {
+							get_template_part( 'template-parts/kaiko-pdp-accumulator', null, array( 'product' => $product ) );
+						} elseif ( $product->is_purchasable() && $product->is_in_stock() ) {
 							woocommerce_template_single_add_to_cart();
 						} else {
 							echo '<p class="kaiko-pp-oos">' . esc_html__( 'Currently out of stock — contact info@kaikoproducts.com for availability.', 'kaiko-child' ) . '</p>';
@@ -312,7 +320,17 @@ while ( have_posts() ) : the_post();
 						?>
 					</div>
 
-					<?php if ( ! empty( $tiers ) && $product->is_purchasable() && $product->is_in_stock() ) : ?>
+					<?php
+					// The .kaiko-pp-total "Your order total" pill is updated by
+					// kaiko-variation-swap.js. When the accumulator is active it
+					// renders its own grand-total row, and variation-swap.js is
+					// not loaded — so the pill would sit empty. Hide it.
+					$kaiko_render_total_pill = ! empty( $tiers )
+						&& $product->is_purchasable()
+						&& $product->is_in_stock()
+						&& ! ( function_exists( 'kaiko_pdp_should_use_accumulator' ) && kaiko_pdp_should_use_accumulator( $product ) );
+					?>
+					<?php if ( $kaiko_render_total_pill ) : ?>
 						<div class="kaiko-pp-total" aria-live="polite">
 							<span class="kaiko-pp-total__label">
 								<?php esc_html_e( 'Your order total', 'kaiko-child' ); ?>

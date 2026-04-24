@@ -39,6 +39,7 @@ require_once KAIKO_DIR . '/inc/cart-layout.php';
 require_once KAIKO_DIR . '/inc/account-layout.php';
 require_once KAIKO_DIR . '/inc/checkout-layout.php';
 require_once KAIKO_DIR . '/inc/mix-and-match-pricing.php';
+require_once KAIKO_DIR . '/inc/mix-match-accumulator.php';
 require_once KAIKO_DIR . '/inc/trade-approval.php';
 require_once KAIKO_DIR . '/inc/redirects.php';
 
@@ -110,14 +111,24 @@ function kaiko_enqueue_assets() {
         // Single-product — variation swap fix (force-inits WC variations_form,
         // manual variation matcher, qty → tier pill → ATC label sync).
         // Ported from Code Snippet #29; only loaded on PDPs.
+        //
+        // Skip on products that render the mix-and-match accumulator — it
+        // owns the variations form, tier display, and ATC label for that
+        // flow. Loading both causes duplicate event bindings and misleading
+        // per-row tier highlights.
         if ( function_exists( 'is_product' ) && is_product() ) {
-            wp_enqueue_script(
-                'kaiko-variation-swap',
-                KAIKO_URI . '/assets/js/kaiko-variation-swap.js',
-                array( 'jquery', 'wc-add-to-cart-variation' ),
-                KAIKO_VERSION,
-                true
-            );
+            $pdp_product = wc_get_product( get_queried_object_id() );
+            $use_accumulator = function_exists( 'kaiko_pdp_should_use_accumulator' )
+                && kaiko_pdp_should_use_accumulator( $pdp_product );
+            if ( ! $use_accumulator ) {
+                wp_enqueue_script(
+                    'kaiko-variation-swap',
+                    KAIKO_URI . '/assets/js/kaiko-variation-swap.js',
+                    array( 'jquery', 'wc-add-to-cart-variation' ),
+                    KAIKO_VERSION,
+                    true
+                );
+            }
         }
     }
 
