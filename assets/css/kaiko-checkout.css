@@ -153,6 +153,26 @@ body.kaiko-checkout-page .kaiko-co-coupon__btn[disabled] {
 	cursor: not-allowed;
 }
 
+/* Inline error surface injected by assets/js/kaiko-checkout.js when
+   wc-ajax=apply_coupon returns a WC error (invalid code, expired,
+   etc.). flex-basis: 100% so it wraps onto its own row inside the
+   flex coupon card instead of squeezing alongside the input + button.
+   Colour palette matches the --kaiko-error treatment elsewhere in the
+   theme (.kaiko-page .woocommerce-error, assets/css/kaiko-woocommerce.css). */
+body.kaiko-checkout-page .kaiko-co-coupon__error {
+	flex-basis: 100%;
+	margin-top: 0.25rem;
+	padding: 0.65rem 0.9rem;
+	background: rgba(239, 68, 68, 0.08);
+	border: 1px solid rgba(239, 68, 68, 0.22);
+	border-radius: 4px;
+	color: #b91c1c;
+	font-family: var(--kaiko-font-body, 'Inter', sans-serif);
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.5;
+}
+
 
 /* ============================================================
    Fields — WC .form-row grid for billing/shipping/notes
