@@ -228,6 +228,30 @@ function kaiko_checkout_template_include( $template ) {
 remove_action( 'woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form', 10 );
 
 /**
+ * Also unhook WC's default `woocommerce_checkout_payment()` from the
+ * `woocommerce_checkout_order_review` action. WC ships two priorities
+ * on that hook:
+ *
+ *   add_action( 'woocommerce_checkout_order_review', 'woocommerce_order_review',   10 );
+ *   add_action( 'woocommerce_checkout_order_review', 'woocommerce_checkout_payment', 20 );
+ *
+ * The first one loads our review-order.php override and is what we
+ * want. The second one loads WC's default checkout/payment.php — a
+ * full gateway list + terms wrapper + a second `#place_order` button
+ * — rendered inside #order_review ALONGSIDE our override. That was
+ * the "payment rendering twice" bug on live: our own #payment sits
+ * clip-rect hidden, but the default one that WC injects at priority
+ * 20 has no .kaiko-co-payment-hidden wrapper, so nothing targets it
+ * and it renders visibly.
+ *
+ * Our review-order.php already emits its own #payment with the BACS
+ * radio in an accessibly-hidden wrapper (so WC's submit validator
+ * still has payment_method posted) plus the single visible branded
+ * place-order button, so the default render is redundant.
+ */
+remove_action( 'woocommerce_checkout_order_review', 'woocommerce_checkout_payment', 20 );
+
+/**
  * Place Order button label — set centrally so a future WC upgrade that
  * re-ships review-order.php doesn't silently revert us to "Place order".
  */

@@ -628,16 +628,38 @@ body.kaiko-checkout-page #payment {
 	margin: 0;
 	border: 0;
 }
-body.kaiko-checkout-page #payment .kaiko-co-payment-hidden {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
-	clip: rect(0 0 0 0);
-	white-space: nowrap;
-	border: 0;
-	padding: 0;
-	margin: -1px;
+body.kaiko-checkout-page #payment .kaiko-co-payment-hidden,
+body.kaiko-checkout-page .kaiko-checkout-review #payment .kaiko-co-payment-hidden {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	overflow: hidden !important;
+	clip: rect(0 0 0 0) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
+	padding: 0 !important;
+	margin: -1px !important;
+}
+
+/* Belt-and-braces: if anything manages to render a stray gateway list
+   or terms wrapper into the review column (a rogue plugin re-hooking
+   woocommerce_checkout_payment elsewhere, for instance), clip-rect
+   them too so zero pixels paint. The <input name="payment_method">
+   stays in the DOM + accessibility tree — WC's submit validator
+   treats display:none gateways as intentionally disabled, so we
+   never reach for that here. */
+body.kaiko-checkout-page .kaiko-checkout-review .wc_payment_methods,
+body.kaiko-checkout-page .kaiko-checkout-review .woocommerce-terms-and-conditions-wrapper,
+body.kaiko-checkout-page .kaiko-checkout-review .payment_box {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	overflow: hidden !important;
+	clip: rect(0 0 0 0) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
+	padding: 0 !important;
+	margin: -1px !important;
 }
 body.kaiko-checkout-page #payment .form-row.place-order {
 	padding: 0;
