@@ -735,13 +735,6 @@ body.kaiko-checkout-page .kaiko-checkout-hero__subtitle {
   padding: 52px 40px 100px;
 }
 
-.kaiko-checkout-section .woocommerce-checkout {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: var(--kaiko-space-3xl);
-  align-items: start;
-}
-
 .kaiko-checkout-section .woocommerce-billing-fields h3,
 .kaiko-checkout-section .woocommerce-shipping-fields h3,
 .kaiko-checkout-section .woocommerce-additional-fields h3,
@@ -783,14 +776,6 @@ body.kaiko-checkout-page .kaiko-checkout-hero__subtitle {
   outline: none;
   border-color: var(--kaiko-teal);
   box-shadow: 0 0 0 3px rgba(26, 92, 82, 0.1);
-}
-
-.kaiko-checkout-section #order_review {
-  background: var(--kaiko-off-white);
-  border-radius: var(--kaiko-radius-xl);
-  padding: var(--kaiko-space-2xl);
-  position: sticky;
-  top: 100px;
 }
 
 .kaiko-checkout-section #place_order {
