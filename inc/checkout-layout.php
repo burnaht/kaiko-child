@@ -24,8 +24,10 @@ defined( 'ABSPATH' ) || exit;
 add_filter( 'body_class', 'kaiko_checkout_body_class' );
 
 function kaiko_checkout_body_class( $classes ) {
+	// kaiko-page is added globally by kaiko_add_page_body_classes()
+	// (inc/elementor-enqueue.php). Only the page-specific scoping class
+	// is owned here.
 	if ( function_exists( 'is_checkout' ) && is_checkout() && ! ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'order-received' ) ) ) {
-		if ( ! in_array( 'kaiko-page', $classes, true ) )          $classes[] = 'kaiko-page';
 		if ( ! in_array( 'kaiko-checkout-page', $classes, true ) ) $classes[] = 'kaiko-checkout-page';
 	}
 	return $classes;

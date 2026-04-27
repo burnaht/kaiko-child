@@ -105,6 +105,14 @@ function kaiko_enqueue_elementor_assets() {
 add_filter( 'body_class', 'kaiko_add_page_body_classes' );
 
 function kaiko_add_page_body_classes( $classes ) {
+    // Global Kaiko shell marker. Added on every front-end route so the
+    // child theme's reset / footer-suppression rules consistently win
+    // against Woodmart, including on /shop/ and /contact/ where the
+    // header.php body_class context wasn't always reaching the markup.
+    if ( ! is_admin() && ! in_array( 'kaiko-page', $classes, true ) ) {
+        $classes[] = 'kaiko-page';
+    }
+
     if ( ! is_page() ) {
         return $classes;
     }
