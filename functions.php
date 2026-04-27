@@ -43,6 +43,12 @@ require_once KAIKO_DIR . '/inc/mix-match-accumulator.php';
 require_once KAIKO_DIR . '/inc/trade-approval.php';
 require_once KAIKO_DIR . '/inc/redirects.php';
 
+/* One-shot admin migration triggers. Remove with scripts/* once the
+   pending migrations have been run on production. */
+if ( is_admin() && file_exists( KAIKO_DIR . '/inc/admin/migrations.php' ) ) {
+    require_once KAIKO_DIR . '/inc/admin/migrations.php';
+}
+
 
 /* ============================================
    1. ENQUEUE STYLES & SCRIPTS
