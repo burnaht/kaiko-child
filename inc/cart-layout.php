@@ -41,8 +41,10 @@ if ( ! function_exists( 'kaiko_get_product_tier_rules' ) ) {
 add_filter( 'body_class', 'kaiko_cart_body_class' );
 
 function kaiko_cart_body_class( $classes ) {
+	// kaiko-page is added globally by kaiko_add_page_body_classes()
+	// (inc/elementor-enqueue.php). Only the page-specific scoping class
+	// is owned here.
 	if ( function_exists( 'is_cart' ) && is_cart() ) {
-		if ( ! in_array( 'kaiko-page', $classes, true ) )      $classes[] = 'kaiko-page';
 		if ( ! in_array( 'kaiko-cart-page', $classes, true ) ) $classes[] = 'kaiko-cart-page';
 	}
 	return $classes;
