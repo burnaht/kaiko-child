@@ -29,8 +29,20 @@
 .kaiko-page .whb-mobile-nav,
 .kaiko-page .mobile-sticky-toolbar,
 .kaiko-page .wd-sticky-toolbar,
-.kaiko-page .wd-header-mobile-nav {
+.kaiko-page .wd-header-mobile-nav,
+.kaiko-page .wd-toolbar,
+.kaiko-page [aria-label="Sticky toolbar"] {
   display: none !important;
+}
+
+body.kaiko-page .mobile-nav,
+body.kaiko-page .mobile-nav.wd-side-hidden,
+body.kaiko-page .mobile-nav.wd-active,
+body.kaiko-page [aria-label="Mobile navigation"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateX(-100%) !important;
 }
 
 /* Belt-and-braces catch-all for any Woodmart mobile toolbar that renders
