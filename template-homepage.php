@@ -22,7 +22,7 @@ add_action( 'wp_head', function () {
     body.kaiko-homepage .kaiko-hero { min-height: 90vh; display: flex; align-items: center; padding: 120px var(--kaiko-space-xl) 80px; background: linear-gradient(135deg, var(--kaiko-off-white) 0%, var(--kaiko-warm-gray) 100%); position: relative; overflow: hidden; }
     body.kaiko-homepage .kaiko-hero::after { content: ''; position: absolute; top: -20%; right: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(26,92,82,0.06) 0%, transparent 70%); border-radius: 50%; }
     body.kaiko-homepage .kaiko-hero-inner { max-width: 1400px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; position: relative; z-index: 2; }
-    body.kaiko-homepage .kaiko-hero-logo { font-family: var(--kaiko-font-display); font-size: clamp(2rem, 4vw, 3rem); font-weight: var(--kaiko-weight-bold); letter-spacing: -0.02em; line-height: 1; color: var(--kaiko-dark); margin-bottom: var(--kaiko-space-md); }
+    body.kaiko-homepage .kaiko-hero-logo { font-family: var(--kaiko-font-display); font-size: clamp(3.5rem, 8vw, 6.5rem); font-weight: var(--kaiko-weight-bold); letter-spacing: -0.04em; line-height: 0.9; color: var(--kaiko-dark); margin-bottom: var(--kaiko-space-md); }
     body.kaiko-homepage .kaiko-hero-tag { display: inline-block; font-family: var(--kaiko-font-display); font-size: 0.75rem; font-weight: var(--kaiko-weight-semibold); letter-spacing: 0.12em; text-transform: uppercase; color: var(--kaiko-teal); background: rgba(26,92,82,0.08); padding: 6px 16px; border-radius: 20px; margin-bottom: var(--kaiko-space-lg); }
     body.kaiko-homepage .kaiko-hero h1 { font-family: var(--kaiko-font-display); font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: var(--kaiko-weight-bold); line-height: 1.2; color: var(--kaiko-dark); margin-bottom: var(--kaiko-space-lg); letter-spacing: -0.01em; }
     body.kaiko-homepage .kaiko-hero h1 span { color: var(--kaiko-teal); }
@@ -89,7 +89,7 @@ add_action( 'wp_head', function () {
     }
 
     @media (max-width: 768px) {
-      body.kaiko-homepage .kaiko-hero { padding: 100px 20px 60px; min-height: 70vh; }
+      body.kaiko-homepage .kaiko-hero { padding: 70px 20px 60px; min-height: auto; }
       body.kaiko-homepage .kaiko-hero h1 { font-size: clamp(2rem, 8vw, 2.75rem); }
       body.kaiko-homepage .kaiko-hero-buttons { flex-direction: column; }
       body.kaiko-homepage .kaiko-hero-buttons a { text-align: center; justify-content: center; }
