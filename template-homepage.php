@@ -22,6 +22,7 @@ add_action( 'wp_head', function () {
     body.kaiko-homepage .kaiko-hero { min-height: 90vh; display: flex; align-items: center; padding: 120px var(--kaiko-space-xl) 80px; background: linear-gradient(135deg, var(--kaiko-off-white) 0%, var(--kaiko-warm-gray) 100%); position: relative; overflow: hidden; }
     body.kaiko-homepage .kaiko-hero::after { content: ''; position: absolute; top: -20%; right: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(26,92,82,0.06) 0%, transparent 70%); border-radius: 50%; }
     body.kaiko-homepage .kaiko-hero-inner { max-width: 1400px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; position: relative; z-index: 2; }
+    body.kaiko-homepage .kaiko-hero-logo { font-family: var(--kaiko-font-display); font-size: clamp(2rem, 4vw, 3rem); font-weight: var(--kaiko-weight-bold); letter-spacing: -0.02em; line-height: 1; color: var(--kaiko-dark); margin-bottom: var(--kaiko-space-md); }
     body.kaiko-homepage .kaiko-hero-tag { display: inline-block; font-family: var(--kaiko-font-display); font-size: 0.75rem; font-weight: var(--kaiko-weight-semibold); letter-spacing: 0.12em; text-transform: uppercase; color: var(--kaiko-teal); background: rgba(26,92,82,0.08); padding: 6px 16px; border-radius: 20px; margin-bottom: var(--kaiko-space-lg); }
     body.kaiko-homepage .kaiko-hero h1 { font-family: var(--kaiko-font-display); font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: var(--kaiko-weight-bold); line-height: 1.2; color: var(--kaiko-dark); margin-bottom: var(--kaiko-space-lg); letter-spacing: -0.01em; }
     body.kaiko-homepage .kaiko-hero h1 span { color: var(--kaiko-teal); }
@@ -30,7 +31,6 @@ add_action( 'wp_head', function () {
     body.kaiko-homepage .kaiko-hero-visual { display: flex; justify-content: center; align-items: center; }
     body.kaiko-homepage .kaiko-hero-image-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--kaiko-space-md); overflow: visible; padding: 20px 0; }
     body.kaiko-homepage .kaiko-hero-image-grid .img-placeholder { border-radius: 20px; overflow: hidden; aspect-ratio: 3/4; background: var(--kaiko-cream); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--kaiko-light-gray); }
-    body.kaiko-homepage .kaiko-hero-image-grid .img-placeholder:nth-child(2) { margin-top: 40px; }
 
     /* Buttons */
     body.kaiko-homepage .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--kaiko-teal); color: var(--kaiko-white); padding: 14px 32px; border-radius: 8px; font-family: var(--kaiko-font-body); font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.25s; border: none; cursor: pointer; letter-spacing: 0.02em; }
@@ -110,6 +110,7 @@ get_header();
   <section class="kaiko-hero">
     <div class="kaiko-hero-inner">
       <div class="kaiko-hero-content">
+        <div class="kaiko-hero-logo">KAIKO</div>
         <div class="kaiko-hero-tag">Wholesale Reptile Supplies</div>
         <h1>Quality Habitat<br>Equipment for<br><span>Exotic Keepers</span></h1>
         <p>Handcrafted feeding bowls, humidity hides, and habitat accessories designed by reptile enthusiasts. Wholesale pricing for approved trade partners.</p>
