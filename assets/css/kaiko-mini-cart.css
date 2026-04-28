@@ -203,7 +203,7 @@ body.admin-bar .kaiko-toast {
   margin-top: 2px;
 }
 
-.kaiko-drawer__close {
+body.kaiko-page .kaiko-drawer__close {
   margin-left: auto;
   width: 36px;
   height: 36px;
@@ -219,8 +219,8 @@ body.admin-bar .kaiko-toast {
   flex-shrink: 0;
 }
 
-.kaiko-drawer__close:hover,
-.kaiko-drawer__close:focus-visible {
+body.kaiko-page .kaiko-drawer__close:hover,
+body.kaiko-page .kaiko-drawer__close:focus-visible {
   border-color: var(--kaiko-dark);
 }
 
@@ -696,7 +696,7 @@ body.kaiko-cart-open {
    DRAWER × REMOVE BUTTON
    ============================================================ */
 
-.kaiko-drawer__item__remove {
+body.kaiko-page .kaiko-drawer__item__remove {
   align-self: start;
   justify-self: end;
   margin-top: 4px;
@@ -715,8 +715,8 @@ body.kaiko-cart-open {
   transition: color 180ms ease, background 180ms ease, border-color 180ms ease;
 }
 
-.kaiko-drawer__item__remove:hover,
-.kaiko-drawer__item__remove:focus-visible {
+body.kaiko-page .kaiko-drawer__item__remove:hover,
+body.kaiko-page .kaiko-drawer__item__remove:focus-visible {
   color: #c0392b;
   background: #fef3f2;
   border-color: #c0392b;
