@@ -112,7 +112,7 @@ get_header();
       <div class="kaiko-hero-content">
         <div class="kaiko-hero-logo">KAIKO</div>
         <div class="kaiko-hero-tag">Wholesale Reptile Supplies</div>
-        <h1>Quality Habitat<br>Equipment for<br><span>Exotic Keepers</span></h1>
+        <h1>Quality Habitat<br>Hardware for<br><span>Exotic Keepers</span></h1>
         <p>Handcrafted feeding bowls, humidity hides, and habitat accessories designed by reptile enthusiasts. Wholesale pricing for approved trade partners.</p>
         <div class="kaiko-hero-buttons">
           <a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" class="btn-primary">Browse Products &rarr;</a>
