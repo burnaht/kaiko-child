@@ -154,6 +154,40 @@
 			return +tiers[ 0 ].unit_price;
 		}
 
+		// Redraws the .kaiko-pp-tier chips (rendered in single-product.php's
+		// tier panel) so default-schedule chips reflect the picked size's
+		// own base × discount_pct. ACF absolute-price chips are left alone.
+		function refreshTierChipsForSize( sizeSlug ) {
+			if ( ! hasSizes ) return;
+			if ( ! variationMap || ! Object.keys( variationMap ).length ) return;
+
+			var sizeBase = 0;
+			for ( var vid in variationMap ) {
+				if ( ! Object.prototype.hasOwnProperty.call( variationMap, vid ) ) continue;
+				var v = variationMap[ vid ];
+				if ( String( v.size || '' ) !== String( sizeSlug || '' ) ) continue;
+				var p = parseFloat( v.price ) || 0;
+				if ( p > 0 && ( sizeBase === 0 || p < sizeBase ) ) {
+					sizeBase = p;
+				}
+			}
+			if ( sizeBase <= 0 ) return;
+
+			var chips = document.querySelectorAll( '.kaiko-pp-tier' );
+			Array.prototype.forEach.call( chips, function ( c ) {
+				if ( c.getAttribute( 'data-default-schedule' ) !== '1' ) return;
+				var pct  = parseFloat( c.getAttribute( 'data-discount-pct' ) ) || 0;
+				var unit = Math.round( sizeBase * ( 1 - pct / 100 ) * 100 ) / 100;
+				c.setAttribute( 'data-price', unit.toFixed( 2 ) );
+				var priceEl = c.querySelector( '.kaiko-pp-tier__price' );
+				if ( priceEl ) priceEl.innerHTML = '<bdi>' + fmtMoney( unit ) + '</bdi>';
+				var min = parseInt( c.getAttribute( 'data-min' ), 10 ) || 0;
+				var max = parseInt( c.getAttribute( 'data-max' ), 10 ) || 0;
+				var qtyLabel = max > 0 ? ( min + ' – ' + max ) : ( min + '+' );
+				c.setAttribute( 'aria-label', 'Select tier: ' + qtyLabel + ' units at ' + fmtMoney( unit ) + ' each' );
+			} );
+		}
+
 		/* ---------------- derivations ---------------- */
 
 		function rowsBySize( size ) {
@@ -495,6 +529,7 @@
 				var tab = e.target.closest ? e.target.closest( '.kaiko-mm__size-tab' ) : null;
 				if ( ! tab ) return;
 				state.activeSize = tab.getAttribute( 'data-size' );
+				refreshTierChipsForSize( state.activeSize );
 				render();
 			} );
 		}
@@ -636,6 +671,7 @@
 		/* ---------------- first paint ---------------- */
 
 		render();
+		refreshTierChipsForSize( state.activeSize );
 	}
 
 	function boot() {
