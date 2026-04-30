@@ -52,7 +52,7 @@ if ( ! function_exists( 'kaiko_checkout_attr_term_name' ) ) {
 }
 ?>
 
-<div class="kaiko-co-review-inner">
+<div class="kaiko-co-review-inner woocommerce-checkout-review-order-table">
 
 	<div class="kaiko-co-lines">
 		<?php
