@@ -114,7 +114,7 @@
 				}
 			}
 			$( document.body ).trigger( 'applied_coupon_in_checkout', [ code ] );
-			$( document.body ).trigger( 'update_checkout', { update_shipping_method: false } );
+			$( document.body ).trigger( 'update_checkout', { update_shipping_method: true } );
 		} ).fail( function () {
 			showCouponError( $card, 'Could not apply coupon — please try again.' );
 		} ).always( function () {
@@ -134,7 +134,7 @@
 			dataType: 'html'
 		} ).done( function () {
 			$( document.body ).trigger( 'removed_coupon_in_checkout', [ code ] );
-			$( document.body ).trigger( 'update_checkout', { update_shipping_method: false } );
+			$( document.body ).trigger( 'update_checkout', { update_shipping_method: true } );
 		} );
 	}
 
